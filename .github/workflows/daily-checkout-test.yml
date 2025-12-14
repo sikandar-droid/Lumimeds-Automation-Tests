@@ -1,6 +1,12 @@
 name: Daily Checkout Test
 
 on:
+  # Run on pushes to add-github-actions branch
+  push:
+    branches:
+      - add-github-actions
+      - main
+  
   # FOR TESTING: Run every 5 minutes (change to '30 11 * * *' for daily 3:30 AM PST)
   schedule:
     - cron: '*/5 * * * *'  # Every 5 minutes (FOR TESTING ONLY)
