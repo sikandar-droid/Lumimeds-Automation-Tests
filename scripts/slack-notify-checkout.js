@@ -121,30 +121,47 @@ async function sendCheckoutNotification() {
   
   const statusEmoji = passed ? ':white_check_mark:' : ':x:';
   const statusText = passed ? 'PASSED' : 'FAILED';
+  const statusBanner = passed ? '🟢 *ALL TESTS PASSED*' : '🔴 *TESTS FAILED*';
   
-  const detailedText = `*Today's Automated Checkout Summary — ${today}*\n\n` +
-    `*Checkout Flow*\n\n` +
-    `Tested the complete flow of the Survey Form. ${statusEmoji}\n\n` +
-    `Product pricing is correct ${statusEmoji}\n\n` +
-    `Promos being applied correctly ${statusEmoji}\n\n` +
-    `Promo on relevant medication on product summary ${statusEmoji}\n\n` +
-    `Patient info such as Name, DOB, Address, Phone Number saved correctly ${statusEmoji}\n\n` +
-    `All questions verified and functioning as expected. ${statusEmoji}\n\n` +
-    `*Product Summary Form*\n\n` +
-    `Successfully navigated to the Product Summary Form. ${statusEmoji}\n\n` +
-    `Page flow and transitions working smoothly. ${statusEmoji}\n\n` +
-    `---\n` +
-    `*Test Details:*\n` +
-    `• Environment: ${environment}\n` +
-    `• URL: ${testUrl}\n` +
-    (checkoutDetails.email ? `• Email: \`${checkoutDetails.email}\`\n` : '') +
-    (checkoutDetails.couponCode ? `• Coupon: \`${checkoutDetails.couponCode}\`\n` : '') +
-    `• Duration: ${formatDuration(results.duration)}\n` +
-    `• Status: *${statusText}*`;
+  const detailedText = 
+    `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
+    `       🛒 *LUMIMEDS CHECKOUT AUTOMATION*\n` +
+    `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n` +
+    
+    `📅 *${today}*\n` +
+    `${statusBanner}\n\n` +
+    
+    `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n` +
+    
+    `📋 *CHECKOUT FLOW*\n\n` +
+    `   ${statusEmoji}  Survey Form - Complete flow tested\n` +
+    `   ${statusEmoji}  Product Pricing - Verified correct\n` +
+    `   ${statusEmoji}  Promo Application - Working correctly\n` +
+    `   ${statusEmoji}  Medication Summary - Promo displayed\n` +
+    `   ${statusEmoji}  Patient Info - Name, DOB, Address, Phone saved\n` +
+    `   ${statusEmoji}  Questions - All verified and functional\n\n` +
+    
+    `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n` +
+    
+    `📦 *PRODUCT SUMMARY FORM*\n\n` +
+    `   ${statusEmoji}  Navigation - Successfully accessed\n` +
+    `   ${statusEmoji}  Page Flow - Smooth transitions\n\n` +
+    
+    `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n` +
+    
+    `📊 *TEST DETAILS*\n\n` +
+    `   🌍  *Environment:*  ${environment}\n` +
+    `   🔗  *URL:*  ${testUrl}\n` +
+    (checkoutDetails.email ? `   📧  *Email:*  \`${checkoutDetails.email}\`\n` : '') +
+    (checkoutDetails.couponCode ? `   🎫  *Coupon:*  \`${checkoutDetails.couponCode}\`\n` : '') +
+    `   ⏱️  *Duration:*  ${formatDuration(results.duration)}\n` +
+    `   📈  *Status:*  *${statusText}*\n\n` +
+    
+    `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
 
   const message = {
-    username: 'Lumimeds Checkout Bot',
-    icon_emoji: ':shopping_bags:',
+    username: 'Lumimeds Automation',
+    icon_emoji: ':robot_face:',
     text: detailedText
   };
 
