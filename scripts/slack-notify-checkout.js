@@ -130,15 +130,6 @@ async function sendCheckoutNotification() {
     `Promo on relevant medication on product summary ${statusEmoji}\n\n` +
     `Patient info such as Name, DOB, Address, Phone Number saved correctly ${statusEmoji}\n\n` +
     `All questions verified and functioning as expected. ${statusEmoji}\n\n` +
-    `*Product Summary Form*\n\n` +
-    `Successfully navigated to the Product Summary Form. ${statusEmoji}\n\n` +
-    `Page flow and transitions working smoothly. ${statusEmoji}\n\n` +
-    `*Patient Portal*\n\n` +
-    `Verified login functionality. ${statusEmoji}\n\n` +
-    `Verification Order Cancellation/Pause ${statusEmoji}\n\n` +
-    `Messages sent correctly . ${statusEmoji}\n\n` +
-    `Intake forms working correctly ${statusEmoji}\n\n` +
-    `All modules accessible and working fine. ${statusEmoji}\n\n` +
     `---\n` +
     `*Test Details:*\n` +
     `• Environment: ${environment}\n` +
