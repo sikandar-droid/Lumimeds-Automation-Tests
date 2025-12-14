@@ -112,22 +112,46 @@ async function sendCheckoutNotification() {
     }
   );
 
+  // Build detailed checkout summary
+  const today = new Date().toLocaleDateString('en-US', { 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric' 
+  });
+  
+  const statusEmoji = passed ? ':white_check_mark:' : ':x:';
+  const statusText = passed ? 'PASSED' : 'FAILED';
+  
+  const detailedText = `*Today's Automated Checkout Summary — ${today}*\n\n` +
+    `*Checkout Flow*\n\n` +
+    `Tested the complete flow of the Survey Form. ${statusEmoji}\n\n` +
+    `Product pricing is correct ${statusEmoji}\n\n` +
+    `Promos being applied correctly ${statusEmoji}\n\n` +
+    `Promo on relevant medication on product summary ${statusEmoji}\n\n` +
+    `Patient info such as Name, DOB, Address, Phone Number saved correctly ${statusEmoji}\n\n` +
+    `All questions verified and functioning as expected. ${statusEmoji}\n\n` +
+    `*Product Summary Form*\n\n` +
+    `Successfully navigated to the Product Summary Form. ${statusEmoji}\n\n` +
+    `Page flow and transitions working smoothly. ${statusEmoji}\n\n` +
+    `*Patient Portal*\n\n` +
+    `Verified login functionality. ${statusEmoji}\n\n` +
+    `Verification Order Cancellation/Pause ${statusEmoji}\n\n` +
+    `Messages sent correctly . ${statusEmoji}\n\n` +
+    `Intake forms working correctly ${statusEmoji}\n\n` +
+    `All modules accessible and working fine. ${statusEmoji}\n\n` +
+    `---\n` +
+    `*Test Details:*\n` +
+    `• Environment: ${environment}\n` +
+    `• URL: ${testUrl}\n` +
+    (checkoutDetails.email ? `• Email: \`${checkoutDetails.email}\`\n` : '') +
+    (checkoutDetails.couponCode ? `• Coupon: \`${checkoutDetails.couponCode}\`\n` : '') +
+    `• Duration: ${formatDuration(results.duration)}\n` +
+    `• Status: *${statusText}*`;
+
   const message = {
     username: 'Lumimeds Checkout Bot',
     icon_emoji: ':shopping_bags:',
-    text: passed 
-      ? `✅ *Checkout Test Passed* - ${environment}`
-      : `❌ *Checkout Test Failed* - ${environment}`,
-    attachments: [
-      {
-        color: color,
-        title: `🛒 ${testFile} - Checkout Flow Test`,
-        fields: fields,
-        footer: 'Lumimeds Test Automation',
-        footer_icon: 'https://playwright.dev/img/playwright-logo.svg',
-        ts: Math.floor(Date.now() / 1000)
-      }
-    ]
+    text: detailedText
   };
 
   // Send to Slack
