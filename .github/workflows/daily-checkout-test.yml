@@ -1,18 +1,18 @@
 name: Daily Checkout Test
 
 on:
-  # Run on pushes to add-github-actions branch
+  # Run on pushes to main branch
   push:
     branches:
-      - add-github-actions
       - main
   
-  # FOR TESTING: Run every 5 minutes (change to '30 11 * * *' for daily 3:30 AM PST)
-  schedule:
-    - cron: '*/5 * * * *'  # Every 5 minutes (FOR TESTING ONLY)
-    # - cron: '30 11 * * *'  # Uncomment this for 3:30 AM PST daily
+  # SCHEDULE DISABLED - Set your schedule here when ready
+  # Examples:
+  # - cron: '30 11 * * *'     # Daily at 3:30 AM PST
+  # - cron: '0 9 * * 1-5'     # Weekdays at 9 AM
+  # - cron: '0 */6 * * *'     # Every 6 hours
   
-  # Allow manual trigger from GitHub UI
+  # Manual trigger from GitHub UI (always available)
   workflow_dispatch:
     inputs:
       environment:
