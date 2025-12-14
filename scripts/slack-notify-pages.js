@@ -180,14 +180,16 @@ async function sendPageTestNotification() {
     `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n` +
     
     `✅ *WHAT WE VERIFIED*\n\n` +
-    `   ${statusEmoji}  *Page Loading* - All pages load with correct titles\n` +
-    `   ${statusEmoji}  *Get Started Buttons* - Redirect to /products/survey/weight_loss\n` +
-    `   ${statusEmoji}  *Special Buttons* - "Choose Plan", "Start Now", "Comenzar"\n` +
-    `   ${statusEmoji}  *Learn More Flow* - Learn More → Plans → Select → Survey\n` +
-    `   ${statusEmoji}  *Pricing Modal* - Modal → Select → Survey Form (OTP page)\n` +
-    `   ${statusEmoji}  *Trustpilot Widget* - Visible and functional\n` +
-    `   ${statusEmoji}  *Footer Links* - All 6 links verified (Terms, Pharmacy, etc.)\n` +
-    `   ${statusEmoji}  *Footer Contact* - Phone, email, address, service hours\n` +
+    `   ${statusEmoji}  *Page Loading* - All pages load successfully with correct titles\n\n` +
+    `   ${statusEmoji}  *Get Started Buttons* - All redirect to /products/survey/weight_loss\n\n` +
+    `   ${statusEmoji}  *Special Buttons* - "Choose Your Plan Now", "Start Now",\n` +
+    `        "Start Your Journey Now", "Comenzar" (Spanish)\n\n` +
+    `   ${statusEmoji}  *Learn More Flow* - Learn More → Plans Page → Select → Survey Form\n\n` +
+    `   ${statusEmoji}  *Pricing Modal* - Opens modal → Select → Survey Form (OTP page)\n\n` +
+    `   ${statusEmoji}  *Trustpilot Widget* - Visible and functional\n\n` +
+    `   ${statusEmoji}  *Footer Links* - All 6 links verified\n` +
+    `        (Terms, Pharmacy, Careers, FAQ, Terms of Use, Privacy)\n\n` +
+    `   ${statusEmoji}  *Footer Contact* - Phone, email, address, service hours present\n\n` +
     `   ${statusEmoji}  *Header* - Logo, hamburger menu, nav links functional\n\n` +
     
     `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n` +
@@ -203,8 +205,8 @@ async function sendPageTestNotification() {
     `\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
 
   const message = {
-    username: 'Lumimeds Ad Pages Bot',
-    icon_emoji: ':memo:',
+    username: 'Lumimeds Automation',
+    icon_emoji: ':globe_with_meridians:',
     text: detailedText
   };
 
