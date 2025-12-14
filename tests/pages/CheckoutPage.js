@@ -122,12 +122,12 @@ class CheckoutPage {
             const isVisible = await couponField.isVisible().catch(() => false);
             
             if (!isVisible) {
-                // Click "Discount Code?" link/button to reveal the textbox
-                const discountCodeButton = this.page.locator('text=/discount code/i').first();
-                await discountCodeButton.waitFor({ state: 'visible', timeout: 10000 });
-                await discountCodeButton.scrollIntoViewIfNeeded();
-                await discountCodeButton.click();
-                console.log('✅ Clicked "Discount Code?" to reveal input field');
+            // Click "Discount Code?" link/button to reveal the textbox
+            const discountCodeButton = this.page.locator('text=/discount code/i').first();
+            await discountCodeButton.waitFor({ state: 'visible', timeout: 10000 });
+            await discountCodeButton.scrollIntoViewIfNeeded();
+            await discountCodeButton.click();
+            console.log('✅ Clicked "Discount Code?" to reveal input field');
                 await this.page.waitForTimeout(2000);
             } else {
                 console.log('ℹ️  Coupon field already visible');
