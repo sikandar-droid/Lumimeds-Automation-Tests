@@ -127,22 +127,85 @@ async function sendPageTestNotification() {
     short: true
   });
 
+  // Build detailed ad pages summary
+  const today = new Date().toLocaleDateString('en-US', { 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric' 
+  });
+  
+  const statusEmoji = passed ? ':white_check_mark:' : ':x:';
+  const statusText = passed ? 'PASSED' : 'FAILED';
+  const statusBanner = passed ? '🟢 *ALL PAGES VERIFIED*' : '🔴 *SOME PAGES FAILED*';
+  
+  // List of ad pages
+  const adPages = [
+    '/ad/for-women',
+    '/ad/how-to-start',
+    '/ad/journey',
+    '/ad/redefined',
+    '/en/ad/med-spa1',
+    '/ad/best-weight-loss-medication',
+    '/ad/weight-loss-thanksgiving',
+    '/ad/stay-on-track',
+    '/ad/glow-up',
+    '/ad/free',
+    '/ad/black-friday-sale',
+    '/ad/science',
+    '/ad/otp',
+    '/ad/cyber-monday-sale',
+    '/ad/glp1-gip-treatment',
+    '/ad/sustained',
+    '/ad/sustainable-weight-loss',
+    '/ad/weight-loss-treatment',
+    '/ad/easy-weight-loss',
+    '/ad/med-spa',
+    '/es/ad/med-spa3 (Spanish)',
+    '/ad/holiday-weight-goals'
+  ];
+  
+  const detailedText = 
+    `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
+    `       📄 *LUMIMEDS AD PAGES TESTING*\n` +
+    `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n` +
+    
+    `📅 *${today}*\n` +
+    `${statusBanner}\n\n` +
+    
+    `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n` +
+    
+    `📋 *AD PAGES TESTED (${adPages.length} pages)*\n\n` +
+    adPages.map(page => `   ${statusEmoji}  ${page}`).join('\n') + '\n\n' +
+    
+    `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n` +
+    
+    `✅ *WHAT WE VERIFIED*\n\n` +
+    `   ${statusEmoji}  *Page Loading* - All pages load with correct titles\n` +
+    `   ${statusEmoji}  *Get Started Buttons* - Redirect to /products/survey/weight_loss\n` +
+    `   ${statusEmoji}  *Special Buttons* - "Choose Plan", "Start Now", "Comenzar"\n` +
+    `   ${statusEmoji}  *Learn More Flow* - Learn More → Plans → Select → Survey\n` +
+    `   ${statusEmoji}  *Pricing Modal* - Modal → Select → Survey Form (OTP page)\n` +
+    `   ${statusEmoji}  *Trustpilot Widget* - Visible and functional\n` +
+    `   ${statusEmoji}  *Footer Links* - All 6 links verified (Terms, Pharmacy, etc.)\n` +
+    `   ${statusEmoji}  *Footer Contact* - Phone, email, address, service hours\n` +
+    `   ${statusEmoji}  *Header* - Logo, hamburger menu, nav links functional\n\n` +
+    
+    `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n` +
+    
+    `📊 *TEST SUMMARY*\n\n` +
+    `   📄  *Pages Tested:*  ${adPages.length}\n` +
+    `   ✅  *Passed:*  ${stats.expected || 0}\n` +
+    `   ❌  *Failed:*  ${stats.unexpected || 0}\n` +
+    `   ⚠️  *Flaky:*  ${stats.flaky || 0}\n` +
+    `   ⏱️  *Duration:*  ${formatDuration(results.duration)}\n` +
+    `   📈  *Status:*  *${statusText}*\n` +
+    (details.screenshotTaken ? `   📸  *Screenshots:*  Captured\n` : '') +
+    `\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
+
   const message = {
-    username: 'Lumimeds Page Test Bot',
-    icon_emoji: ':page_facing_up:',
-    text: passed 
-      ? `✅ *Page Tests Passed* - ${testFile}`
-      : `❌ *Page Tests Failed* - ${testFile}`,
-    attachments: [
-      {
-        color: color,
-        title: `📄 ${testFile} - Functional Tests`,
-        fields: fields,
-        footer: 'Lumimeds Test Automation',
-        footer_icon: 'https://playwright.dev/img/playwright-logo.svg',
-        ts: Math.floor(Date.now() / 1000)
-      }
-    ]
+    username: 'Lumimeds Ad Pages Bot',
+    icon_emoji: ':memo:',
+    text: detailedText
   };
 
   // Send to Slack
