@@ -112,12 +112,15 @@ async function sendCheckoutNotification() {
     }
   );
 
-  // Build detailed checkout summary
-  const today = new Date().toLocaleDateString('en-US', { 
+  // Build detailed checkout summary with dynamic date
+  const now = new Date();
+  const today = now.toLocaleDateString('en-US', { 
+    weekday: 'long',
     year: 'numeric', 
     month: 'long', 
     day: 'numeric' 
   });
+  const todayLabel = `[Today] ${today}`;
   
   const statusEmoji = passed ? ':white_check_mark:' : ':x:';
   const statusText = passed ? 'PASSED' : 'FAILED';
@@ -128,7 +131,7 @@ async function sendCheckoutNotification() {
     `       🛒 *LUMIMEDS CHECKOUT AUTOMATION*\n` +
     `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n` +
     
-    `📅 *${today}*\n` +
+    `📅 *${todayLabel}*\n` +
     `${statusBanner}\n\n` +
     
     `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n` +

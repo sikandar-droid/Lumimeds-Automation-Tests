@@ -127,12 +127,15 @@ async function sendPageTestNotification() {
     short: true
   });
 
-  // Build detailed ad pages summary
-  const today = new Date().toLocaleDateString('en-US', { 
+  // Build detailed ad pages summary with dynamic date
+  const now = new Date();
+  const today = now.toLocaleDateString('en-US', { 
+    weekday: 'long',
     year: 'numeric', 
     month: 'long', 
     day: 'numeric' 
   });
+  const todayLabel = `[Today] ${today}`;
   
   const statusEmoji = passed ? ':white_check_mark:' : ':x:';
   const statusText = passed ? 'PASSED' : 'FAILED';
@@ -169,7 +172,7 @@ async function sendPageTestNotification() {
     `       📄 *LUMIMEDS AD PAGES TESTING*\n` +
     `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n` +
     
-    `📅 *${today}*\n` +
+    `📅 *${todayLabel}*\n` +
     `${statusBanner}\n\n` +
     
     `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n` +
