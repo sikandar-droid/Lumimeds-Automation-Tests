@@ -1,0 +1,129 @@
+
+Running 256 tests using 8 workers
+
+[1A[2K(node:62293) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:62295) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:62296) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:62292) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:62294) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:62298) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:62291) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:62297) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:62294) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:62295) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:62293) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:62291) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:62298) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:62292) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:62296) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:62297) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[1/256] [chromium] › tests/Ad-best-weight-loss-medication.spec.js:137:13 › Live Ad Pages - Functional Tests › Testing: /ad/best-weight-loss-medication › should navigate to survey when popup "GET YOURS NOW" is clicked
+[1A[2K[2/256] [chromium] › tests/Ad-best-weight-loss-medication.spec.js:285:13 › Live Ad Pages - Functional Tests › Testing: /ad/best-weight-loss-medication › should verify header navigation elements
+[1A[2K[3/256] [chromium] › tests/Ad-black-friday-sale.spec.js:20:9 › Live Ad Pages - Functional Tests › Testing: /ad/black-friday-sale › should load page successfully
+[1A[2K[4/256] [chromium] › tests/Ad-best-weight-loss-medication.spec.js:392:13 › Live Ad Pages - Functional Tests › Testing: /ad/best-weight-loss-medication › should capture full page screenshot on iPhone 15 Pro Max
+[1A[2K[5/256] [chromium] › tests/Ad-best-weight-loss-medication.spec.js:221:13 › Live Ad Pages - Functional Tests › Testing: /ad/best-weight-loss-medication › should have all footer links clickable
+[1A[2K[6/256] [chromium] › tests/Ad-best-weight-loss-medication.spec.js:27:13 › Live Ad Pages - Functional Tests › Testing: /ad/best-weight-loss-medication › should load page successfully
+[1A[2K[7/256] [chromium] › tests/Ad-best-weight-loss-medication.spec.js:62:13 › Live Ad Pages - Functional Tests › Testing: /ad/best-weight-loss-medication › should have clickable Get Started buttons
+[1A[2K[8/256] [chromium] › tests/Ad-best-weight-loss-medication.spec.js:437:5 › Live Ad Pages - Summary Report › generate test summary
+[1A[2K[chromium] › tests/Ad-best-weight-loss-medication.spec.js:437:5 › Live Ad Pages - Summary Report › generate test summary
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+
+[1A[2K║                    AD PAGES TEST SUMMARY REPORT                              ║
+
+[1A[2K╚══════════════════════════════════════════════════════════════════════════════╝
+
+
+[1A[2K📱 Device: iPhone 15 Pro Max (430x932)
+
+[1A[2K📊 Pages Tested: 1
+
+[1A[2K✅ Test suites per page:
+
+[1A[2K   1. Page load verification
+
+[1A[2K   2. Page title validation
+
+[1A[2K   3. Get Started buttons clickability
+
+[1A[2K   4. Get Started navigation to survey
+
+[1A[2K   5. Trustpilot widget functionality
+
+[1A[2K   6. Footer links validation
+
+[1A[2K   7. Header navigation elements
+
+[1A[2K   8. Contact information presence
+
+[1A[2K   9. Full page screenshot capture
+
+[1A[2K
+✅ All tests completed!
+
+
+[1A[2K[chromium] › tests/Ad-best-weight-loss-medication.spec.js:27:13 › Live Ad Pages - Functional Tests › Testing: /ad/best-weight-loss-medication › should load page successfully
+
+======================================================================
+
+[1A[2K📱 Testing: /ad/best-weight-loss-medication on iPhone 15 Pro Max
+
+[1A[2K======================================================================
+
+[1A[2K[9/256] [chromium] › tests/Ad-black-friday-sale.spec.js:66:9 › Live Ad Pages - Functional Tests › Testing: /ad/black-friday-sale › should have clickable Get Started buttons
+[1A[2K[chromium] › tests/Ad-black-friday-sale.spec.js:20:9 › Live Ad Pages - Functional Tests › Testing: /ad/black-friday-sale › should load page successfully
+
+======================================================================
+
+[1A[2K📱 Testing: /ad/black-friday-sale on iPhone 15 Pro Max
+
+[1A[2K======================================================================
+

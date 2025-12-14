@@ -1,0 +1,36 @@
+{
+  "name": "lumimeds",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test:checkout-prod": "TEST_FILE='checkout-prod' TEST_ENV='Production' TEST_URL='https://lumimeds.com' npx playwright test tests/checkout-prod.spec.js --project=chromium && node scripts/slack-notify-checkout.js",
+    "test:checkout-staging": "TEST_FILE='checkout' TEST_ENV='Staging' TEST_URL='https://staging.lumimeds.com' npx playwright test tests/checkout.spec.js --project=chromium && node scripts/slack-notify-checkout.js",
+    "test:checkout-prod-headed": "TEST_FILE='checkout-prod' TEST_ENV='Production' TEST_URL='https://lumimeds.com' npx playwright test tests/checkout-prod.spec.js --project=chromium --headed && node scripts/slack-notify-checkout.js",
+    "test:ad-otp": "TEST_FILE='Ad-otp' TEST_ENV='Production' TEST_URL='https://lumimeds.com/ad/otp' npx playwright test tests/Ad-otp.spec.js --project=chromium && node scripts/slack-notify-pages.js",
+    "test:ad-black-friday": "TEST_FILE='Ad-black-friday-sale' TEST_ENV='Production' TEST_URL='https://lumimeds.com/ad/black-friday-sale' npx playwright test tests/Ad-black-friday-sale.spec.js --project=chromium && node scripts/slack-notify-pages.js",
+    "test:ad-cyber-monday": "TEST_FILE='Ad-cyber-monday-sale' TEST_ENV='Production' TEST_URL='https://lumimeds.com/ad/cyber-monday-sale' npx playwright test tests/Ad-cyber-monday-sale.spec.js --project=chromium && node scripts/slack-notify-pages.js",
+    "test:ad-med-spa": "TEST_FILE='Ad-med-spa' TEST_ENV='Production' TEST_URL='https://lumimeds.com/ad/med-spa' npx playwright test tests/Ad-med-spa.spec.js --project=chromium && node scripts/slack-notify-pages.js",
+    "test:ad-weight-loss-treatment": "TEST_FILE='Ad-weight-loss-treatment' TEST_ENV='Production' TEST_URL='https://lumimeds.com/ad/weight-loss-treatment' npx playwright test tests/Ad-weight-loss-treatment.spec.js --project=chromium && node scripts/slack-notify-pages.js",
+    "test:ad-sustained": "TEST_FILE='Ad-sustained' TEST_ENV='Production' TEST_URL='https://lumimeds.com/ad/sustained' npx playwright test tests/Ad-sustained.spec.js --project=chromium && node scripts/slack-notify-pages.js",
+    "test:ad-journey": "TEST_FILE='Ad-journey' TEST_ENV='Production' TEST_URL='https://lumimeds.com/ad/journey' npx playwright test tests/Ad-journey.spec.js --project=chromium && node scripts/slack-notify-pages.js",
+    "test:ad-glow-up": "TEST_FILE='Ad-glow-up' TEST_ENV='Production' TEST_URL='https://lumimeds.com/ad/glow-up' npx playwright test tests/Ad-glow-up.spec.js --project=chromium && node scripts/slack-notify-pages.js",
+    "test:ad-science": "TEST_FILE='Ad-science' TEST_ENV='Production' TEST_URL='https://lumimeds.com/ad/science' npx playwright test tests/Ad-science.spec.js --project=chromium && node scripts/slack-notify-pages.js",
+    "test:all-ads": "TEST_FILE='All-Ad-Pages' TEST_ENV='Production' TEST_URL='https://lumimeds.com/ad/*' npx playwright test tests/Ad-*.spec.js --project=chromium && node scripts/slack-notify-pages.js",
+    "test:all-ads-mobile": "TEST_FILE='All-Ads-Mobile' TEST_ENV='Production' TEST_URL='https://lumimeds.com/ad/*' npx playwright test tests/Ad-*.spec.js --project=chromium && node scripts/slack-notify-pages.js",
+    "test:footer-links": "TEST_FILE='Footer-Links' TEST_ENV='Production' TEST_URL='https://lumimeds.com' npx playwright test tests/footer-links-navigation.spec.js --project=chromium && node scripts/slack-notify-pages.js",
+    "notify:slack": "node scripts/slack-notify-checkout.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@playwright/test": "^1.56.1",
+    "@types/node": "^24.10.1"
+  },
+  "dependencies": {
+    "playwright-extra": "^4.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2"
+  }
+}
