@@ -203,9 +203,9 @@ async function sendPageTestNotification() {
     `   ❌  *Failed:*  ${stats.unexpected || 0}\n` +
     `   ⚠️  *Flaky:*  ${stats.flaky || 0}\n` +
     `   ⏱️  *Duration:*  ${formatDuration(results.duration)}\n` +
-    `   📈  *Status:*  *${statusText}*\n` +
-    (details.screenshotTaken ? `   📸  *Screenshots:*  Captured\n` : '') +
-    `\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
+    `   🌍  *Environment:*  ${environment}\n` +
+    `   📈  *Status:*  *${statusText}*\n\n` +
+    `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
 
   const message = {
     username: 'Lumimeds Automation',
