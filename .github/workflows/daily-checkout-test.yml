@@ -1,11 +1,6 @@
 name: Daily Checkout Test
 
 on:
-  # Run on pushes to main branch
-  push:
-    branches:
-      - main
-  
   # SCHEDULE DISABLED - Set your schedule here when ready
   # Examples:
   # - cron: '30 11 * * *'     # Daily at 3:30 AM PST
