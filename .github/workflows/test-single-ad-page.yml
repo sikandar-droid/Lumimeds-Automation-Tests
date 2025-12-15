@@ -117,11 +117,17 @@ jobs:
         if: always() && github.event.inputs.notify_slack == 'true'
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          TEST_FILE: ${{ github.event.inputs.page }}
+          TEST_FILE: 'Ad Page: ${{ github.event.inputs.page }}'
           TEST_ENV: 'Production'
           TEST_URL: 'https://lumimeds.com/ad/${{ github.event.inputs.page }}'
+          TEST_TYPE: 'ad-pages'
         run: |
-          node scripts/slack-notify-pages.js || echo "⚠️ Slack notification skipped"
+          echo "📱 Sending Ad Page notification for: ${{ github.event.inputs.page }}"
+          if [ -f "test-results.json" ]; then
+            node scripts/slack-notify-pages.js
+          else
+            echo "⚠️ No test results found, skipping Slack notification"
+          fi
       
       - name: 📊 Upload test results
         if: always()
