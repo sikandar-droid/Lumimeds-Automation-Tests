@@ -1,0 +1,159 @@
+name: Test Single Ad Page
+
+on:
+  workflow_dispatch:
+    inputs:
+      page:
+        description: 'Select Ad Page to Test'
+        required: true
+        type: choice
+        options:
+          - 'All Pages'
+          - 'for-women'
+          - 'how-to-start'
+          - 'journey'
+          - 'redefined'
+          - 'med-spa1'
+          - 'best-weight-loss-medication'
+          - 'weight-loss-thanksgiving'
+          - 'stay-on-track'
+          - 'glow-up'
+          - 'free'
+          - 'black-friday-sale'
+          - 'science'
+          - 'otp'
+          - 'cyber-monday-sale'
+          - 'glp1-gip-treatment'
+          - 'sustained'
+          - 'sustainable-weight-loss'
+          - 'weight-loss-treatment'
+          - 'easy-weight-loss'
+          - 'med-spa'
+          - 'med-spa3 (Spanish)'
+          - 'holiday-weight-goals'
+      
+      browser:
+        description: 'Browser to test on'
+        required: true
+        type: choice
+        default: 'chromium'
+        options:
+          - 'chromium'
+          - 'firefox'
+          - 'webkit'
+          - 'all-browsers'
+      
+      notify_slack:
+        description: 'Send Slack notification?'
+        required: true
+        type: boolean
+        default: false
+
+jobs:
+  test-single-page:
+    name: Test ${{ github.event.inputs.page }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+      
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: 📦 Install dependencies
+        run: npm ci
+      
+      - name: 🎭 Install Playwright browsers
+        run: |
+          if [ "${{ github.event.inputs.browser }}" == "all-browsers" ]; then
+            npx playwright install --with-deps
+          elif [ "${{ github.event.inputs.browser }}" == "firefox" ]; then
+            npx playwright install firefox --with-deps
+          elif [ "${{ github.event.inputs.browser }}" == "webkit" ]; then
+            npx playwright install webkit --with-deps
+          else
+            npx playwright install chromium --with-deps
+          fi
+      
+      - name: 🧪 Run Selected Test
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          # Determine which test file to run
+          if [ "${{ github.event.inputs.page }}" == "All Pages" ]; then
+            TEST_FILE="tests/Ad-*.spec.js"
+            echo "🚀 Running all Ad pages..."
+          elif [ "${{ github.event.inputs.page }}" == "med-spa1" ]; then
+            TEST_FILE="tests/Ad-med-spa1.spec.js"
+            echo "🚀 Running Ad-med-spa1..."
+          elif [ "${{ github.event.inputs.page }}" == "med-spa3 (Spanish)" ]; then
+            TEST_FILE="tests/Ad-med-spa3.spec.js"
+            echo "🚀 Running Ad-med-spa3 (Spanish)..."
+          else
+            # Convert page name to test file name (e.g., "for-women" -> "Ad-for-women.spec.js")
+            PAGE_NAME="${{ github.event.inputs.page }}"
+            TEST_FILE="tests/Ad-${PAGE_NAME}.spec.js"
+            echo "🚀 Running ${TEST_FILE}..."
+          fi
+          
+          # Determine browser project
+          if [ "${{ github.event.inputs.browser }}" == "all-browsers" ]; then
+            BROWSER_ARG=""
+            echo "🌐 Testing on all browsers (Chrome, Firefox, Safari)"
+          else
+            BROWSER_ARG="--project=${{ github.event.inputs.browser }}"
+            echo "🌐 Testing on ${{ github.event.inputs.browser }}"
+          fi
+          
+          # Run the test
+          npx playwright test ${TEST_FILE} ${BROWSER_ARG}
+      
+      - name: 📱 Send Slack notification
+        if: always() && github.event.inputs.notify_slack == 'true'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          TEST_FILE: ${{ github.event.inputs.page }}
+          TEST_ENV: 'Production'
+          TEST_URL: 'https://lumimeds.com/ad/${{ github.event.inputs.page }}'
+        run: |
+          node scripts/slack-notify-pages.js || echo "⚠️ Slack notification skipped"
+      
+      - name: 📊 Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ github.event.inputs.page }}-${{ github.event.inputs.browser }}
+          path: test-results.json
+          retention-days: 7
+      
+      - name: 📸 Upload screenshots
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshots-${{ github.event.inputs.page }}-${{ github.event.inputs.browser }}
+          path: screenshots/
+          retention-days: 7
+      
+      - name: 📄 Upload HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-${{ github.event.inputs.page }}-${{ github.event.inputs.browser }}
+          path: playwright-report/
+          retention-days: 7
+      
+      - name: 📋 Test Summary
+        if: always()
+        run: |
+          echo "### 🧪 Test Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Page:** ${{ github.event.inputs.page }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Browser:** ${{ github.event.inputs.browser }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Status:** ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Triggered by:** @${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
+
