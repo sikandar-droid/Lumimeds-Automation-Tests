@@ -1,5 +1,5 @@
 const { test, expect } = require('@playwright/test');
-const AdPage = require('./pages/Ad-holiday-weight-goals');
+const AdPage = require('../pages/Ad-holiday-weight-goals');
 
 test.describe('Live Ad Pages - Functional Tests', () => {
     let adPage;

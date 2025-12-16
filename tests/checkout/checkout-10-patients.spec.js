@@ -1,8 +1,8 @@
 const { test, expect } = require('@playwright/test');
-const HomePage = require('./pages/HomePage');
-const OnboardingQuestionnairePage = require('./pages/OnboardingQuestionnairePage');
-const PlanSelectionPage = require('./pages/PlanSelectionPage');
-const CheckoutPage = require('./pages/CheckoutPage');
+const HomePage = require('../pages/HomePage');
+const OnboardingQuestionnairePage = require('../pages/OnboardingQuestionnairePage');
+const PlanSelectionPage = require('../pages/PlanSelectionPage');
+const CheckoutPage = require('../pages/CheckoutPage');
 
 // Checkout tests for 10 patients (5 Louisiana + 5 Minnesota)
 test.describe('Checkout Test - 10 Patients from LA & MN', () => {

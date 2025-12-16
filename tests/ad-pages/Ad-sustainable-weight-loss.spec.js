@@ -1,5 +1,5 @@
 const { test, expect } = require('@playwright/test');
-const AdPage = require('./pages/Ad-sustainable-weight-loss');
+const AdPage = require('../pages/Ad-sustainable-weight-loss');
 
 // iPhone 15 Pro Max viewport
 const iPhone15ProMax = {

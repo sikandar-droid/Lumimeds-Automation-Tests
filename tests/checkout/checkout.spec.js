@@ -1,8 +1,8 @@
 const { test, expect } = require('@playwright/test');
-const HomePage = require('./pages/HomePage');
-const OnboardingQuestionnairePage = require('./pages/OnboardingQuestionnairePage');
-const PlanSelectionPage = require('./pages/PlanSelectionPage');
-const CheckoutPage = require('./pages/CheckoutPage');
+const HomePage = require('../pages/HomePage');
+const OnboardingQuestionnairePage = require('../pages/OnboardingQuestionnairePage');
+const PlanSelectionPage = require('../pages/PlanSelectionPage');
+const CheckoutPage = require('../pages/CheckoutPage');
 
 // Single checkout test execution
 test.describe('Checkout Test', () => {
