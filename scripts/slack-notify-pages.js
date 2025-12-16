@@ -184,7 +184,6 @@ async function sendPageTestNotification() {
     `  Passed:        ${stats.expected || 0}\n` +
     `  Failed:        ${stats.unexpected || 0}\n` +
     `  Flaky:         ${stats.flaky || 0}\n` +
-    `  Duration:      ${formatDuration(results.duration)}\n` +
     `  Environment:   ${environment}\n\n` +
     `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
 
