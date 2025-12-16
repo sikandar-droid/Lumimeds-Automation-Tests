@@ -139,31 +139,14 @@ async function sendPageTestNotification() {
   
   const statusText = passed ? '✓ PASSED' : '✗ FAILED';
   
-  // List of ad pages
-  const adPages = [
-    '/ad/for-women',
-    '/ad/how-to-start',
-    '/ad/journey',
-    '/ad/redefined',
-    '/en/ad/med-spa1',
-    '/ad/best-weight-loss-medication',
-    '/ad/weight-loss-thanksgiving',
-    '/ad/stay-on-track',
-    '/ad/glow-up',
-    '/ad/free',
-    '/ad/black-friday-sale',
-    '/ad/science',
-    '/ad/otp',
-    '/ad/cyber-monday-sale',
-    '/ad/glp1-gip-treatment',
-    '/ad/sustained',
-    '/ad/sustainable-weight-loss',
-    '/ad/weight-loss-treatment',
-    '/ad/easy-weight-loss',
-    '/ad/med-spa',
-    '/es/ad/med-spa3 (Spanish)',
-    '/ad/holiday-weight-goals'
-  ];
+  // Extract actual pages tested from results
+  const adPages = extractTestedPages(results, testFile);
+  const pageCount = adPages.length;
+  
+  // Build page section title based on count
+  const pageTitle = pageCount === 1 
+    ? `*AD PAGE TESTED*` 
+    : `*AD PAGES TESTED (${pageCount} pages)*`;
   
   const detailedText = 
     `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
@@ -175,7 +158,7 @@ async function sendPageTestNotification() {
     
     `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n` +
     
-    `*AD PAGES TESTED (${adPages.length} pages)*\n\n` +
+    `${pageTitle}\n\n` +
     adPages.map(page => `  • ${page}`).join('\n') + '\n\n' +
     
     `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n` +
@@ -196,7 +179,8 @@ async function sendPageTestNotification() {
     `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n` +
     
     `*TEST SUMMARY*\n\n` +
-    `  Pages Tested:  ${adPages.length}\n` +
+    `  Pages Tested:  ${pageCount}\n` +
+    `  Test Cases:    ${stats.expected + stats.unexpected || 0}\n` +
     `  Passed:        ${stats.expected || 0}\n` +
     `  Failed:        ${stats.unexpected || 0}\n` +
     `  Flaky:         ${stats.flaky || 0}\n` +
@@ -244,6 +228,88 @@ async function sendPageTestNotification() {
     req.write(JSON.stringify(message));
     req.end();
   });
+}
+
+/**
+ * Extract which ad pages were actually tested from results
+ */
+function extractTestedPages(results, testFile) {
+  const testedPages = new Set();
+  
+  // Map of test file names to page URLs
+  const pageMap = {
+    'Ad-otp': '/ad/otp',
+    'Ad-black-friday-sale': '/ad/black-friday-sale',
+    'Ad-cyber-monday-sale': '/ad/cyber-monday-sale',
+    'Ad-med-spa': '/ad/med-spa',
+    'Ad-med-spa1': '/en/ad/med-spa1',
+    'Ad-med-spa3': '/es/ad/med-spa3 (Spanish)',
+    'Ad-weight-loss-treatment': '/ad/weight-loss-treatment',
+    'Ad-weight-loss-thanksgiving': '/ad/weight-loss-thanksgiving',
+    'Ad-sustained': '/ad/sustained',
+    'Ad-sustainable-weight-loss': '/ad/sustainable-weight-loss',
+    'Ad-journey': '/ad/journey',
+    'Ad-glow-up': '/ad/glow-up',
+    'Ad-science': '/ad/science',
+    'Ad-easy-weight-loss': '/ad/easy-weight-loss',
+    'Ad-for-women': '/ad/for-women',
+    'Ad-free': '/ad/free',
+    'Ad-glp1-gip-treatment': '/ad/glp1-gip-treatment',
+    'Ad-holiday-weight-goals': '/ad/holiday-weight-goals',
+    'Ad-how-to-start': '/ad/how-to-start',
+    'Ad-stay-on-track': '/ad/stay-on-track',
+    'Ad-redefined': '/ad/redefined',
+    'Ad-best-weight-loss-medication': '/ad/best-weight-loss-medication'
+  };
+  
+  try {
+    // Extract from test file environment variable first
+    if (testFile && testFile !== 'All-Ad-Pages' && testFile !== 'All-Ads-Mobile') {
+      const pagePath = pageMap[testFile];
+      if (pagePath) {
+        return [pagePath];
+      }
+    }
+    
+    // If "All" tests or couldn't determine from env var, extract from results
+    const collectPages = (obj) => {
+      if (!obj) return;
+      
+      // Check spec file paths
+      if (obj.file && obj.file.includes('Ad-')) {
+        const match = obj.file.match(/Ad-([a-z0-9-]+)\.spec\.js/);
+        if (match) {
+          const fileName = 'Ad-' + match[1];
+          const pagePath = pageMap[fileName];
+          if (pagePath) {
+            testedPages.add(pagePath);
+          }
+        }
+      }
+      
+      // Recursively process suites and specs
+      if (obj.suites && Array.isArray(obj.suites)) {
+        obj.suites.forEach(collectPages);
+      }
+      if (obj.specs && Array.isArray(obj.specs)) {
+        obj.specs.forEach(collectPages);
+      }
+    };
+    
+    if (results.suites) {
+      results.suites.forEach(collectPages);
+    }
+  } catch (error) {
+    console.log('ℹ️  Could not extract tested pages:', error.message);
+  }
+  
+  // If we found pages, return them sorted
+  if (testedPages.size > 0) {
+    return Array.from(testedPages).sort();
+  }
+  
+  // Fallback: return all pages if we couldn't determine
+  return Object.values(pageMap).sort();
 }
 
 /**
