@@ -150,7 +150,7 @@ async function sendPageTestNotification() {
   
   const detailedText = 
     `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
-    `       LUMIMEDS AD PAGES TESTING\n` +
+    `     LUMIMEDS AD PAGES TESTING\n` +
     `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n` +
     
     `*${todayLabel}*\n` +
