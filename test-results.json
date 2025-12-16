@@ -11,7 +11,7 @@
     "grepInvert": null,
     "maxFailures": 0,
     "metadata": {
-      "actualWorkers": 1
+      "actualWorkers": 5
     },
     "preserveOutput": "always",
     "reporter": [
@@ -37,7 +37,7 @@
         "repeatEach": 1,
         "retries": 2,
         "metadata": {
-          "actualWorkers": 1
+          "actualWorkers": 5
         },
         "id": "chromium",
         "name": "chromium",
@@ -53,7 +53,7 @@
         "repeatEach": 1,
         "retries": 2,
         "metadata": {
-          "actualWorkers": 1
+          "actualWorkers": 5
         },
         "id": "firefox",
         "name": "firefox",
@@ -69,7 +69,7 @@
         "repeatEach": 1,
         "retries": 2,
         "metadata": {
-          "actualWorkers": 1
+          "actualWorkers": 5
         },
         "id": "webkit",
         "name": "webkit",
@@ -90,112 +90,762 @@
   },
   "suites": [
     {
-      "title": "checkout.spec.js",
-      "file": "checkout.spec.js",
+      "title": "Ad-holiday-weight-goals.spec.js",
+      "file": "Ad-holiday-weight-goals.spec.js",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "Checkout Test",
-          "file": "checkout.spec.js",
-          "line": 8,
+          "title": "Live Ad Pages - Functional Tests",
+          "file": "Ad-holiday-weight-goals.spec.js",
+          "line": 4,
           "column": 6,
-          "specs": [
+          "specs": [],
+          "suites": [
             {
-              "title": "Complete Checkout Flow",
-              "ok": true,
-              "tags": [],
-              "tests": [
+              "title": "Testing: /ad/holiday-weight-goals",
+              "file": "Ad-holiday-weight-goals.spec.js",
+              "line": 16,
+              "column": 10,
+              "specs": [
                 {
-                  "timeout": 180000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
+                  "title": "should load page successfully",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
                     {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 103472,
-                      "errors": [],
-                      "stdout": [
+                      "timeout": 120000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
                         {
-                          "text": "🔍 Attempting to close any popup by clicking...\n"
-                        },
-                        {
-                          "text": "✅ Popup close sequence completed\n"
-                        },
-                        {
-                          "text": "🔍 Attempting to close any popup by clicking...\n"
-                        },
-                        {
-                          "text": "✅ Popup close sequence completed\n"
-                        },
-                        {
-                          "text": "🚀 Starting checkout with email: sikandar.naeem+87275@devslooptech.com\n"
-                        },
-                        {
-                          "text": "\n💳 Starting payment details entry...\n"
-                        },
-                        {
-                          "text": "⏳ Waiting for Stripe iframes to load...\n"
-                        },
-                        {
-                          "text": "✅ Stripe iframes loaded\n"
-                        },
-                        {
-                          "text": "📝 Filling card number: 4242424242424242\n"
-                        },
-                        {
-                          "text": "✅ Card number filled\n"
-                        },
-                        {
-                          "text": "📝 Filling expiry date: 1039\n"
-                        },
-                        {
-                          "text": "✅ Expiry date filled\n"
-                        },
-                        {
-                          "text": "📝 Filling CVC: 345\n"
-                        },
-                        {
-                          "text": "✅ CVC filled\n"
-                        },
-                        {
-                          "text": "⏳ Waiting for Stripe to validate card...\n"
-                        },
-                        {
-                          "text": "✅ Payment details completed\n\n"
-                        },
-                        {
-                          "text": "⏳ Waiting for Stripe to finish tokenizing...\n"
-                        },
-                        {
-                          "text": "✅ Checkout button is ready\n"
-                        },
-                        {
-                          "text": "🛒 Clicking checkout button...\n"
-                        },
-                        {
-                          "text": "✅ Checkout completed successfully!\n"
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 39148,
+                          "errors": [],
+                          "stdout": [
+                            {
+                              "text": "\n======================================================================\n"
+                            },
+                            {
+                              "text": "📱 Testing: /ad/holiday-weight-goals on iPhone 15 Pro Max\n"
+                            },
+                            {
+                              "text": "======================================================================\n\n"
+                            },
+                            {
+                              "text": "Network still active, proceeding...\n"
+                            },
+                            {
+                              "text": "🔍 Attempting to close any popup by clicking...\n"
+                            },
+                            {
+                              "text": "✅ Popup close sequence completed\n"
+                            },
+                            {
+                              "text": "✅ Page loaded successfully\n"
+                            }
+                          ],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-16T13:12:05.660Z",
+                          "annotations": [],
+                          "attachments": []
                         }
                       ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-12-14T19:53:10.906Z",
-                      "annotations": [],
-                      "attachments": []
+                      "status": "expected"
                     }
                   ],
-                  "status": "expected"
+                  "id": "4073da25da365d211175-a9672c23f8e1fadb8986",
+                  "file": "Ad-holiday-weight-goals.spec.js",
+                  "line": 18,
+                  "column": 9
+                },
+                {
+                  "title": "should have correct page title",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 120000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 1,
+                          "parallelIndex": 1,
+                          "status": "passed",
+                          "duration": 24032,
+                          "errors": [],
+                          "stdout": [
+                            {
+                              "text": "Network still active, proceeding...\n"
+                            },
+                            {
+                              "text": "🔍 Attempting to close any popup by clicking...\n"
+                            },
+                            {
+                              "text": "✅ Popup close sequence completed\n"
+                            },
+                            {
+                              "text": "✅ Page title: \"Holiday Weight Goals | Lumimeds\"\n"
+                            }
+                          ],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-16T13:12:05.665Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "4073da25da365d211175-4b6a6250360310dbea53",
+                  "file": "Ad-holiday-weight-goals.spec.js",
+                  "line": 54,
+                  "column": 9
+                },
+                {
+                  "title": "should have clickable Get Started buttons",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 120000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 2,
+                          "parallelIndex": 2,
+                          "status": "passed",
+                          "duration": 26580,
+                          "errors": [],
+                          "stdout": [
+                            {
+                              "text": "Network still active, proceeding...\n"
+                            },
+                            {
+                              "text": "🔍 Attempting to close any popup by clicking...\n"
+                            },
+                            {
+                              "text": "✅ Popup close sequence completed\n"
+                            },
+                            {
+                              "text": "✅ Found 6 Get Started button(s)\n"
+                            },
+                            {
+                              "text": "✅ 6 button(s) are clickable\n"
+                            }
+                          ],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-16T13:12:05.660Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "4073da25da365d211175-70300032a90def16eeba",
+                  "file": "Ad-holiday-weight-goals.spec.js",
+                  "line": 64,
+                  "column": 9
+                },
+                {
+                  "title": "should navigate to survey page when Get Started is clicked",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 120000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 3,
+                          "parallelIndex": 3,
+                          "status": "passed",
+                          "duration": 31361,
+                          "errors": [],
+                          "stdout": [
+                            {
+                              "text": "Network still active, proceeding...\n"
+                            },
+                            {
+                              "text": "🔍 Attempting to close any popup by clicking...\n"
+                            },
+                            {
+                              "text": "✅ Popup close sequence completed\n"
+                            },
+                            {
+                              "text": "\n🔍 Testing Get Started button navigation to survey page...\n"
+                            },
+                            {
+                              "text": "📍 Current URL before click: https://lumimeds.com/ad/holiday-weight-goals\n"
+                            },
+                            {
+                              "text": "📍 Current URL after click: https://lumimeds.com/products/survey/weight_loss\n"
+                            },
+                            {
+                              "text": "✅ Navigated to survey page: https://lumimeds.com/products/survey/weight_loss\n"
+                            }
+                          ],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-16T13:12:05.664Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "4073da25da365d211175-2990d14e492e72910e3d",
+                  "file": "Ad-holiday-weight-goals.spec.js",
+                  "line": 82,
+                  "column": 9
+                },
+                {
+                  "title": "should navigate to survey when \"Start Your Online Evaluation\" is clicked",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 120000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 4,
+                          "parallelIndex": 4,
+                          "status": "passed",
+                          "duration": 38806,
+                          "errors": [],
+                          "stdout": [
+                            {
+                              "text": "Network still active, proceeding...\n"
+                            },
+                            {
+                              "text": "🔍 Attempting to close any popup by clicking...\n"
+                            },
+                            {
+                              "text": "✅ Popup close sequence completed\n"
+                            },
+                            {
+                              "text": "\n🔍 Testing \"Start Your Online Evaluation\" button...\n"
+                            },
+                            {
+                              "text": "📍 Current URL before click: https://lumimeds.com/ad/holiday-weight-goals\n"
+                            },
+                            {
+                              "text": "📍 Current URL after click: https://lumimeds.com/products/survey/weight_loss\n"
+                            },
+                            {
+                              "text": "✅ \"Start Your Online Evaluation\" navigated to survey page: https://lumimeds.com/products/survey/weight_loss\n"
+                            }
+                          ],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-16T13:12:05.664Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "4073da25da365d211175-e9fa198bf4153054ff90",
+                  "file": "Ad-holiday-weight-goals.spec.js",
+                  "line": 114,
+                  "column": 9
+                },
+                {
+                  "title": "should navigate to survey when \"Get Your Plan\" is clicked",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 120000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 1,
+                          "parallelIndex": 1,
+                          "status": "passed",
+                          "duration": 26534,
+                          "errors": [],
+                          "stdout": [
+                            {
+                              "text": "Network still active, proceeding...\n"
+                            },
+                            {
+                              "text": "🔍 Attempting to close any popup by clicking...\n"
+                            },
+                            {
+                              "text": "✅ Popup close sequence completed\n"
+                            },
+                            {
+                              "text": "\n🔍 Testing \"Get Your Plan\" button...\n"
+                            },
+                            {
+                              "text": "📍 Current URL before click: https://lumimeds.com/ad/holiday-weight-goals\n"
+                            },
+                            {
+                              "text": "📍 Current URL after click: https://lumimeds.com/products/survey/weight_loss\n"
+                            },
+                            {
+                              "text": "✅ \"Get Your Plan\" navigated to survey page: https://lumimeds.com/products/survey/weight_loss\n"
+                            }
+                          ],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-16T13:12:30.030Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "4073da25da365d211175-e5b832c87dc5f9f92a4c",
+                  "file": "Ad-holiday-weight-goals.spec.js",
+                  "line": 161,
+                  "column": 9
+                },
+                {
+                  "title": "should navigate to survey when popup \"GET YOURS NOW\" is clicked",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 120000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 2,
+                          "parallelIndex": 2,
+                          "status": "passed",
+                          "duration": 32270,
+                          "errors": [],
+                          "stdout": [
+                            {
+                              "text": "Network still active, proceeding...\n"
+                            },
+                            {
+                              "text": "\n🔍 Testing popup \"GET YOURS NOW\" button...\n"
+                            },
+                            {
+                              "text": "ℹ️  Popup \"GET YOURS NOW\" button not found or already closed\n"
+                            }
+                          ],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-16T13:12:32.576Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "4073da25da365d211175-1186f0bb38bccb6821a3",
+                  "file": "Ad-holiday-weight-goals.spec.js",
+                  "line": 208,
+                  "column": 9
+                },
+                {
+                  "title": "should have working Trustpilot widget",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 120000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 3,
+                          "parallelIndex": 3,
+                          "status": "passed",
+                          "duration": 29538,
+                          "errors": [],
+                          "stdout": [
+                            {
+                              "text": "Network still active, proceeding...\n"
+                            },
+                            {
+                              "text": "🔍 Attempting to close any popup by clicking...\n"
+                            },
+                            {
+                              "text": "✅ Popup close sequence completed\n"
+                            },
+                            {
+                              "text": "✅ Trustpilot widget found and visible\n"
+                            },
+                            {
+                              "text": "✅ Trustpilot widget navigated to: https://www.trustpilot.com/review/lumimeds.com?utm_medium=trustbox&utm_source=Horizontal\n"
+                            }
+                          ],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-16T13:12:37.358Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "4073da25da365d211175-7493c4be16cb7c96b17e",
+                  "file": "Ad-holiday-weight-goals.spec.js",
+                  "line": 255,
+                  "column": 9
+                },
+                {
+                  "title": "should have all footer links clickable",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 120000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 4,
+                          "parallelIndex": 4,
+                          "status": "passed",
+                          "duration": 36360,
+                          "errors": [],
+                          "stdout": [
+                            {
+                              "text": "Network still active, proceeding...\n"
+                            },
+                            {
+                              "text": "🔍 Attempting to close any popup by clicking...\n"
+                            },
+                            {
+                              "text": "✅ Popup close sequence completed\n"
+                            },
+                            {
+                              "text": "\n📋 Footer Links Status:\n"
+                            },
+                            {
+                              "text": "   ✅ membershipTerms: Clickable\n"
+                            },
+                            {
+                              "text": "   ✅ pharmacyPartnerships: Clickable\n"
+                            },
+                            {
+                              "text": "   ✅ careers: Clickable\n"
+                            },
+                            {
+                              "text": "   ✅ faq: Clickable\n"
+                            },
+                            {
+                              "text": "   ✅ termsOfUse: Clickable\n"
+                            },
+                            {
+                              "text": "   ✅ privacyPolicy: Clickable\n"
+                            },
+                            {
+                              "text": "\n✅ 6/6 footer links are clickable\n"
+                            }
+                          ],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-16T13:12:44.806Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "4073da25da365d211175-2818014f32febeeb2e6c",
+                  "file": "Ad-holiday-weight-goals.spec.js",
+                  "line": 287,
+                  "column": 9
+                },
+                {
+                  "title": "should verify header navigation elements",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 120000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 20709,
+                          "errors": [],
+                          "stdout": [
+                            {
+                              "text": "🔍 Attempting to close any popup by clicking...\n"
+                            },
+                            {
+                              "text": "✅ Popup close sequence completed\n"
+                            },
+                            {
+                              "text": "✅ Header/Navigation found\n"
+                            },
+                            {
+                              "text": "ℹ️  Navigation links may be hidden in mobile view\n"
+                            }
+                          ],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-16T13:12:45.147Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "4073da25da365d211175-080c020cb4cd770ba312",
+                  "file": "Ad-holiday-weight-goals.spec.js",
+                  "line": 306,
+                  "column": 9
+                },
+                {
+                  "title": "should verify contact information is present",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 120000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 1,
+                          "parallelIndex": 1,
+                          "status": "passed",
+                          "duration": 19321,
+                          "errors": [],
+                          "stdout": [
+                            {
+                              "text": "🔍 Attempting to close any popup by clicking...\n"
+                            },
+                            {
+                              "text": "✅ Popup close sequence completed\n"
+                            },
+                            {
+                              "text": "✅ Phone number visible in footer\n"
+                            },
+                            {
+                              "text": "✅ Email visible in footer\n"
+                            }
+                          ],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-16T13:12:56.572Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "4073da25da365d211175-f5c2633db79bb9e7a1a7",
+                  "file": "Ad-holiday-weight-goals.spec.js",
+                  "line": 328,
+                  "column": 9
+                },
+                {
+                  "title": "should capture full page screenshot on iPhone 15 Pro Max",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 120000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 2,
+                          "parallelIndex": 2,
+                          "status": "passed",
+                          "duration": 33413,
+                          "errors": [],
+                          "stdout": [
+                            {
+                              "text": "🔍 Attempting to close any popup by clicking...\n"
+                            },
+                            {
+                              "text": "✅ Popup close sequence completed\n"
+                            },
+                            {
+                              "text": "\n📸 Capturing screenshot...\n"
+                            },
+                            {
+                              "text": "✅ Screenshot saved: screenshots/mobile/ad_holiday-weight-goals.png\n"
+                            },
+                            {
+                              "text": "   Viewport: 430x932 (iPhone 15 Pro Max)\n"
+                            },
+                            {
+                              "text": "\n======================================================================\n"
+                            },
+                            {
+                              "text": "✅ All tests completed for /ad/holiday-weight-goals\n"
+                            },
+                            {
+                              "text": "======================================================================\n\n"
+                            }
+                          ],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-16T13:13:04.854Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "4073da25da365d211175-1d7761f8667cb5834339",
+                  "file": "Ad-holiday-weight-goals.spec.js",
+                  "line": 342,
+                  "column": 9
                 }
-              ],
-              "id": "24e4b3ac21f7f473b7e5-8951ec02141315eb6273",
-              "file": "checkout.spec.js",
-              "line": 15,
-              "column": 5
+              ]
+            },
+            {
+              "title": "Live Ad Pages - Summary Report",
+              "file": "Ad-holiday-weight-goals.spec.js",
+              "line": 363,
+              "column": 10,
+              "specs": [
+                {
+                  "title": "generate test summary",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 120000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 88,
+                          "errors": [],
+                          "stdout": [
+                            {
+                              "text": "\n╔══════════════════════════════════════════════════════════════════════════════╗\n"
+                            },
+                            {
+                              "text": "║                    AD PAGES TEST SUMMARY REPORT                              ║\n"
+                            },
+                            {
+                              "text": "╚══════════════════════════════════════════════════════════════════════════════╝\n\n"
+                            },
+                            {
+                              "text": "📱 Device: iPhone 15 Pro Max (430x932)\n"
+                            },
+                            {
+                              "text": "📊 Pages Tested: 1\n"
+                            },
+                            {
+                              "text": "✅ Test suites per page:\n"
+                            },
+                            {
+                              "text": "   1. Page load verification\n"
+                            },
+                            {
+                              "text": "   2. Page title validation\n"
+                            },
+                            {
+                              "text": "   3. Get Started buttons clickability\n"
+                            },
+                            {
+                              "text": "   4. Get Started navigation to survey\n"
+                            },
+                            {
+                              "text": "   5. Start Your Online Evaluation navigation to survey\n"
+                            },
+                            {
+                              "text": "   6. Get Your Plan navigation to survey\n"
+                            },
+                            {
+                              "text": "   7. Popup GET YOURS NOW navigation to survey\n"
+                            },
+                            {
+                              "text": "   8. Trustpilot widget functionality\n"
+                            },
+                            {
+                              "text": "   9. Footer links validation\n"
+                            },
+                            {
+                              "text": "   10. Header navigation elements\n"
+                            },
+                            {
+                              "text": "   11. Contact information presence\n"
+                            },
+                            {
+                              "text": "   12. Full page screenshot capture\n"
+                            },
+                            {
+                              "text": "\n✅ All tests completed!\n\n"
+                            }
+                          ],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-12-16T13:13:05.867Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "4073da25da365d211175-b11f890fe879303fa779",
+                  "file": "Ad-holiday-weight-goals.spec.js",
+                  "line": 364,
+                  "column": 9
+                }
+              ]
             }
           ]
         }
@@ -204,9 +854,9 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2025-12-14T19:53:10.581Z",
-    "duration": 103950.588,
-    "expected": 1,
+    "startTime": "2025-12-16T13:12:05.254Z",
+    "duration": 93045.887,
+    "expected": 13,
     "skipped": 0,
     "unexpected": 0,
     "flaky": 0
