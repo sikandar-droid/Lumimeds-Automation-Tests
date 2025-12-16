@@ -149,9 +149,9 @@ async function sendPageTestNotification() {
     : `*AD PAGES TESTED (${pageCount} pages)*`;
   
   const detailedText = 
-    `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
-    `     LUMIMEDS AD PAGES TESTING\n` +
-    `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n` +
+    `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
+    `                          LUMIMEDS AD PAGES TESTING\n` +
+    `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n` +
     
     `*${todayLabel}*\n` +
     `Status: *${statusText}*\n\n` +
