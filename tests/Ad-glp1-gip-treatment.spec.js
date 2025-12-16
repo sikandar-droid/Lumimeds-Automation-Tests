@@ -34,6 +34,9 @@ test.describe('Live Ad Pages - Functional Tests', () => {
                 await adPage.goto(adPageInfo.name);
                 await adPage.waitForPageLoad();
                 await adPage.closePopup();
+                
+                // Wait for page to stabilize after popup close
+                await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {});
 
                 const isLoaded = await adPage.isPageLoaded();
                 expect(isLoaded).toBeTruthy();
@@ -46,6 +49,9 @@ test.describe('Live Ad Pages - Functional Tests', () => {
                 await adPage.goto(adPageInfo.name);
                 await adPage.waitForPageLoad();
                 await adPage.closePopup();
+                
+                // Wait for page to stabilize after popup close
+                await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {});
 
                 const pageTitle = await adPage.getPageTitle();
                 expect(pageTitle).toBeTruthy();
@@ -59,6 +65,9 @@ test.describe('Live Ad Pages - Functional Tests', () => {
                 await adPage.goto(adPageInfo.name);
                 await adPage.waitForPageLoad();
                 await adPage.closePopup();
+                
+                // Wait for page to stabilize after popup close
+                await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {});
 
                 const buttonCount = await adPage.countGetStartedButtons();
                 expect(buttonCount).toBeGreaterThan(0);
@@ -131,6 +140,9 @@ test.describe('Live Ad Pages - Functional Tests', () => {
                 await adPage.goto(adPageInfo.name);
                 await adPage.waitForPageLoad();
                 await adPage.closePopup();
+                
+                // Wait for page to stabilize after popup close
+                await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {});
 
                 console.log('\n🔍 Testing Get Started button navigation to survey page...');
 
@@ -173,6 +185,9 @@ test.describe('Live Ad Pages - Functional Tests', () => {
                 await adPage.goto(adPageInfo.name);
                 await adPage.waitForPageLoad();
                 await adPage.closePopup();
+                
+                // Wait for page to stabilize after popup close
+                await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {});
 
                 try {
                     await adPage.scrollToTrustpilot();
@@ -240,6 +255,9 @@ test.describe('Live Ad Pages - Functional Tests', () => {
                 await adPage.goto(adPageInfo.name);
                 await adPage.waitForPageLoad();
                 await adPage.closePopup();
+                
+                // Wait for page to stabilize after popup close
+                await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {});
 
                 const logoVisible = await adPage.logo.isVisible({ timeout: 5000 });
                 expect(logoVisible).toBeTruthy();
@@ -304,6 +322,9 @@ test.describe('Live Ad Pages - Functional Tests', () => {
                 await adPage.goto(adPageInfo.name);
                 await adPage.waitForPageLoad();
                 await adPage.closePopup();
+                
+                // Wait for page to stabilize after popup close
+                await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {});
 
                 console.log('\n📸 Capturing screenshot...');
 

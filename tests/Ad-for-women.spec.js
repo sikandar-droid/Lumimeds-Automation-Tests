@@ -112,6 +112,9 @@ test.describe('Live Ad Pages - Functional Tests', () => {
                 await adPage.goto(adPageInfo.name);
                 await adPage.waitForPageLoad();
                 
+                // Wait for popup to fully render
+                await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {});
+                
                 console.log('\n🔍 Testing popup "GET YOURS NOW" button...');
 
                 try {
@@ -127,6 +130,10 @@ test.describe('Live Ad Pages - Functional Tests', () => {
                         
                         const urlBeforeClick = page.url();
                         console.log(`📍 Current URL before click: ${urlBeforeClick}`);
+                        
+                        // Ensure button is stable and ready
+                        await getYoursNowBtn.waitFor({ state: 'visible', timeout: 5000 });
+                        await page.waitForTimeout(500);
                         
                         // Click the button and wait for navigation
                         await Promise.all([
@@ -159,12 +166,18 @@ test.describe('Live Ad Pages - Functional Tests', () => {
                 await adPage.goto(adPageInfo.name);
                 await adPage.waitForPageLoad();
                 await adPage.closePopup();
+                
+                // Wait for page to stabilize after popup close
+                await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {});
 
                 console.log('\n🔍 Testing Get Started button navigation to survey page...');
 
                 try {
                     const urlBeforeClick = page.url();
                     console.log(`📍 Current URL before click: ${urlBeforeClick}`);
+
+                    // Ensure button is stable and ready to interact
+                    await page.waitForTimeout(500);
 
                     // Click Get Started and wait for navigation
                     await Promise.all([

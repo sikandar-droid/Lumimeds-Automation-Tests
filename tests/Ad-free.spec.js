@@ -36,8 +36,14 @@ test.describe('Live Ad Pages - Functional Tests', () => {
                 await adPage.waitForPageLoad();
                 await adPage.closePopup();
                 
+                // Wait for page to stabilize after popup close
+                await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {});
+                
                 // Close any popups (Black Friday/Cyber Monday sale)
                 await adPage.closePopup();
+                
+                // Wait for page to stabilize after popup close
+                await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {});
 
                 // Verify page loaded
                 const isLoaded = await adPage.isPageLoaded();
@@ -51,6 +57,9 @@ test.describe('Live Ad Pages - Functional Tests', () => {
                 await adPage.goto(adPageInfo.name);
                 await adPage.waitForPageLoad();
                 await adPage.closePopup();
+                
+                // Wait for page to stabilize after popup close
+                await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {});
 
                 // Get and verify page title
                 const pageTitle = await adPage.getPageTitle();
@@ -65,6 +74,9 @@ test.describe('Live Ad Pages - Functional Tests', () => {
                 await adPage.goto(adPageInfo.name);
                 await adPage.waitForPageLoad();
                 await adPage.closePopup();
+                
+                // Wait for page to stabilize after popup close
+                await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {});
 
                 // Count Get Started buttons
                 const buttonCount = await adPage.countGetStartedButtons();
@@ -139,12 +151,24 @@ test.describe('Live Ad Pages - Functional Tests', () => {
                 await adPage.goto(adPageInfo.name);
                 await adPage.waitForPageLoad();
                 await adPage.closePopup();
+                
+                // Wait for page to stabilize after popup close
+                await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {});
 
                 console.log('\n🔍 Testing Get Started button navigation to survey page...');
 
                 try {
                     const urlBeforeClick = page.url();
                     console.log(`📍 Current URL before click: ${urlBeforeClick}`);
+
+                    // Ensure button is stable and ready to interact
+
+
+                    await page.waitForTimeout(500);
+
+
+                    
+
 
                     // Click Get Started and wait for navigation
                     await Promise.all([
@@ -176,6 +200,9 @@ test.describe('Live Ad Pages - Functional Tests', () => {
                 await adPage.goto(adPageInfo.name);
                 await adPage.waitForPageLoad();
                 await adPage.closePopup();
+                
+                // Wait for page to stabilize after popup close
+                await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {});
 
                 try {
                     // Scroll to Trustpilot section
@@ -218,6 +245,9 @@ test.describe('Live Ad Pages - Functional Tests', () => {
                 await adPage.goto(adPageInfo.name);
                 await adPage.waitForPageLoad();
                 await adPage.closePopup();
+                
+                // Wait for page to stabilize after popup close
+                await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {});
 
                 // Scroll to footer
                 await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
@@ -249,6 +279,9 @@ test.describe('Live Ad Pages - Functional Tests', () => {
                 await adPage.goto(adPageInfo.name);
                 await adPage.waitForPageLoad();
                 await adPage.closePopup();
+                
+                // Wait for page to stabilize after popup close
+                await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {});
 
                 // Check logo
                 const logoVisible = await adPage.logo.isVisible({ timeout: 5000 });
@@ -324,6 +357,9 @@ test.describe('Live Ad Pages - Functional Tests', () => {
                 await adPage.goto(adPageInfo.name);
                 await adPage.waitForPageLoad();
                 await adPage.closePopup();
+                
+                // Wait for page to stabilize after popup close
+                await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {});
 
                 // Scroll to footer
                 await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
@@ -356,6 +392,9 @@ test.describe('Live Ad Pages - Functional Tests', () => {
                 await adPage.goto(adPageInfo.name);
                 await adPage.waitForPageLoad();
                 await adPage.closePopup();
+                
+                // Wait for page to stabilize after popup close
+                await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {});
 
                 console.log('\n📸 Capturing screenshot...');
 
