@@ -157,6 +157,9 @@ test.describe('Live Ad Pages - Functional Tests', () => {
             await adPage.goto(adPageInfo.name);
             await adPage.waitForPageLoad();
             await adPage.closePopup();
+            
+            // Wait for page to stabilize after popup close
+            await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {});
 
             console.log('\n🔍 Testing "Get Your Plan" button...');
             
@@ -164,6 +167,10 @@ test.describe('Live Ad Pages - Functional Tests', () => {
             
             if (isVisible) {
                 console.log(`📍 Current URL before click: ${page.url()}`);
+
+                // Ensure button is stable and ready to interact
+                await adPage.getYourPlanButton.waitFor({ state: 'visible', timeout: 5000 });
+                await page.waitForTimeout(500); // Brief stabilization wait
 
                 try {
                     await Promise.all([
