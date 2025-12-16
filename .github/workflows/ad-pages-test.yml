@@ -1,9 +1,8 @@
 name: Ad Pages Daily Test
 
 on:
-  # SCHEDULE DISABLED - Set your schedule here when ready
-  # schedule:
-  #   - cron: '30 11 * * *'  # 3:30 AM PST daily
+  schedule:
+    - cron: '30 8 * * *'  # 3:30 AM EST daily (8:30 AM UTC)
   
   # Manual trigger from GitHub UI
   workflow_dispatch:
