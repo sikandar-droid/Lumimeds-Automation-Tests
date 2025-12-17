@@ -150,16 +150,6 @@ async function sendCheckoutNotification() {
     `   ${statusEmoji}  Navigation - Successfully accessed\n` +
     `   ${statusEmoji}  Page Flow - Smooth transitions\n\n` +
     
-    `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n` +
-    
-    `📊 *TEST DETAILS*\n\n` +
-    `   🌍  *Environment:*  ${environment}\n` +
-    `   🔗  *URL:*  ${testUrl}\n` +
-    (checkoutDetails.email ? `   📧  *Email:*  \`${checkoutDetails.email}\`\n` : '') +
-    (checkoutDetails.couponCode ? `   🎫  *Coupon:*  \`${checkoutDetails.couponCode}\`\n` : '') +
-    `   ⏱️  *Duration:*  ${formatDuration(results.duration)}\n` +
-    `   📈  *Status:*  *${statusText}*\n\n` +
-    
     `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
 
   const message = {
