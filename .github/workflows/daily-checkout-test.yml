@@ -1,11 +1,8 @@
 name: Daily Checkout Test
 
 on:
-  # SCHEDULE DISABLED - Set your schedule here when ready
-  # Examples:
-  # - cron: '30 11 * * *'     # Daily at 3:30 AM PST
-  # - cron: '0 9 * * 1-5'     # Weekdays at 9 AM
-  # - cron: '0 */6 * * *'     # Every 6 hours
+  schedule:
+    - cron: '30 8 * * *'  # 3:30 AM EST daily (8:30 AM UTC)
   
   # Manual trigger from GitHub UI (always available)
   workflow_dispatch:
@@ -13,7 +10,7 @@ on:
       environment:
         description: 'Test environment'
         required: true
-        default: 'staging'
+        default: 'production'
         type: choice
         options:
           - staging
@@ -56,7 +53,7 @@ jobs:
         run: npx playwright install-deps chromium
       
       - name: 🧪 Run Staging Checkout Test
-        if: github.event.inputs.environment != 'production'
+        if: github.event.inputs.environment == 'staging'
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           TEST_FILE: 'checkout'
@@ -67,7 +64,7 @@ jobs:
           node scripts/slack-notify-checkout.js
       
       - name: 🚀 Run Production Checkout Test
-        if: github.event.inputs.environment == 'production'
+        if: github.event.inputs.environment != 'staging'
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           TEST_FILE: 'checkout-prod'
