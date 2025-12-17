@@ -42,10 +42,26 @@ test.describe('Production Checkout Test', () => {
         await planSelection.selectPlanAndCheckout('3-Month Subscription');
 
         // Complete checkout with production card and coupon code
-        await checkout.completeCheckout(null, prodPaymentData, '99offfromjustin');
-        
-        console.log(`✅ Production checkout completed with 99% discount!`);
-        console.log(`📧 Email: ${uniqueEmail}`);
+        // This will automatically verify the 99% discount is applied
+        // If verification fails, it will STOP and prevent full charge
+        try {
+            await checkout.completeCheckout(null, prodPaymentData, '99offfromjustin');
+            
+            console.log(`\n✅ ========== PRODUCTION CHECKOUT SUCCESS ==========`);
+            console.log(`✅ Coupon verified and applied correctly`);
+            console.log(`✅ Checkout completed with 99% discount!`);
+            console.log(`📧 Email: ${uniqueEmail}`);
+            console.log(`💳 Charged: ~$6.49 (99% off)`);
+            console.log(`========================================\n`);
+            
+        } catch (e) {
+            console.log(`\n❌ ========== PRODUCTION CHECKOUT FAILED ==========`);
+            console.log(`❌ ${e.message}`);
+            console.log(`🛡️  Safety check prevented full payment charge`);
+            console.log(`📧 Email (not charged): ${uniqueEmail}`);
+            console.log(`========================================\n`);
+            throw e;
+        }
     });
 });
 

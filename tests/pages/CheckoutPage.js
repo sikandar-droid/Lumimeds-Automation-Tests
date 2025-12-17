@@ -102,11 +102,42 @@ class CheckoutPage {
     }
 
     /**
-     * Apply discount coupon code
-     * @param {string} couponCode - Coupon code to apply
+     * Get current total price from the page
+     * @returns {number} - Current total price as a number
      */
-    async applyCoupon(couponCode) {
+    async getTotalPrice() {
+        try {
+            // Look for Total price text
+            const totalText = await this.page.locator('text=/total/i').locator('..').textContent();
+            
+            // Extract price using regex (matches $123.45 or $123)
+            const priceMatch = totalText.match(/\$(\d+\.?\d*)/);
+            
+            if (priceMatch) {
+                const price = parseFloat(priceMatch[1]);
+                console.log(`💰 Current total price: $${price.toFixed(2)}`);
+                return price;
+            }
+            
+            throw new Error('Could not extract price from page');
+        } catch (e) {
+            console.log(`⚠️ Failed to get total price: ${e.message}`);
+            throw e;
+        }
+    }
+
+    /**
+     * Apply discount coupon code with price verification
+     * @param {string} couponCode - Coupon code to apply
+     * @param {number} expectedDiscountPercent - Expected discount percentage (e.g., 99 for 99% off)
+     * @returns {Object} - { priceBeforeCoupon, priceAfterCoupon, discountApplied, discountPercent }
+     */
+    async applyCoupon(couponCode, expectedDiscountPercent = null) {
         console.log(`🎫 Applying coupon code: ${couponCode}`);
+        
+        // Capture price BEFORE applying coupon
+        const priceBeforeCoupon = await this.getTotalPrice();
+        console.log(`📊 Price BEFORE coupon: $${priceBeforeCoupon.toFixed(2)}`);
         
         try {
             // Scroll to the coupon section
@@ -150,11 +181,45 @@ class CheckoutPage {
             console.log('✅ Clicked Apply button');
             
             // Wait for price changes to reflect
-            await this.page.waitForTimeout(2000);
+            await this.page.waitForTimeout(3000);
             
-            console.log(`✅ Coupon code "${couponCode}" applied - price updated`);
+            // Capture price AFTER applying coupon
+            const priceAfterCoupon = await this.getTotalPrice();
+            console.log(`📊 Price AFTER coupon: $${priceAfterCoupon.toFixed(2)}`);
+            
+            // Calculate discount
+            const discountApplied = priceBeforeCoupon - priceAfterCoupon;
+            const discountPercent = (discountApplied / priceBeforeCoupon) * 100;
+            
+            console.log(`💵 Discount applied: $${discountApplied.toFixed(2)} (${discountPercent.toFixed(1)}% off)`);
+            
+            // Verify discount if expected percentage provided
+            if (expectedDiscountPercent !== null) {
+                const tolerance = 2; // Allow 2% tolerance for rounding/fees
+                const minExpected = expectedDiscountPercent - tolerance;
+                const maxExpected = expectedDiscountPercent + tolerance;
+                
+                if (discountPercent < minExpected || discountPercent > maxExpected) {
+                    throw new Error(
+                        `🚨 COUPON VERIFICATION FAILED!\n` +
+                        `Expected: ${expectedDiscountPercent}% discount\n` +
+                        `Actual: ${discountPercent.toFixed(1)}% discount\n` +
+                        `Price before: $${priceBeforeCoupon.toFixed(2)}\n` +
+                        `Price after: $${priceAfterCoupon.toFixed(2)}`
+                    );
+                }
+                console.log(`✅ Coupon verification PASSED - Discount is within expected range`);
+            }
+            
+            return {
+                priceBeforeCoupon,
+                priceAfterCoupon,
+                discountApplied,
+                discountPercent
+            };
+            
         } catch (e) {
-            console.log(`⚠️ Failed to apply coupon: ${e.message}`);
+            console.log(`❌ Failed to apply coupon: ${e.message}`);
             throw e;
         }
     }
@@ -411,10 +476,43 @@ class CheckoutPage {
         
         // Apply coupon BEFORE filling payment details (coupon clears card fields)
         if (couponCode) {
+            console.log('\n🛡️  ========== SAFETY CHECK: COUPON VERIFICATION ==========\n');
+            
             // First remove any existing auto-applied coupon
             await this.removeCoupon();
-            // Then apply the new coupon
-            await this.applyCoupon(couponCode);
+            
+            // Determine expected discount based on coupon code
+            let expectedDiscount = null;
+            if (couponCode.toLowerCase().includes('99off')) {
+                expectedDiscount = 99; // Expect 99% discount
+                console.log('🎯 Expected discount: 99% off (based on coupon code)');
+            }
+            
+            // Apply coupon with price verification
+            try {
+                const result = await this.applyCoupon(couponCode, expectedDiscount);
+                
+                console.log('\n✅ ========== COUPON VERIFICATION PASSED ==========');
+                console.log(`   Original price: $${result.priceBeforeCoupon.toFixed(2)}`);
+                console.log(`   Discounted price: $${result.priceAfterCoupon.toFixed(2)}`);
+                console.log(`   Discount: ${result.discountPercent.toFixed(1)}% off`);
+                console.log(`   Savings: $${result.discountApplied.toFixed(2)}`);
+                console.log('✅ Safe to proceed with checkout\n');
+                
+            } catch (e) {
+                console.log('\n❌ ========== COUPON VERIFICATION FAILED ==========');
+                console.log(`   ${e.message}`);
+                console.log('🛑 STOPPING CHECKOUT TO PREVENT FULL CHARGE!\n');
+                
+                // Take screenshot of the error
+                await this.page.screenshot({ 
+                    path: 'screenshots/coupon-verification-failed.png', 
+                    fullPage: true 
+                });
+                console.log('📸 Screenshot saved: screenshots/coupon-verification-failed.png\n');
+                
+                throw new Error('🚨 CHECKOUT STOPPED: Coupon verification failed. This prevents full payment charge.');
+            }
         }
         
         // Fill payment details AFTER coupon is applied
