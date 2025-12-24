@@ -1,10 +1,26 @@
 const { test, expect } = require('@playwright/test');
 const AdPage = require('../pages/Ad-med-spa3');
 
-// iPhone 15 Pro Max viewport
-const iPhone15ProMax = {
-    width: 430,
-    height: 932
+// Multiple viewport configurations
+const viewports = {
+    mobile: {
+        name: 'iPhone 15 Pro Max',
+        width: 430,
+        height: 932,
+        type: 'mobile'
+    },
+    tablet: {
+        name: 'iPad Air',
+        width: 820,
+        height: 1180,
+        type: 'tablet'
+    },
+    laptop: {
+        name: 'Laptop',
+        width: 1366,
+        height: 768,
+        type: 'laptop'
+    }
 };
 
 // Ad pages to test (Spanish page)
@@ -17,7 +33,7 @@ test.describe('Live Ad Pages - Functional Tests (Spanish)', () => {
 
     test.beforeEach(async ({ page }) => {
         adPage = new AdPage(page);
-        await page.setViewportSize(iPhone15ProMax);
+        await page.setViewportSize({ width: viewport.width, height: viewport.height });
     });
 
     for (const adPageInfo of adPages) {
@@ -27,7 +43,7 @@ test.describe('Live Ad Pages - Functional Tests (Spanish)', () => {
                 test.setTimeout(120000);
                 
                 console.log(`\n${'='.repeat(70)}`);
-                console.log(`📱 Testing: /es/ad/${adPageInfo.name} on iPhone 15 Pro Max`);
+                console.log(`📱 Testing: /es/ad/${adPageInfo.name} on ${viewport.name}`);
                 console.log(`🌐 Language: Spanish (ES)`);
                 console.log('='.repeat(70));
 
@@ -321,7 +337,7 @@ test.describe('Live Ad Pages - Functional Tests (Spanish)', () => {
                 }
             });
 
-            test('should capture full page screenshot on iPhone 15 Pro Max', async ({ page }) => {
+            test('should capture full page screenshot on ${viewport.name}', async ({ page }) => {
                 test.setTimeout(120000);
                 
                 await adPage.goto(adPageInfo.name);
@@ -350,10 +366,10 @@ test.describe('Live Ad Pages - Functional Tests (Spanish)', () => {
                 await page.waitForTimeout(3000);
 
                 const screenshotFilename = `ad_es_${adPageInfo.name.replace(/\//g, '_')}.png`;
-                await adPage.takeFullPageScreenshot(screenshotFilename, 'mobile');
+                await adPage.takeFullPageScreenshot(screenshotFilename, viewport.type);
 
-                console.log(`✅ Screenshot saved: screenshots/mobile/${screenshotFilename}`);
-                console.log(`   Viewport: ${iPhone15ProMax.width}x${iPhone15ProMax.height} (iPhone 15 Pro Max)`);
+                console.log(`✅ Screenshot saved: screenshots/${viewport.type}/${screenshotFilename}`);
+                console.log(`   Viewport: ${viewport.width}x${viewport.height} (${viewport.name})`);
                 console.log(`   Language: Spanish (ES)`);
             });
 
@@ -394,5 +410,7 @@ test.describe('Live Ad Pages - Summary Report (Spanish)', () => {
         console.log('   - Política de Privacidad');
         console.log('\n✅ All tests completed!\n');
     });
-});
+    });
+}
+
 

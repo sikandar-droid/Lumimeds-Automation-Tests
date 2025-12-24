@@ -1,27 +1,46 @@
 const { test, expect } = require('@playwright/test');
 const AdPage = require('../pages/Ad-black-friday-sale');
 
-// iPhone 15 Pro Max viewport
-const iPhone15ProMax = {
-    width: 430,
-    height: 932
+// Multiple viewport configurations
+const viewports = {
+    mobile: {
+        name: 'iPhone 15 Pro Max',
+        width: 430,
+        height: 932,
+        type: 'mobile'
+    },
+    tablet: {
+        name: 'iPad Air',
+        width: 820,
+        height: 1180,
+        type: 'tablet'
+    },
+    laptop: {
+        name: 'Laptop',
+        width: 1366,
+        height: 768,
+        type: 'laptop'
+    }
 };
 
-test.describe('Live Ad Pages - Functional Tests', () => {
-    let adPage;
+// Test on all viewports
+for (const [viewportKey, viewport] of Object.entries(viewports)) {
+    test.describe(`Live Ad Pages - Functional Tests [${viewport.name}]`, () => {
+        let adPage;
 
-    test.beforeEach(async ({ page }) => {
-        adPage = new AdPage(page);
-        await page.setViewportSize(iPhone15ProMax);
-    });
+        test.beforeEach(async ({ page }) => {
+            adPage = new AdPage(page);
+            // Set viewport for this test suite
+            await page.setViewportSize({ width: viewport.width, height: viewport.height });
+        });
 
-    test.describe('Testing: /ad/black-friday-sale', () => {
+        test.describe('Testing: /ad/black-friday-sale', () => {
         
         test('should load page successfully', async ({ page }) => {
             test.setTimeout(180000);
             
             console.log(`\n${'='.repeat(70)}`);
-            console.log(`📱 Testing: /ad/black-friday-sale on iPhone 15 Pro Max`);
+            console.log(`📱 Testing: /ad/black-friday-sale on ${viewport.name}`);
             console.log('='.repeat(70));
 
             let retries = 2;
@@ -417,7 +436,7 @@ test.describe('Live Ad Pages - Functional Tests', () => {
             }
         });
 
-        test('should capture full page screenshot on iPhone 15 Pro Max', async ({ page }) => {
+        test('should capture full page screenshot', async ({ page }) => {
             test.setTimeout(120000);
             
             await adPage.goto();
@@ -446,17 +465,18 @@ test.describe('Live Ad Pages - Functional Tests', () => {
             await page.waitForTimeout(3000);
 
             const screenshotFilename = `ad_black-friday-sale.png`;
-            await adPage.takeFullPageScreenshot(screenshotFilename, 'mobile');
+            await adPage.takeFullPageScreenshot(screenshotFilename, viewport.type);
 
-            console.log(`✅ Screenshot saved: screenshots/mobile/${screenshotFilename}`);
-            console.log(`   Viewport: ${iPhone15ProMax.width}x${iPhone15ProMax.height} (iPhone 15 Pro Max)`);
+            console.log(`✅ Screenshot saved: screenshots/${viewport.type}/${screenshotFilename}`);
+            console.log(`   Viewport: ${viewport.width}x${viewport.height} (${viewport.name})`);
         });
 
         test.afterAll(async () => {
             console.log('\n' + '='.repeat(70));
-            console.log(`✅ All tests completed for /ad/black-friday-sale`);
+            console.log(`✅ All tests completed for /ad/black-friday-sale on ${viewport.name}`);
             console.log('='.repeat(70) + '\n');
         });
     });
-});
+    });
+}
 

@@ -1,10 +1,26 @@
 const { test, expect } = require('@playwright/test');
 const AdPage = require('../pages/Ad-weight-loss-treatment');
 
-// iPhone 15 Pro Max viewport
-const iPhone15ProMax = {
-    width: 430,
-    height: 932
+// Multiple viewport configurations
+const viewports = {
+    mobile: {
+        name: 'iPhone 15 Pro Max',
+        width: 430,
+        height: 932,
+        type: 'mobile'
+    },
+    tablet: {
+        name: 'iPad Air',
+        width: 820,
+        height: 1180,
+        type: 'tablet'
+    },
+    laptop: {
+        name: 'Laptop',
+        width: 1366,
+        height: 768,
+        type: 'laptop'
+    }
 };
 
 // Ad pages to test
@@ -12,12 +28,14 @@ const adPages = [
     { name: 'weight-loss-treatment', title: 'Reach your goals with Compounded Tirzepatide (GLP-1/GIP) treatment.' },
 ];
 
-test.describe('Live Ad Pages - Functional Tests', () => {
+// Test on all viewports
+for (const [viewportKey, viewport] of Object.entries(viewports)) {
+    test.describe(`Live Ad Pages - Functional Tests [${viewport.name}]`, () => {
     let adPage;
 
     test.beforeEach(async ({ page }) => {
         adPage = new AdPage(page);
-        await page.setViewportSize(iPhone15ProMax);
+        await page.setViewportSize({ width: viewport.width, height: viewport.height });
     });
 
     for (const adPageInfo of adPages) {
@@ -27,7 +45,7 @@ test.describe('Live Ad Pages - Functional Tests', () => {
                 test.setTimeout(120000);
                 
                 console.log(`\n${'='.repeat(70)}`);
-                console.log(`📱 Testing: /ad/${adPageInfo.name} on iPhone 15 Pro Max`);
+                console.log(`📱 Testing: /ad/${adPageInfo.name} on ${viewport.name}`);
                 console.log('='.repeat(70));
 
                 await adPage.goto(adPageInfo.name);
@@ -434,7 +452,7 @@ test.describe('Live Ad Pages - Functional Tests', () => {
                 }
             });
 
-            test('should capture full page screenshot on iPhone 15 Pro Max', async ({ page }) => {
+            test('should capture full page screenshot on ${viewport.name}', async ({ page }) => {
                 test.setTimeout(120000);
                 
                 await adPage.goto(adPageInfo.name);
@@ -463,10 +481,10 @@ test.describe('Live Ad Pages - Functional Tests', () => {
                 await page.waitForTimeout(3000);
 
                 const screenshotFilename = `ad_${adPageInfo.name.replace(/\//g, '_')}.png`;
-                await adPage.takeFullPageScreenshot(screenshotFilename, 'mobile');
+                await adPage.takeFullPageScreenshot(screenshotFilename, viewport.type);
 
-                console.log(`✅ Screenshot saved: screenshots/mobile/${screenshotFilename}`);
-                console.log(`   Viewport: ${iPhone15ProMax.width}x${iPhone15ProMax.height} (iPhone 15 Pro Max)`);
+                console.log(`✅ Screenshot saved: screenshots/${viewport.type}/${screenshotFilename}`);
+                console.log(`   Viewport: ${viewport.width}x${viewport.height} (${viewport.name})`);
             });
 
             test.afterAll(async () => {
@@ -500,5 +518,7 @@ test.describe('Live Ad Pages - Summary Report', () => {
         console.log('   11. Full page screenshot capture');
         console.log('\n✅ All tests completed!\n');
     });
-});
+    });
+}
+
 

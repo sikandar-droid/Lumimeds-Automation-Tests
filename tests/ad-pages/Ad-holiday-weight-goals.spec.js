@@ -1,7 +1,9 @@
 const { test, expect } = require('@playwright/test');
 const AdPage = require('../pages/Ad-holiday-weight-goals');
 
-test.describe('Live Ad Pages - Functional Tests', () => {
+// Test on all viewports
+for (const [viewportKey, viewport] of Object.entries(viewports)) {
+    test.describe(`Live Ad Pages - Functional Tests [${viewport.name}]`, () => {
     let adPage;
 
     const adPageInfo = {
@@ -19,7 +21,7 @@ test.describe('Live Ad Pages - Functional Tests', () => {
             test.setTimeout(120000);
             
             console.log('\n======================================================================');
-            console.log(`📱 Testing: ${adPageInfo.name} on iPhone 15 Pro Max`);
+            console.log(`📱 Testing: ${adPageInfo.name} on ${viewport.name}`);
             console.log('======================================================================\n');
             
             let retries = 0;
@@ -339,7 +341,7 @@ test.describe('Live Ad Pages - Functional Tests', () => {
             console.log('✅ Email visible in footer');
         });
 
-        test('should capture full page screenshot on iPhone 15 Pro Max', async ({ page }) => {
+        test('should capture full page screenshot on ${viewport.name}', async ({ page }) => {
             test.setTimeout(120000);
             
             await adPage.goto(adPageInfo.name);
@@ -348,7 +350,7 @@ test.describe('Live Ad Pages - Functional Tests', () => {
             
             console.log('\n📸 Capturing screenshot...');
             
-            const screenshotPath = `screenshots/mobile/ad_holiday-weight-goals.png`;
+            const screenshotPath = `screenshots/${viewport.type}/ad_holiday-weight-goals.png`;
             await adPage.captureFullPageScreenshot(screenshotPath);
             
             console.log(`✅ Screenshot saved: ${screenshotPath}`);
@@ -383,5 +385,7 @@ test.describe('Live Ad Pages - Functional Tests', () => {
             console.log('\n✅ All tests completed!\n');
         });
     });
-});
+    });
+}
+
 

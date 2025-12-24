@@ -1,10 +1,26 @@
 const { test, expect } = require('@playwright/test');
 const AdPage = require('../pages/Ad-best-weight-loss-medication');
 
-// iPhone 15 Pro Max viewport
-const iPhone15ProMax = {
-    width: 430,
-    height: 932
+// Multiple viewport configurations
+const viewports = {
+    mobile: {
+        name: 'iPhone 15 Pro Max',
+        width: 430,
+        height: 932,
+        type: 'mobile'
+    },
+    tablet: {
+        name: 'iPad Air',
+        width: 820,
+        height: 1180,
+        type: 'tablet'
+    },
+    laptop: {
+        name: 'Laptop',
+        width: 1366,
+        height: 768,
+        type: 'laptop'
+    }
 };
 
 // Ad pages to test
@@ -12,14 +28,16 @@ const adPages = [
     { name: 'best-weight-loss-medication', title: 'Flexibility Meets Confidence' },
 ];
 
-test.describe('Live Ad Pages - Functional Tests', () => {
-    let adPage;
+// Test on all viewports
+for (const [viewportKey, viewport] of Object.entries(viewports)) {
+    test.describe(`Live Ad Pages - Functional Tests [${viewport.name}]`, () => {
+        let adPage;
 
-    test.beforeEach(async ({ page }) => {
-        adPage = new AdPage(page);
-        // Set iPhone 15 Pro Max viewport
-        await page.setViewportSize(iPhone15ProMax);
-    });
+        test.beforeEach(async ({ page }) => {
+            adPage = new AdPage(page);
+            // Set viewport for this test suite
+            await page.setViewportSize({ width: viewport.width, height: viewport.height });
+        });
 
     for (const adPageInfo of adPages) {
         test.describe(`Testing: /ad/${adPageInfo.name}`, () => {
@@ -28,7 +46,7 @@ test.describe('Live Ad Pages - Functional Tests', () => {
                 test.setTimeout(120000); // 2 minutes
                 
                 console.log(`\n${'='.repeat(70)}`);
-                console.log(`📱 Testing: /ad/${adPageInfo.name} on iPhone 15 Pro Max`);
+                console.log(`📱 Testing: /ad/${adPageInfo.name} on ${viewport.name}`);
                 console.log('='.repeat(70));
 
                 // Navigate to page
@@ -428,7 +446,7 @@ test.describe('Live Ad Pages - Functional Tests', () => {
                 }
             });
 
-            test('should capture full page screenshot on iPhone 15 Pro Max', async ({ page }) => {
+            test('should capture full page screenshot', async ({ page }) => {
                 test.setTimeout(120000);
                 
                 await adPage.goto(adPageInfo.name);
@@ -460,20 +478,21 @@ test.describe('Live Ad Pages - Functional Tests', () => {
 
                 // Take screenshot
                 const screenshotFilename = `ad_${adPageInfo.name.replace(/\//g, '_')}.png`;
-                await adPage.takeFullPageScreenshot(screenshotFilename, 'mobile');
+                await adPage.takeFullPageScreenshot(screenshotFilename, viewport.type);
 
-                console.log(`✅ Screenshot saved: screenshots/mobile/${screenshotFilename}`);
-                console.log(`   Viewport: ${iPhone15ProMax.width}x${iPhone15ProMax.height} (iPhone 15 Pro Max)`);
+                console.log(`✅ Screenshot saved: screenshots/${viewport.type}/${screenshotFilename}`);
+                console.log(`   Viewport: ${viewport.width}x${viewport.height} (${viewport.name})`);
             });
 
             test.afterAll(async () => {
                 console.log('\n' + '='.repeat(70));
-                console.log(`✅ All tests completed for /ad/${adPageInfo.name}`);
+                console.log(`✅ All tests completed for /ad/${adPageInfo.name} on ${viewport.name}`);
                 console.log('='.repeat(70) + '\n');
             });
         });
     }
-});
+    });
+}
 
 test.describe('Live Ad Pages - Summary Report', () => {
     test('generate test summary', async ({ page }) => {
@@ -481,9 +500,13 @@ test.describe('Live Ad Pages - Summary Report', () => {
         console.log('║' + ' '.repeat(20) + 'AD PAGES TEST SUMMARY REPORT' + ' '.repeat(30) + '║');
         console.log('╚' + '═'.repeat(78) + '╝\n');
         
-        console.log('📱 Device: iPhone 15 Pro Max (430x932)');
+        console.log('📱 Viewports Tested:');
+        console.log('   • Mobile: iPhone 15 Pro Max (430x932)');
+        console.log('   • Tablet: iPad Air (820x1180)');
+        console.log('   • Laptop: 1366x768');
         console.log(`📊 Pages Tested: ${adPages.length}`);
-        console.log('✅ Test suites per page:');
+        console.log(`📊 Total Test Combinations: ${adPages.length} pages × ${Object.keys(viewports).length} viewports = ${adPages.length * Object.keys(viewports).length}`);
+        console.log('✅ Test suites per page per viewport:');
         console.log('   1. Page load verification');
         console.log('   2. Page title validation');
         console.log('   3. Get Started buttons clickability');
