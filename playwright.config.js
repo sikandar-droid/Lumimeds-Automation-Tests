@@ -20,8 +20,8 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   /* Retry failed tests up to 2 times */
   retries: 2,
-  /* Optimal workers for CI - 3 workers for faster parallel execution */
-  workers: process.env.CI ? 3 : undefined,
+  /* Optimal workers for CI - 5 workers for faster cross-browser execution */
+  workers: process.env.CI ? 5 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [
     ['html'],
