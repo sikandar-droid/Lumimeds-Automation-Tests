@@ -170,6 +170,13 @@ async function sendPageTestNotification() {
     
     `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n` +
     
+    `*BROWSERS TESTED*\n\n` +
+    `  🌐 *Chromium* - Chrome/Edge compatible\n` +
+    `  🦊 *Firefox* - Mozilla Firefox\n` +
+    `  🧭 *WebKit* - Safari compatible\n\n` +
+    
+    `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n` +
+    
     `*VERIFICATION CATEGORIES*\n\n` +
     `  • *Page Loading* - All pages load successfully with correct titles\n` +
     `  • *Get Started Buttons* - All redirect to /products/survey/weight_loss\n` +
@@ -187,6 +194,7 @@ async function sendPageTestNotification() {
     
     `*TEST SUMMARY*\n\n` +
     `  Pages Tested:  ${pageCount}\n` +
+    `  Browsers:      3 (Chromium, Firefox, WebKit)\n` +
     `  Viewports:     3 (Mobile, Tablet, Laptop)\n` +
     `  Test Cases:    ${stats.expected + stats.unexpected || 0}\n` +
     `  Passed:        ${stats.expected || 0}\n` +

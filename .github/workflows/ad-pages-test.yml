@@ -11,7 +11,7 @@ jobs:
   ad-pages-test:
     name: Run All Ad Pages Tests
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 90
     
     steps:
       - name: 📥 Checkout code
@@ -37,20 +37,20 @@ jobs:
       
       - name: 🎭 Install Playwright browsers
         if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: npx playwright install chromium --with-deps
+        run: npx playwright install chromium firefox webkit --with-deps
       
       - name: 🎭 Install Playwright dependencies
         if: steps.playwright-cache.outputs.cache-hit == 'true'
-        run: npx playwright install-deps chromium
+        run: npx playwright install-deps chromium firefox webkit
       
-      - name: 🧪 Run All Ad Pages Tests
+      - name: 🧪 Run All Ad Pages Tests (Cross-Browser)
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           TEST_FILE: 'All-Ad-Pages'
           TEST_ENV: 'Production'
           TEST_URL: 'https://lumimeds.com/ad/*'
         run: |
-          npx playwright test tests/ad-pages/Ad-*.spec.js --project=chromium
+          npx playwright test tests/ad-pages/Ad-*.spec.js --project=chromium --project=firefox --project=webkit
           node scripts/slack-notify-pages.js
       
       - name: 📊 Upload test results

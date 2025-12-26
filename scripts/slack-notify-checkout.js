@@ -150,6 +150,13 @@ async function sendCheckoutNotification() {
     `   ${statusEmoji}  Navigation - Successfully accessed\n` +
     `   ${statusEmoji}  Page Flow - Smooth transitions\n\n` +
     
+    `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n` +
+    
+    `🌐 *BROWSERS TESTED*\n\n` +
+    `   • Chromium (Chrome/Edge)\n` +
+    `   • Firefox\n` +
+    `   • WebKit (Safari)\n\n` +
+    
     `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
 
   const message = {
