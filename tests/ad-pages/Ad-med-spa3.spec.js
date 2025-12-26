@@ -28,7 +28,9 @@ const adPages = [
     { name: 'med-spa3', title: 'Spanish Med Spa Page', language: 'es' },
 ];
 
-test.describe('Live Ad Pages - Functional Tests (Spanish)', () => {
+// Test on all viewports
+for (const [viewportKey, viewport] of Object.entries(viewports)) {
+    test.describe(`Live Ad Pages - Functional Tests (Spanish) [${viewport.name}]`, () => {
     let adPage;
 
     test.beforeEach(async ({ page }) => {
@@ -380,37 +382,6 @@ test.describe('Live Ad Pages - Functional Tests (Spanish)', () => {
             });
         });
     }
-});
-
-test.describe('Live Ad Pages - Summary Report (Spanish)', () => {
-    test('generate test summary', async ({ page }) => {
-        console.log('\n' + '╔' + '═'.repeat(78) + '╗');
-        console.log('║' + ' '.repeat(15) + 'AD PAGES TEST SUMMARY REPORT (SPANISH)' + ' '.repeat(25) + '║');
-        console.log('╚' + '═'.repeat(78) + '╝\n');
-        
-        console.log('📱 Device: iPhone 15 Pro Max (430x932)');
-        console.log('🌐 Language: Spanish (ES)');
-        console.log(`📊 Pages Tested: ${adPages.length}`);
-        console.log('✅ Test suites per page:');
-        console.log('   1. Page load verification');
-        console.log('   2. Page title validation');
-        console.log('   3. Comenzar buttons clickability');
-        console.log('   4. Comenzar navigation to survey');
-        console.log('   5. Trustpilot widget functionality');
-        console.log('   6. Spanish footer links validation');
-        console.log('   7. Header navigation elements');
-        console.log('   8. Contact information presence');
-        console.log('   9. Full page screenshot capture');
-        console.log('\n🇪🇸 Spanish Footer Links Validated:');
-        console.log('   - Términos y Condiciones de Membresía');
-        console.log('   - Asociaciones Farmacéuticas');
-        console.log('   - Carreras / Aplicar para Posición');
-        console.log('   - Preguntas Frecuentes');
-        console.log('   - Términos de Uso');
-        console.log('   - Política de Privacidad');
-        console.log('\n✅ All tests completed!\n');
-    });
     });
 }
-
 

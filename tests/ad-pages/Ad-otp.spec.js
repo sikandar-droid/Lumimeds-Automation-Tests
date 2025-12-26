@@ -517,7 +517,7 @@ for (const [viewportKey, viewport] of Object.entries(viewports)) {
         });
     }
 });
-    });
+
 }
 
 

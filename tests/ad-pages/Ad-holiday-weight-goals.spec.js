@@ -1,6 +1,28 @@
 const { test, expect } = require('@playwright/test');
 const AdPage = require('../pages/Ad-holiday-weight-goals');
 
+// Multiple viewport configurations
+const viewports = {
+    mobile: {
+        name: 'iPhone 15 Pro Max',
+        width: 430,
+        height: 932,
+        type: 'mobile'
+    },
+    tablet: {
+        name: 'iPad Air',
+        width: 820,
+        height: 1180,
+        type: 'tablet'
+    },
+    laptop: {
+        name: 'Laptop',
+        width: 1366,
+        height: 768,
+        type: 'laptop'
+    }
+};
+
 // Test on all viewports
 for (const [viewportKey, viewport] of Object.entries(viewports)) {
     test.describe(`Live Ad Pages - Functional Tests [${viewport.name}]`, () => {
@@ -362,29 +384,6 @@ for (const [viewportKey, viewport] of Object.entries(viewports)) {
         });
     });
 
-    test.describe('Live Ad Pages - Summary Report', () => {
-        test('generate test summary', async () => {
-            console.log('\n╔══════════════════════════════════════════════════════════════════════════════╗');
-            console.log('║                    AD PAGES TEST SUMMARY REPORT                              ║');
-            console.log('╚══════════════════════════════════════════════════════════════════════════════╝\n');
-            console.log('📱 Device: iPhone 15 Pro Max (430x932)');
-            console.log('📊 Pages Tested: 1');
-            console.log('✅ Test suites per page:');
-            console.log('   1. Page load verification');
-            console.log('   2. Page title validation');
-            console.log('   3. Get Started buttons clickability');
-            console.log('   4. Get Started navigation to survey');
-            console.log('   5. Start Your Online Evaluation navigation to survey');
-            console.log('   6. Get Your Plan navigation to survey');
-            console.log('   7. Popup GET YOURS NOW navigation to survey');
-            console.log('   8. Trustpilot widget functionality');
-            console.log('   9. Footer links validation');
-            console.log('   10. Header navigation elements');
-            console.log('   11. Contact information presence');
-            console.log('   12. Full page screenshot capture');
-            console.log('\n✅ All tests completed!\n');
-        });
-    });
     });
 }
 
