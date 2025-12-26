@@ -369,27 +369,6 @@ for (const [viewportKey, viewport] of Object.entries(viewports)) {
         });
     }
 });
-
-test.describe('Live Ad Pages - Summary Report', () => {
-    test('generate test summary', async ({ page }) => {
-        console.log('\n' + '╔' + '═'.repeat(78) + '╗');
-        console.log('║' + ' '.repeat(20) + 'AD PAGES TEST SUMMARY REPORT' + ' '.repeat(30) + '║');
-        console.log('╚' + '═'.repeat(78) + '╝\n');
-        
-        console.log('📱 Device: iPhone 15 Pro Max (430x932)');
-        console.log(`📊 Pages Tested: ${adPages.length}`);
-        console.log('✅ Test suites per page:');
-        console.log('   1. Page load verification');
-        console.log('   2. Page title validation');
-        console.log('   3. Get Started buttons clickability');
-        console.log('   4. Get Started navigation to survey');
-        console.log('   5. Trustpilot widget functionality');
-        console.log('   6. Footer links validation');
-        console.log('   7. Header navigation elements');
-        console.log('   8. Contact information presence');
-        console.log('   9. Full page screenshot capture');
-        console.log('\n✅ All tests completed!\n');
-    });
     });
 }
 
