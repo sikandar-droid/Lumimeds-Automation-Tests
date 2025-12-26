@@ -31,17 +31,12 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-playwright-browsers-v2-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-playwright-
+            ${{ runner.os }}-playwright-browsers-v2-
       
       - name: 🎭 Install Playwright browsers
-        if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: npx playwright install chromium firefox webkit --with-deps
-      
-      - name: 🎭 Install Playwright dependencies
-        if: steps.playwright-cache.outputs.cache-hit == 'true'
-        run: npx playwright install-deps chromium firefox webkit
       
       - name: 🧪 Run All Ad Pages Tests (Cross-Browser)
         env:
