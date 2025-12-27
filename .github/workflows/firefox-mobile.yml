@@ -42,7 +42,16 @@ jobs:
           TEST_VIEWPORT: 'Mobile'
         run: |
           npx playwright test tests/ad-pages/Ad-*.spec.js --project=firefox --grep "iPhone 15 Pro Max"
-          node scripts/slack-notify-pages.js
+      
+      - name: 📤 Send Slack Notification
+        if: always()
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          TEST_FILE: 'Firefox-Mobile'
+          TEST_ENV: 'Production'
+          TEST_BROWSER: 'Firefox'
+          TEST_VIEWPORT: 'Mobile'
+        run: node scripts/slack-notify-pages.js
       
       - name: 📊 Upload results
         if: always()
