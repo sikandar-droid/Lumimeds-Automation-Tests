@@ -23,13 +23,13 @@ class AdPage {
         this.mainHeading = page.locator('h1, [role="heading"]').first();
         
         // CTA Buttons (Comenzar - Spanish for "Get Started")
-        // Use data-tracking-id for more reliable selector
-        this.comenzarButtons = page.locator('button[data-tracking-id="get-started-home-weight-loss-program"]');
+        // Spanish page doesn't have data-tracking-id, use text-based selectors
+        this.comenzarButtons = page.locator('button:has-text("Comenzar"), button[class*="ctaButton"]');
         this.comenzarLinks = page.getByRole('link', { name: /^comenzar$/i });
-        this.primaryCTAButton = page.locator('button[data-tracking-id="get-started-home-weight-loss-program"]').first();
+        this.primaryCTAButton = page.locator('button:has-text("Comenzar")').first();
         
         // Also check for "Get Started" buttons in case page is partially in English
-        this.getStartedButtons = page.locator('button[data-tracking-id="get-started-home-weight-loss-program"]');
+        this.getStartedButtons = page.locator('button:has-text("Get Started"), button[class*="ctaButton"]');
         this.getStartedLinks = page.getByRole('link', { name: /^get started$/i });
         
         // Choose Your Plan Now (may be in Spanish: "Elige Tu Plan Ahora")
