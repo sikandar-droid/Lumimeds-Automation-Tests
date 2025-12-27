@@ -38,6 +38,8 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           TEST_FILE: 'Safari-Laptop'
           TEST_ENV: 'Production'
+          TEST_BROWSER: 'WebKit'
+          TEST_VIEWPORT: 'Laptop'
         run: |
           npx playwright test tests/ad-pages/Ad-*.spec.js --project=webkit --grep "Laptop"
           node scripts/slack-notify-pages.js

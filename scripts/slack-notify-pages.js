@@ -31,6 +31,8 @@ async function sendPageTestNotification() {
   const testFile = process.env.TEST_FILE || 'Ad Page Tests';
   const environment = process.env.TEST_ENV || 'Production';
   const testUrl = process.env.TEST_URL || 'https://lumimeds.com';
+  const testBrowser = process.env.TEST_BROWSER || 'All';
+  const testViewport = process.env.TEST_VIEWPORT || 'All';
   
   // Extract test details
   const testDetails = extractTestDetails(results);
@@ -148,6 +150,32 @@ async function sendPageTestNotification() {
     ? `*AD PAGE TESTED*` 
     : `*AD PAGES TESTED (${pageCount} pages)*`;
   
+  // Build viewport section based on what was tested
+  const viewportMap = {
+    'Mobile': '📱 *Mobile* - 430×932',
+    'Tablet': '📱 *Tablet* - 820×1180',
+    'Laptop': '💻 *Laptop* - 1366×768'
+  };
+  
+  const viewportSection = testViewport !== 'All' && viewportMap[testViewport]
+    ? `*VIEWPORT TESTED*\n\n  ${viewportMap[testViewport]}\n\n`
+    : `*VIEWPORTS TESTED*\n\n  📱 *Mobile* - 430×932\n  📱 *Tablet* - 820×1180\n  💻 *Laptop* - 1366×768\n\n`;
+  
+  // Build browser section based on what was tested
+  const browserMap = {
+    'Chromium': '🌐 *Chromium* - Chrome/Edge compatible',
+    'Firefox': '🦊 *Firefox* - Mozilla Firefox',
+    'WebKit': '🧭 *WebKit* - Safari compatible'
+  };
+  
+  const browserSection = testBrowser !== 'All' && browserMap[testBrowser]
+    ? `*BROWSER TESTED*\n\n  ${browserMap[testBrowser]}\n\n`
+    : `*BROWSERS TESTED*\n\n  🌐 *Chromium* - Chrome/Edge compatible\n  🦊 *Firefox* - Mozilla Firefox\n  🧭 *WebKit* - Safari compatible\n\n`;
+  
+  // Build summary section
+  const browserSummary = testBrowser !== 'All' ? `1 (${testBrowser})` : '3 (Chromium, Firefox, WebKit)';
+  const viewportSummary = testViewport !== 'All' ? `1 (${testViewport})` : '3 (Mobile, Tablet, Laptop)';
+  
   const detailedText = 
     `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
     `  LUMIMEDS AD PAGES TESTING\n` +
@@ -163,17 +191,11 @@ async function sendPageTestNotification() {
     
     `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n` +
     
-    `*VIEWPORTS TESTED*\n\n` +
-    `  📱 *Mobile* - 430×932\n` +
-    `  📱 *Tablet* - 820×1180\n` +
-    `  💻 *Laptop* - 1366×768\n\n` +
+    viewportSection +
     
     `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n` +
     
-    `*BROWSERS TESTED*\n\n` +
-    `  🌐 *Chromium* - Chrome/Edge compatible\n` +
-    `  🦊 *Firefox* - Mozilla Firefox\n` +
-    `  🧭 *WebKit* - Safari compatible\n\n` +
+    browserSection +
     
     `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n` +
     
@@ -194,8 +216,8 @@ async function sendPageTestNotification() {
     
     `*TEST SUMMARY*\n\n` +
     `  Pages Tested:  ${pageCount}\n` +
-    `  Browsers:      3 (Chromium, Firefox, WebKit)\n` +
-    `  Viewports:     3 (Mobile, Tablet, Laptop)\n` +
+    `  Browsers:      ${browserSummary}\n` +
+    `  Viewports:     ${viewportSummary}\n` +
     `  Test Cases:    ${stats.expected + stats.unexpected || 0}\n` +
     `  Passed:        ${stats.expected || 0}\n` +
     `  Failed:        ${stats.unexpected || 0}\n` +
