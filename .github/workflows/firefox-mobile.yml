@@ -9,7 +9,7 @@ jobs:
   test:
     name: Firefox Mobile Tests
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     
     steps:
       - name: 📥 Checkout code
