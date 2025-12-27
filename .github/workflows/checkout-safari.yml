@@ -1,10 +1,8 @@
-name: Daily Checkout Test
+name: Checkout - Safari
 
 on:
   schedule:
     - cron: '30 8 * * *'  # 3:30 AM EST daily (8:30 AM UTC)
-  
-  # Manual trigger from GitHub UI (always available)
   workflow_dispatch:
     inputs:
       environment:
@@ -17,10 +15,10 @@ on:
           - production
 
 jobs:
-  checkout-test:
-    name: Run Checkout Test
+  test:
+    name: Safari Checkout Test
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 15
     
     steps:
       - name: 📥 Checkout code
@@ -36,61 +34,41 @@ jobs:
         run: npm ci
       
       - name: 💾 Cache Playwright browsers
-        id: playwright-cache
         uses: actions/cache@v3
         with:
           path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-browsers-v2-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-playwright-browsers-v2-
+          key: ${{ runner.os }}-playwright-webkit-v2-${{ hashFiles('**/package-lock.json') }}
       
-      - name: 🎭 Install Playwright browsers
-        run: npx playwright install chromium firefox webkit --with-deps
+      - name: 🎭 Install WebKit
+        run: npx playwright install webkit --with-deps
       
-      - name: 🧪 Run Staging Checkout Test (Cross-Browser)
+      - name: 🧪 Run Staging Checkout
         if: github.event.inputs.environment == 'staging'
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          TEST_FILE: 'checkout'
+          TEST_FILE: 'Checkout-Safari-Staging'
           TEST_ENV: 'Staging'
           TEST_URL: 'https://staging.lumimeds.com'
         run: |
-          npx playwright test tests/checkout/checkout.spec.js --project=chromium --project=firefox --project=webkit
+          npx playwright test tests/checkout/checkout.spec.js --project=webkit
           node scripts/slack-notify-checkout.js
       
-      - name: 🚀 Run Production Checkout Test (Cross-Browser)
+      - name: 🚀 Run Production Checkout
         if: github.event.inputs.environment != 'staging'
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          TEST_FILE: 'checkout-prod'
+          TEST_FILE: 'Checkout-Safari-Production'
           TEST_ENV: 'Production'
           TEST_URL: 'https://lumimeds.com'
         run: |
-          npx playwright test tests/checkout/checkout-prod.spec.js --project=chromium --project=firefox --project=webkit
+          npx playwright test tests/checkout/checkout-prod.spec.js --project=webkit
           node scripts/slack-notify-checkout.js
       
-      - name: 📊 Upload test results
+      - name: 📊 Upload results
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: test-results
+          name: checkout-safari-results
           path: test-results.json
           retention-days: 30
-      
-      - name: 📸 Upload screenshots
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: screenshots
-          path: screenshots/
-          retention-days: 7
-      
-      - name: 📄 Upload HTML report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: playwright-report
-          path: playwright-report/
-          retention-days: 30
-
 
