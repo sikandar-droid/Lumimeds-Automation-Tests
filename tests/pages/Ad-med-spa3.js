@@ -23,13 +23,13 @@ class AdPage {
         this.mainHeading = page.locator('h1, [role="heading"]').first();
         
         // CTA Buttons (Comenzar - Spanish for "Get Started")
-        // Spanish page doesn't have data-tracking-id, use text-based selectors
-        this.comenzarButtons = page.locator('button:has-text("Comenzar"), button[class*="ctaButton"]');
+        // Skip header button, target the pricing card buttons with ctaButton class
+        this.comenzarButtons = page.locator('button[class*="ctaButton"]:has-text("Comenzar")');
         this.comenzarLinks = page.getByRole('link', { name: /^comenzar$/i });
-        this.primaryCTAButton = page.locator('button:has-text("Comenzar")').first();
+        this.primaryCTAButton = page.locator('button[class*="ctaButton"]:has-text("Comenzar")').first();
         
         // Also check for "Get Started" buttons in case page is partially in English
-        this.getStartedButtons = page.locator('button:has-text("Get Started"), button[class*="ctaButton"]');
+        this.getStartedButtons = page.locator('button[class*="ctaButton"]:has-text("Get Started")');
         this.getStartedLinks = page.getByRole('link', { name: /^get started$/i });
         
         // Choose Your Plan Now (may be in Spanish: "Elige Tu Plan Ahora")
