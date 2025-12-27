@@ -31,6 +31,7 @@ async function sendCheckoutNotification() {
   const testFile = process.env.TEST_FILE || 'checkout-prod';
   const environment = process.env.TEST_ENV || 'Production';
   const testUrl = process.env.TEST_URL || 'https://lumimeds.com';
+  const testBrowser = process.env.TEST_BROWSER || 'All';
   
   // Try to extract checkout details from test output
   const checkoutDetails = extractCheckoutDetails(results);
@@ -126,6 +127,17 @@ async function sendCheckoutNotification() {
   const statusText = passed ? 'PASSED' : 'FAILED';
   const statusBanner = passed ? '🟢 *ALL TESTS PASSED*' : '🔴 *TESTS FAILED*';
   
+  // Build browser section based on what was tested
+  const browserMap = {
+    'Chromium': '🌐 *Chromium* - Chrome/Edge compatible',
+    'Firefox': '🦊 *Firefox* - Mozilla Firefox',
+    'WebKit': '🧭 *WebKit* - Safari compatible'
+  };
+  
+  const browserSection = testBrowser !== 'All' && browserMap[testBrowser]
+    ? `🌐 *BROWSER TESTED*\n\n   • ${browserMap[testBrowser].replace(/🌐|🦊|🧭 \*/g, '')}\n\n`
+    : `🌐 *BROWSERS TESTED*\n\n   • Chromium (Chrome/Edge)\n   • Firefox\n   • WebKit (Safari)\n\n`;
+  
   const detailedText = 
     `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
     `       🛒 *LUMIMEDS CHECKOUT AUTOMATION*\n` +
@@ -152,10 +164,7 @@ async function sendCheckoutNotification() {
     
     `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n` +
     
-    `🌐 *BROWSERS TESTED*\n\n` +
-    `   • Chromium (Chrome/Edge)\n` +
-    `   • Firefox\n` +
-    `   • WebKit (Safari)\n\n` +
+    browserSection +
     
     `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
 

@@ -49,6 +49,7 @@ jobs:
           TEST_FILE: 'Checkout-Firefox-Staging'
           TEST_ENV: 'Staging'
           TEST_URL: 'https://staging.lumimeds.com'
+          TEST_BROWSER: 'Firefox'
         run: |
           npx playwright test tests/checkout/checkout.spec.js --project=firefox
           node scripts/slack-notify-checkout.js
@@ -60,6 +61,7 @@ jobs:
           TEST_FILE: 'Checkout-Firefox-Production'
           TEST_ENV: 'Production'
           TEST_URL: 'https://lumimeds.com'
+          TEST_BROWSER: 'Firefox'
         run: |
           npx playwright test tests/checkout/checkout-prod.spec.js --project=firefox
           node scripts/slack-notify-checkout.js
