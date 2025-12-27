@@ -1,0 +1,52 @@
+name: Safari - Tablet
+
+on:
+  schedule:
+    - cron: '30 8 * * *'  # 3:30 AM EST daily (8:30 AM UTC)
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Safari Tablet Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+      
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: 📦 Install dependencies
+        run: npm ci
+      
+      - name: 💾 Cache Playwright browsers
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-webkit-v2-${{ hashFiles('**/package-lock.json') }}
+      
+      - name: 🎭 Install WebKit
+        run: npx playwright install webkit --with-deps
+      
+      - name: 🧪 Run Tests
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          TEST_FILE: 'Safari-Tablet'
+          TEST_ENV: 'Production'
+        run: |
+          npx playwright test tests/ad-pages/Ad-*.spec.js --project=webkit --grep "iPad Air"
+          node scripts/slack-notify-pages.js
+      
+      - name: 📊 Upload results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: safari-tablet-results
+          path: test-results.json
+          retention-days: 30
+
