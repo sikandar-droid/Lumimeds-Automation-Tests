@@ -4,7 +4,7 @@ class HomePage {
         this.baseUrl = baseUrl || process.env.BASE_URL || 'https://staging.lumimeds.com';
         
         // Locators
-        this.getStartedButton = page.locator('#hero-weight-loss').getByRole('button', { name: 'Get Started' });
+        this.getStartedButton = page.locator('button[data-tracking-id="get-started-home-weight-loss-program"]');
         this.continueButton = page.getByRole('button', { name: 'Continue' });
     }
 
