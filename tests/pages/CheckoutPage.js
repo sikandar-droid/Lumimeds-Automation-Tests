@@ -442,8 +442,8 @@ class CheckoutPage {
         console.log('🛒 Clicking checkout button...');
         await this.checkoutButton.click();
         
-        // Wait for navigation to success page
-        await this.page.waitForURL('**/checkout/success', { timeout: 60000 });
+        // Wait for navigation to success page (longer timeout for Safari/WebKit)
+        await this.page.waitForURL('**/checkout/success', { timeout: 120000 });
         console.log(`✅ Checkout completed successfully!`);
     }
 
