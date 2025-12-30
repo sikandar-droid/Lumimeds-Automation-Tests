@@ -17,8 +17,8 @@ test.describe('Checkout Test', () => {
         const uniqueNumber = Math.floor(10000 + Math.random() * 90000);
         const uniqueEmail = `sikandar.naeem+${uniqueNumber}@devslooptech.com`;
 
-        // Initialize page objects - Staging URL
-        const homePage = new HomePage(page, 'https://staging.lumimeds.com');
+        // Initialize page objects - Pre-Prod URL
+        const homePage = new HomePage(page, 'https://pre-prod.lumimeds.com');
         const questionnaire = new OnboardingQuestionnairePage(page);
         const planSelection = new PlanSelectionPage(page);
         const checkout = new CheckoutPage(page);
