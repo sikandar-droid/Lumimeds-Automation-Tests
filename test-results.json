@@ -10,7 +10,9 @@
     "grep": {},
     "grepInvert": null,
     "maxFailures": 0,
-    "metadata": {},
+    "metadata": {
+      "actualWorkers": 1
+    },
     "preserveOutput": "always",
     "reporter": [
       [
@@ -34,7 +36,9 @@
         "outputDir": "/Users/macbookpro/Desktop/Lumimeds/test-results",
         "repeatEach": 1,
         "retries": 2,
-        "metadata": {},
+        "metadata": {
+          "actualWorkers": 1
+        },
         "id": "chromium",
         "name": "chromium",
         "testDir": "/Users/macbookpro/Desktop/Lumimeds/tests",
@@ -48,7 +52,9 @@
         "outputDir": "/Users/macbookpro/Desktop/Lumimeds/test-results",
         "repeatEach": 1,
         "retries": 2,
-        "metadata": {},
+        "metadata": {
+          "actualWorkers": 1
+        },
         "id": "firefox",
         "name": "firefox",
         "testDir": "/Users/macbookpro/Desktop/Lumimeds/tests",
@@ -62,7 +68,9 @@
         "outputDir": "/Users/macbookpro/Desktop/Lumimeds/test-results",
         "repeatEach": 1,
         "retries": 2,
-        "metadata": {},
+        "metadata": {
+          "actualWorkers": 1
+        },
         "id": "webkit",
         "name": "webkit",
         "testDir": "/Users/macbookpro/Desktop/Lumimeds/tests",
@@ -77,25 +85,25 @@
     "updateSnapshots": "missing",
     "updateSourceMethod": "patch",
     "version": "1.56.1",
-    "workers": 5,
+    "workers": 1,
     "webServer": null
   },
   "suites": [
     {
-      "title": "checkout/checkout-prod.spec.js",
-      "file": "checkout/checkout-prod.spec.js",
+      "title": "checkout/checkout.spec.js",
+      "file": "checkout/checkout.spec.js",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "Production Checkout Test",
-          "file": "checkout/checkout-prod.spec.js",
+          "title": "Checkout Test",
+          "file": "checkout/checkout.spec.js",
           "line": 8,
           "column": 6,
           "specs": [
             {
-              "title": "Complete Checkout Flow with Production Card",
+              "title": "Complete Checkout Flow",
               "ok": true,
               "tags": [],
               "tests": [
@@ -103,14 +111,89 @@
                   "timeout": 180000,
                   "annotations": [],
                   "expectedStatus": "passed",
-                  "projectId": "webkit",
-                  "projectName": "webkit",
-                  "results": [],
-                  "status": "skipped"
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 112449,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "🔍 Attempting to close any popup by clicking...\n"
+                        },
+                        {
+                          "text": "✅ Popup close sequence completed\n"
+                        },
+                        {
+                          "text": "🔍 Attempting to close any popup by clicking...\n"
+                        },
+                        {
+                          "text": "✅ Popup close sequence completed\n"
+                        },
+                        {
+                          "text": "🚀 Starting checkout with email: sikandar.naeem+51463@devslooptech.com\n"
+                        },
+                        {
+                          "text": "\n💳 Starting payment details entry...\n"
+                        },
+                        {
+                          "text": "⏳ Waiting for Stripe iframes to load...\n"
+                        },
+                        {
+                          "text": "✅ Stripe iframes loaded\n"
+                        },
+                        {
+                          "text": "📝 Filling card number: 4242424242424242\n"
+                        },
+                        {
+                          "text": "✅ Card number filled\n"
+                        },
+                        {
+                          "text": "📝 Filling expiry date: 1039\n"
+                        },
+                        {
+                          "text": "✅ Expiry date filled\n"
+                        },
+                        {
+                          "text": "📝 Filling CVC: 345\n"
+                        },
+                        {
+                          "text": "✅ CVC filled\n"
+                        },
+                        {
+                          "text": "⏳ Waiting for Stripe to validate card...\n"
+                        },
+                        {
+                          "text": "✅ Payment details completed\n\n"
+                        },
+                        {
+                          "text": "⏳ Waiting for Stripe to finish tokenizing...\n"
+                        },
+                        {
+                          "text": "✅ Checkout button is ready\n"
+                        },
+                        {
+                          "text": "🛒 Clicking checkout button...\n"
+                        },
+                        {
+                          "text": "✅ Checkout completed successfully!\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-12-30T17:37:44.458Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
                 }
               ],
-              "id": "ed82e8282114c429b742-fe6b6155720f1fcb5eb0",
-              "file": "checkout/checkout-prod.spec.js",
+              "id": "a2664365e8b8350ee616-d0bb4e4a53e86580f222",
+              "file": "checkout/checkout.spec.js",
               "line": 15,
               "column": 5
             }
@@ -121,10 +204,10 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2025-12-27T13:44:42.342Z",
-    "duration": 12.83099999999996,
-    "expected": 0,
-    "skipped": 1,
+    "startTime": "2025-12-30T17:37:44.098Z",
+    "duration": 114993.505,
+    "expected": 1,
+    "skipped": 0,
     "unexpected": 0,
     "flaky": 0
   }
