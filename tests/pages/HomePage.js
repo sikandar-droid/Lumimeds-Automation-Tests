@@ -76,11 +76,35 @@ class HomePage {
     }
 
     /**
-     * Click Continue button in the modal/overlay
+     * Click Continue or Get Started button in the modal/overlay (handles both desktop and mobile)
      */
     async clickContinue() {
-        await this.continueButton.waitFor({ state: 'visible', timeout: 15000 });
-        await this.continueButton.click();
+        await this.page.waitForTimeout(1500); // Wait for modal to appear
+        
+        try {
+            // First check for mobile "Get Started" button using data-tracking-id (appears after first Get Started)
+            const mobileGetStarted = this.page.locator('button[data-tracking-id="get-started-home-weight-loss-program"]');
+            const isGetStartedVisible = await mobileGetStarted.isVisible().catch(() => false);
+            
+            if (isGetStartedVisible) {
+                console.log('✅ Found mobile Get Started button in modal');
+                await mobileGetStarted.click();
+                console.log('✅ Clicked mobile Get Started button');
+                return;
+            }
+        } catch (error) {
+            // Continue to check for Continue button
+        }
+        
+        try {
+            // Check for desktop Continue button
+            await this.continueButton.waitFor({ state: 'visible', timeout: 3000 });
+            await this.continueButton.click();
+            console.log('✅ Clicked Continue button');
+        } catch (error) {
+            console.log('ℹ️  No Continue or Get Started button found (direct flow), proceeding...');
+            await this.page.waitForTimeout(1000);
+        }
     }
 
     /**
@@ -89,6 +113,9 @@ class HomePage {
     async startOnboarding() {
         await this.clickGetStarted();
         await this.clickContinue();
+        
+        // Extra wait for mobile to ensure page transition
+        await this.page.waitForTimeout(1500);
     }
 }
 

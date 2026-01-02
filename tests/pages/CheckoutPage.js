@@ -439,8 +439,13 @@ class CheckoutPage {
     async submitCheckout() {
         await this.waitForCheckoutReady();
         
+        // Scroll to checkout button (important for mobile)
+        console.log('📜 Scrolling to checkout button...');
+        await this.checkoutButton.scrollIntoViewIfNeeded();
+        await this.page.waitForTimeout(1000); // Wait for scroll to complete
+        
         console.log('🛒 Clicking checkout button...');
-        await this.checkoutButton.click();
+        await this.checkoutButton.click({ force: true }); // Force click for mobile
         
         // Wait for URL to change to success page (just verify redirect, don't wait for page load)
         console.log('⏳ Waiting for redirect to success page...');
@@ -472,12 +477,12 @@ class CheckoutPage {
     async completeCheckout(addressData = null, paymentData = null, couponCode = null) {
         await this.waitForPageLoad();
         
-        // Default address data
+        // Default address data - Updated to Las Vegas address
         const defaultAddress = {
-            address: 'test',
-            city: 'New York City',
-            state: 'New York',
-            zipCode: '90210'
+            address: '5328 Poker Flat Ln',
+            city: 'Las Vegas',
+            state: 'Nevada',
+            zipCode: '89118'
         };
         
         // Default payment data (Stripe test card)

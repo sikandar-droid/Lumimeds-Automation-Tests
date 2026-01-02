@@ -175,15 +175,25 @@ class OnboardingQuestionnairePage {
         await this.page.waitForSelector('text=How motivated are you to begin your weight loss journey right now?', { state: 'visible', timeout: 15000 });
         await this.page.waitForSelector(`text=${motivation}`, { state: 'visible', timeout: 15000 });
         await this.page.getByRole('button', { name: motivation }).click({ force: true });
+        
+        // Add longer wait for mobile - last question before product selection
+        console.log('⏳ Waiting for page to process motivation selection (mobile compatibility)...');
+        await this.page.waitForTimeout(2000);
     }
 
     /**
      * Submit the questionnaire
      */
     async submitQuestionnaire() {
+        console.log('⏳ Waiting for submit button to be ready...');
         await this.waitForSubmitButtonEnabled();
-        await this.page.waitForTimeout(500);
+        await this.page.waitForTimeout(1500); // Increased from 500ms for mobile compatibility
+        console.log('🖱️  Clicking submit button...');
         await this.submitButton.click({ force: true });
+        
+        // Wait for navigation to product selection page
+        console.log('⏳ Waiting for navigation to product selection...');
+        await this.page.waitForTimeout(2000);
     }
 
     /**

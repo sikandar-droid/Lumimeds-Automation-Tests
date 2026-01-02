@@ -2,26 +2,58 @@ class PlanSelectionPage {
     constructor(page) {
         this.page = page;
         
-        // Locators
+        // Locators for both desktop and mobile
         this.checkoutButton = page.getByRole('button', { name: 'Checkout' });
+        this.continueButton = page.getByRole('button', { name: /Continue.*\$/ }); // Mobile button with "Continue $216 / mo."
     }
 
     /**
-     * Wait for checkout button to be enabled
+     * Wait for checkout/continue button to be enabled (handles both desktop and mobile)
      */
     async waitForCheckoutButtonEnabled() {
-        await this.checkoutButton.waitFor({ state: 'visible', timeout: 10000 });
-        await this.checkoutButton.scrollIntoViewIfNeeded();
+        console.log('⏳ Waiting for checkout/continue button...');
         
-        await this.page.waitForFunction(
-            (buttonText) => {
-                const buttons = Array.from(document.querySelectorAll('button'));
-                const button = buttons.find(btn => btn.textContent?.includes(buttonText));
-                return button && !button.disabled;
-            },
-            'Checkout',
-            { timeout: 20000 }
-        );
+        // Try to find either the desktop "Checkout" or mobile "Continue" button
+        try {
+            // Wait for either button to appear
+            await Promise.race([
+                this.checkoutButton.waitFor({ state: 'visible', timeout: 10000 }),
+                this.continueButton.waitFor({ state: 'visible', timeout: 10000 })
+            ]);
+            
+            // Determine which button is visible
+            const isCheckoutVisible = await this.checkoutButton.isVisible().catch(() => false);
+            const isContinueVisible = await this.continueButton.isVisible().catch(() => false);
+            
+            if (isCheckoutVisible) {
+                console.log('✅ Found desktop "Checkout" button');
+                await this.checkoutButton.scrollIntoViewIfNeeded();
+                
+                await this.page.waitForFunction(
+                    () => {
+                        const buttons = Array.from(document.querySelectorAll('button'));
+                        const button = buttons.find(btn => btn.textContent?.includes('Checkout'));
+                        return button && !button.disabled;
+                    },
+                    { timeout: 20000 }
+                );
+            } else if (isContinueVisible) {
+                console.log('✅ Found mobile "Continue" button');
+                await this.continueButton.scrollIntoViewIfNeeded();
+                
+                await this.page.waitForFunction(
+                    () => {
+                        const buttons = Array.from(document.querySelectorAll('button'));
+                        const button = buttons.find(btn => btn.textContent?.includes('Continue'));
+                        return button && !button.disabled;
+                    },
+                    { timeout: 20000 }
+                );
+            }
+        } catch (error) {
+            console.log('❌ Neither Checkout nor Continue button found');
+            throw error;
+        }
     }
 
     /**
@@ -60,12 +92,25 @@ class PlanSelectionPage {
     }
 
     /**
-     * Proceed to checkout after selecting a plan
+     * Proceed to checkout after selecting a plan (handles both desktop and mobile)
      */
     async proceedToCheckout() {
         await this.waitForCheckoutButtonEnabled();
         await this.page.waitForTimeout(500);
-        await this.checkoutButton.click();
+        
+        // Click whichever button is visible
+        const isCheckoutVisible = await this.checkoutButton.isVisible().catch(() => false);
+        const isContinueVisible = await this.continueButton.isVisible().catch(() => false);
+        
+        if (isCheckoutVisible) {
+            console.log('🖱️  Clicking desktop "Checkout" button');
+            await this.checkoutButton.click();
+        } else if (isContinueVisible) {
+            console.log('🖱️  Clicking mobile "Continue" button');
+            await this.continueButton.click();
+        } else {
+            throw new Error('Neither Checkout nor Continue button is visible');
+        }
     }
 
     /**
