@@ -90,16 +90,16 @@
   },
   "suites": [
     {
-      "title": "checkout/checkout-prod.spec.js",
-      "file": "checkout/checkout-prod.spec.js",
+      "title": "checkout/checkout-prod-mobile.spec.js",
+      "file": "checkout/checkout-prod-mobile.spec.js",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "Production Checkout Test",
-          "file": "checkout/checkout-prod.spec.js",
-          "line": 8,
+          "title": "Production Checkout Test - Mobile (iPhone 15 Pro Max)",
+          "file": "checkout/checkout-prod-mobile.spec.js",
+          "line": 17,
           "column": 6,
           "specs": [
             {
@@ -118,7 +118,7 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 129859,
+                      "duration": 135940,
                       "errors": [],
                       "stdout": [
                         {
@@ -137,7 +137,7 @@
                           "text": "✅ Clicked Continue button\n"
                         },
                         {
-                          "text": "🚀 Starting checkout with email: sikandar.naeem+32359@devslooptech.com\n"
+                          "text": "🚀 Starting checkout with email: sikandar.naeem+50537@devslooptech.com\n"
                         },
                         {
                           "text": "⏳ Waiting for page to process motivation selection (mobile compatibility)...\n"
@@ -155,10 +155,10 @@
                           "text": "⏳ Waiting for checkout/continue button...\n"
                         },
                         {
-                          "text": "✅ Found desktop \"Checkout\" button\n"
+                          "text": "✅ Found mobile \"Continue\" button\n"
                         },
                         {
-                          "text": "🖱️  Clicking desktop \"Checkout\" button\n"
+                          "text": "🖱️  Clicking mobile \"Continue\" button\n"
                         },
                         {
                           "text": "\n🛡️  ========== SAFETY CHECK: COUPON VERIFICATION ==========\n\n"
@@ -314,7 +314,10 @@
                           "text": "✅ Success URL validation passed\n"
                         },
                         {
-                          "text": "\n✅ ========== PRODUCTION CHECKOUT SUCCESS ==========\n"
+                          "text": "\n✅ ========== PRODUCTION CHECKOUT SUCCESS (MOBILE) ==========\n"
+                        },
+                        {
+                          "text": "📱 Device: iPhone 15 Pro Max (430x932)\n"
                         },
                         {
                           "text": "✅ Coupon verified and applied correctly\n"
@@ -323,7 +326,7 @@
                           "text": "✅ Checkout completed with 99% discount!\n"
                         },
                         {
-                          "text": "📧 Email: sikandar.naeem+32359@devslooptech.com\n"
+                          "text": "📧 Email: sikandar.naeem+50537@devslooptech.com\n"
                         },
                         {
                           "text": "💳 Charged: ~$6.49 (99% off)\n"
@@ -334,7 +337,7 @@
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-01-02T20:41:05.485Z",
+                      "startTime": "2026-01-02T20:55:33.603Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -342,9 +345,9 @@
                   "status": "expected"
                 }
               ],
-              "id": "ed82e8282114c429b742-bf9d98d5e4233cdf4d84",
-              "file": "checkout/checkout-prod.spec.js",
-              "line": 15,
+              "id": "0afd8db4d527ff30ca0f-229c9f8379de222aa0e8",
+              "file": "checkout/checkout-prod-mobile.spec.js",
+              "line": 27,
               "column": 5
             }
           ]
@@ -354,8 +357,8 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-01-02T20:41:05.107Z",
-    "duration": 133003.61299999998,
+    "startTime": "2026-01-02T20:55:33.108Z",
+    "duration": 138452.331,
     "expected": 1,
     "skipped": 0,
     "unexpected": 0,

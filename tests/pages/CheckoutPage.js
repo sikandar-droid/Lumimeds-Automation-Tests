@@ -177,7 +177,25 @@ class CheckoutPage {
             
             // Click Apply button
             await this.applyButton.waitFor({ state: 'visible', timeout: 5000 });
-            await this.applyButton.click();
+            // Hide Intercom widget if it's blocking (mobile issue)
+            try {
+                await this.page.evaluate(() => {
+                    const intercom = document.querySelector('.intercom-lightweight-app');
+                    if (intercom) {
+                        intercom.style.display = 'none';
+                        console.log('🔇 Intercom widget hidden');
+                    }
+                });
+            } catch (e) {
+                console.log('ℹ️  Intercom widget not found or already hidden');
+            }
+            
+            // Scroll Apply button into view (important for mobile)
+            await this.applyButton.scrollIntoViewIfNeeded();
+            await this.page.waitForTimeout(1000);
+            
+            // Click the Apply button with force (handles mobile overlays)
+            await this.applyButton.click({ force: true });
             console.log('✅ Clicked Apply button');
             
             // Wait for price changes to reflect
