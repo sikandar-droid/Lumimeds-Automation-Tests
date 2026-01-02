@@ -435,9 +435,28 @@ class CheckoutPage {
 
     /**
      * Submit the checkout form
+     * @param {number} expectedPrice - Expected final price to verify before submission
      */
-    async submitCheckout() {
+    async submitCheckout(expectedPrice = null) {
         await this.waitForCheckoutReady();
+        
+        // FINAL SAFETY CHECK: Verify price right before checkout
+        if (expectedPrice !== null) {
+            console.log('\n🛡️  ========== FINAL PRICE VERIFICATION BEFORE CHECKOUT ==========');
+            const finalPrice = await this.getCurrentPrice();
+            console.log(`💰 Expected price: $${expectedPrice.toFixed(2)}`);
+            console.log(`💰 Current price: $${finalPrice.toFixed(2)}`);
+            
+            if (Math.abs(finalPrice - expectedPrice) > 0.10) {
+                await this.page.screenshot({
+                    path: 'screenshots/final-price-mismatch.png',
+                    fullPage: true
+                });
+                throw new Error(`🚨 CRITICAL: Price mismatch! Expected $${expectedPrice.toFixed(2)} but found $${finalPrice.toFixed(2)}. STOPPING CHECKOUT!`);
+            }
+            console.log('✅ Final price verification passed - safe to proceed');
+            console.log('========================================\n');
+        }
         
         // Scroll to checkout button (important for mobile)
         console.log('📜 Scrolling to checkout button...');
@@ -495,6 +514,9 @@ class CheckoutPage {
         // Fill address first
         await this.fillAddressDetails(addressData || defaultAddress);
         
+        // Variable to store expected final price
+        let expectedFinalPrice = null;
+        
         // Apply coupon BEFORE filling payment details (coupon clears card fields)
         if (couponCode) {
             console.log('\n🛡️  ========== SAFETY CHECK: COUPON VERIFICATION ==========\n');
@@ -512,6 +534,9 @@ class CheckoutPage {
             // Apply coupon with price verification
             try {
                 const result = await this.applyCoupon(couponCode, expectedDiscount);
+                
+                // Store the expected final price after coupon
+                expectedFinalPrice = result.priceAfterCoupon;
                 
                 console.log('\n✅ ========== COUPON VERIFICATION PASSED ==========');
                 console.log(`   Original price: $${result.priceBeforeCoupon.toFixed(2)}`);
@@ -539,7 +564,8 @@ class CheckoutPage {
         // Fill payment details AFTER coupon is applied
         await this.fillPaymentDetails(paymentData || defaultPayment);
         
-        await this.submitCheckout();
+        // Submit checkout with final price verification
+        await this.submitCheckout(expectedFinalPrice);
     }
 }
 
