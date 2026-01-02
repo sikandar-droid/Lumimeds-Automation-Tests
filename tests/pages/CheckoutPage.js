@@ -442,15 +442,25 @@ class CheckoutPage {
         console.log('🛒 Clicking checkout button...');
         await this.checkoutButton.click();
         
-        // Wait for navigation to success page with 'commit' waitUntil to avoid waiting for slow third-party scripts
-        // 'commit' means the navigation has been committed (URL changed) but not necessarily all resources loaded
-        await this.page.waitForURL('**/checkout/success', { 
-            timeout: 120000,
-            waitUntil: 'commit' // Don't wait for full page load, just URL change
-        });
+        // Wait for URL to change to success page (just verify redirect, don't wait for page load)
+        console.log('⏳ Waiting for redirect to success page...');
+        await this.page.waitForFunction(
+            () => window.location.href.includes('/checkout/success'),
+            { timeout: 60000 }
+        );
         
+        const successUrl = this.page.url();
         console.log(`✅ Checkout completed successfully!`);
-        console.log(`📍 Success page URL: ${this.page.url()}`);
+        console.log(`📍 Success page URL: ${successUrl}`);
+        
+        // Validate the URL contains expected parameters
+        if (successUrl.includes('/checkout/success') && 
+            successUrl.includes('priceId=') && 
+            successUrl.includes('mode=subscription')) {
+            console.log(`✅ Success URL validation passed`);
+        } else {
+            throw new Error(`❌ Unexpected success URL: ${successUrl}`);
+        }
     }
 
     /**
