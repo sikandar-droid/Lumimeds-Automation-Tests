@@ -1,8 +1,8 @@
 name: Mobile Checkout - Firefox
 
 on:
-  schedule:
-    - cron: '30 8 * * *'  # 3:30 AM EST daily (8:30 AM UTC)
+  # schedule:
+  #   - cron: '30 8 * * *'  # 3:30 AM EST daily (8:30 AM UTC) - DISABLED for now
   workflow_dispatch:
     inputs:
       environment:
