@@ -90,21 +90,21 @@
   },
   "suites": [
     {
-      "title": "checkout/checkout-prod-mobile.spec.js",
-      "file": "checkout/checkout-prod-mobile.spec.js",
+      "title": "checkout/checkout-prod.spec.js",
+      "file": "checkout/checkout-prod.spec.js",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "Production Checkout Test - Mobile (iPhone 15 Pro Max)",
-          "file": "checkout/checkout-prod-mobile.spec.js",
-          "line": 17,
+          "title": "Production Checkout Test",
+          "file": "checkout/checkout-prod.spec.js",
+          "line": 8,
           "column": 6,
           "specs": [
             {
               "title": "Complete Checkout Flow with Production Card",
-              "ok": false,
+              "ok": true,
               "tags": [],
               "tests": [
                 {
@@ -117,28 +117,9 @@
                     {
                       "workerIndex": 0,
                       "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 167827,
-                      "error": {
-                        "message": "TimeoutError: page.waitForFunction: Timeout 30000ms exceeded.",
-                        "stack": "TimeoutError: page.waitForFunction: Timeout 30000ms exceeded.\n    at CheckoutPage.submitCheckout (/Users/macbookpro/Desktop/Lumimeds/tests/pages/CheckoutPage.js:452:25)\n    at CheckoutPage.completeCheckout (/Users/macbookpro/Desktop/Lumimeds/tests/pages/CheckoutPage.js:542:9)\n    at /Users/macbookpro/Desktop/Lumimeds/tests/checkout/checkout-prod-mobile.spec.js:60:13",
-                        "location": {
-                          "file": "/Users/macbookpro/Desktop/Lumimeds/tests/pages/CheckoutPage.js",
-                          "column": 25,
-                          "line": 452
-                        },
-                        "snippet": "   at pages/CheckoutPage.js:452\n\n  450 |         // Wait for URL to change to success page (just verify redirect, don't wait for page load)\n  451 |         console.log('⏳ Waiting for redirect to success page...');\n> 452 |         await this.page.waitForFunction(\n      |                         ^\n  453 |             () => window.location.href.includes('/checkout/success'),\n  454 |             { timeout: 60000 }\n  455 |         );"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "/Users/macbookpro/Desktop/Lumimeds/tests/pages/CheckoutPage.js",
-                            "column": 25,
-                            "line": 452
-                          },
-                          "message": "TimeoutError: page.waitForFunction: Timeout 30000ms exceeded.\n\n   at pages/CheckoutPage.js:452\n\n  450 |         // Wait for URL to change to success page (just verify redirect, don't wait for page load)\n  451 |         console.log('⏳ Waiting for redirect to success page...');\n> 452 |         await this.page.waitForFunction(\n      |                         ^\n  453 |             () => window.location.href.includes('/checkout/success'),\n  454 |             { timeout: 60000 }\n  455 |         );\n    at CheckoutPage.submitCheckout (/Users/macbookpro/Desktop/Lumimeds/tests/pages/CheckoutPage.js:452:25)\n    at CheckoutPage.completeCheckout (/Users/macbookpro/Desktop/Lumimeds/tests/pages/CheckoutPage.js:542:9)\n    at /Users/macbookpro/Desktop/Lumimeds/tests/checkout/checkout-prod-mobile.spec.js:60:13"
-                        }
-                      ],
+                      "status": "passed",
+                      "duration": 129859,
+                      "errors": [],
                       "stdout": [
                         {
                           "text": "🔍 Attempting to close any popup by clicking...\n"
@@ -153,13 +134,10 @@
                           "text": "✅ Popup close sequence completed\n"
                         },
                         {
-                          "text": "✅ Found mobile Get Started button in modal\n"
-                        },
-                        {
                           "text": "✅ Clicked Continue button\n"
                         },
                         {
-                          "text": "🚀 Starting checkout with email: sikandar.naeem+82905@devslooptech.com\n"
+                          "text": "🚀 Starting checkout with email: sikandar.naeem+32359@devslooptech.com\n"
                         },
                         {
                           "text": "⏳ Waiting for page to process motivation selection (mobile compatibility)...\n"
@@ -177,10 +155,10 @@
                           "text": "⏳ Waiting for checkout/continue button...\n"
                         },
                         {
-                          "text": "✅ Found mobile \"Continue\" button\n"
+                          "text": "✅ Found desktop \"Checkout\" button\n"
                         },
                         {
-                          "text": "🖱️  Clicking mobile \"Continue\" button\n"
+                          "text": "🖱️  Clicking desktop \"Checkout\" button\n"
                         },
                         {
                           "text": "\n🛡️  ========== SAFETY CHECK: COUPON VERIFICATION ==========\n\n"
@@ -276,10 +254,46 @@
                           "text": "✅ Payment details completed\n\n"
                         },
                         {
+                          "text": "\n🛡️  ========== RE-VERIFYING COUPON AFTER PAYMENT DETAILS ==========\n"
+                        },
+                        {
+                          "text": "💰 Current total price: $6.49\n"
+                        },
+                        {
+                          "text": "💰 Expected price: $6.49\n"
+                        },
+                        {
+                          "text": "💰 Current price after payment: $6.49\n"
+                        },
+                        {
+                          "text": "✅ Coupon still applied after payment details\n"
+                        },
+                        {
+                          "text": "========================================\n\n"
+                        },
+                        {
                           "text": "⏳ Waiting for Stripe to finish tokenizing...\n"
                         },
                         {
                           "text": "✅ Checkout button is ready\n"
+                        },
+                        {
+                          "text": "\n🛡️  ========== FINAL PRICE VERIFICATION BEFORE CHECKOUT ==========\n"
+                        },
+                        {
+                          "text": "💰 Current total price: $6.49\n"
+                        },
+                        {
+                          "text": "💰 Expected price: $6.49\n"
+                        },
+                        {
+                          "text": "💰 Current price: $6.49\n"
+                        },
+                        {
+                          "text": "✅ Final price verification passed - safe to proceed\n"
+                        },
+                        {
+                          "text": "========================================\n\n"
                         },
                         {
                           "text": "📜 Scrolling to checkout button...\n"
@@ -291,19 +305,28 @@
                           "text": "⏳ Waiting for redirect to success page...\n"
                         },
                         {
-                          "text": "\n❌ ========== PRODUCTION CHECKOUT FAILED (MOBILE) ==========\n"
+                          "text": "✅ Checkout completed successfully!\n"
                         },
                         {
-                          "text": "📱 Device: iPhone 15 Pro Max (430x932)\n"
+                          "text": "📍 Success page URL: https://lumimeds.com/checkout/success?priceId=price_prod_M745E6Si1Rstpd6E&mode=subscription\n"
                         },
                         {
-                          "text": "❌ page.waitForFunction: Timeout 30000ms exceeded.\n"
+                          "text": "✅ Success URL validation passed\n"
                         },
                         {
-                          "text": "🛡️  Safety check prevented full payment charge\n"
+                          "text": "\n✅ ========== PRODUCTION CHECKOUT SUCCESS ==========\n"
                         },
                         {
-                          "text": "📧 Email (not charged): sikandar.naeem+82905@devslooptech.com\n"
+                          "text": "✅ Coupon verified and applied correctly\n"
+                        },
+                        {
+                          "text": "✅ Checkout completed with 99% discount!\n"
+                        },
+                        {
+                          "text": "📧 Email: sikandar.naeem+32359@devslooptech.com\n"
+                        },
+                        {
+                          "text": "💳 Charged: ~$6.49 (99% off)\n"
                         },
                         {
                           "text": "========================================\n\n"
@@ -311,33 +334,17 @@
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-01-02T12:37:41.754Z",
+                      "startTime": "2026-01-02T20:41:05.485Z",
                       "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "/Users/macbookpro/Desktop/Lumimeds/test-results/checkout-checkout-prod-mob-0d720-t-Flow-with-Production-Card-chromium/test-failed-1.png"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/Users/macbookpro/Desktop/Lumimeds/test-results/checkout-checkout-prod-mob-0d720-t-Flow-with-Production-Card-chromium/error-context.md"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "/Users/macbookpro/Desktop/Lumimeds/tests/pages/CheckoutPage.js",
-                        "column": 25,
-                        "line": 452
-                      }
+                      "attachments": []
                     }
                   ],
-                  "status": "unexpected"
+                  "status": "expected"
                 }
               ],
-              "id": "0afd8db4d527ff30ca0f-229c9f8379de222aa0e8",
-              "file": "checkout/checkout-prod-mobile.spec.js",
-              "line": 27,
+              "id": "ed82e8282114c429b742-bf9d98d5e4233cdf4d84",
+              "file": "checkout/checkout-prod.spec.js",
+              "line": 15,
               "column": 5
             }
           ]
@@ -347,11 +354,11 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-01-02T12:37:41.380Z",
-    "duration": 169977.636,
-    "expected": 0,
+    "startTime": "2026-01-02T20:41:05.107Z",
+    "duration": 133003.61299999998,
+    "expected": 1,
     "skipped": 0,
-    "unexpected": 1,
+    "unexpected": 0,
     "flaky": 0
   }
 }

@@ -443,7 +443,7 @@ class CheckoutPage {
         // FINAL SAFETY CHECK: Verify price right before checkout
         if (expectedPrice !== null) {
             console.log('\n🛡️  ========== FINAL PRICE VERIFICATION BEFORE CHECKOUT ==========');
-            const finalPrice = await this.getCurrentPrice();
+            const finalPrice = await this.getTotalPrice();
             console.log(`💰 Expected price: $${expectedPrice.toFixed(2)}`);
             console.log(`💰 Current price: $${finalPrice.toFixed(2)}`);
             
@@ -570,7 +570,7 @@ class CheckoutPage {
             
             await this.page.waitForTimeout(2000); // Wait for any state updates
             
-            const currentPrice = await this.getCurrentPrice();
+            const currentPrice = await this.getTotalPrice();
             console.log(`💰 Expected price: $${expectedFinalPrice.toFixed(2)}`);
             console.log(`💰 Current price after payment: $${currentPrice.toFixed(2)}`);
             
