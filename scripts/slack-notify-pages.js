@@ -280,7 +280,6 @@ function extractTestedPages(results, testFile) {
     'Ad-med-spa1': '/en/ad/med-spa1',
     'Ad-med-spa3': '/es/ad/med-spa3 (Spanish)',
     'Ad-weight-loss-treatment': '/ad/weight-loss-treatment',
-    'Ad-weight-loss-thanksgiving': '/ad/weight-loss-thanksgiving',
     'Ad-sustained': '/ad/sustained',
     'Ad-sustainable-weight-loss': '/ad/sustainable-weight-loss',
     'Ad-journey': '/ad/journey',

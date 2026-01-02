@@ -7,13 +7,12 @@
 
 ## 📋 What's Included
 
-This branch contains **20 Ad Page Tests** for comprehensive testing of Lumimeds advertising pages:
+This branch contains **19 Ad Page Tests** for comprehensive testing of Lumimeds advertising pages:
 
 ### ✅ Ad Pages Tested:
 - `/ad/otp`
 - `/ad/med-spa`, `/ad/med-spa1`, `/ad/med-spa3`
 - `/ad/weight-loss-treatment`
-- `/ad/weight-loss-thanksgiving`
 - `/ad/sustained`
 - `/ad/sustainable-weight-loss`
 - `/ad/journey`
