@@ -442,9 +442,15 @@ class CheckoutPage {
         console.log('🛒 Clicking checkout button...');
         await this.checkoutButton.click();
         
-        // Wait for navigation to success page (longer timeout for Safari/WebKit)
-        await this.page.waitForURL('**/checkout/success', { timeout: 120000 });
+        // Wait for navigation to success page with 'commit' waitUntil to avoid waiting for slow third-party scripts
+        // 'commit' means the navigation has been committed (URL changed) but not necessarily all resources loaded
+        await this.page.waitForURL('**/checkout/success', { 
+            timeout: 120000,
+            waitUntil: 'commit' // Don't wait for full page load, just URL change
+        });
+        
         console.log(`✅ Checkout completed successfully!`);
+        console.log(`📍 Success page URL: ${this.page.url()}`);
     }
 
     /**
