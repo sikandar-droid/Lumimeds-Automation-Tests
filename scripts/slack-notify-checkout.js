@@ -32,6 +32,7 @@ async function sendCheckoutNotification() {
   const environment = process.env.TEST_ENV || 'Production';
   const testUrl = process.env.TEST_URL || 'https://lumimeds.com';
   const testBrowser = process.env.TEST_BROWSER || 'All';
+  const testDevice = process.env.TEST_DEVICE || null;
   
   // Try to extract checkout details from test output
   const checkoutDetails = extractCheckoutDetails(results);
@@ -131,12 +132,24 @@ async function sendCheckoutNotification() {
   const browserMap = {
     'Chromium': '🌐 *Chromium* - Chrome/Edge compatible',
     'Firefox': '🦊 *Firefox* - Mozilla Firefox',
-    'WebKit': '🧭 *WebKit* - Safari compatible'
+    'WebKit': '🧭 *WebKit* - Safari compatible',
+    'WebKit (Safari)': '🧭 *WebKit* - Safari compatible'
   };
   
-  const browserSection = testBrowser !== 'All' && browserMap[testBrowser]
-    ? `🌐 *BROWSER TESTED*\n\n   • ${browserMap[testBrowser].replace(/🌐|🦊|🧭 \*/g, '')}\n\n`
-    : `🌐 *BROWSERS TESTED*\n\n   • Chromium (Chrome/Edge)\n   • Firefox\n   • WebKit (Safari)\n\n`;
+  let browserSection;
+  if (testDevice) {
+    // Mobile checkout
+    const browserName = browserMap[testBrowser] ? browserMap[testBrowser].replace(/🌐|🦊|🧭 \*/g, '') : testBrowser;
+    browserSection = 
+      `📱 *DEVICE TESTED*\n\n   • ${testDevice}\n\n` +
+      `🌐 *BROWSER TESTED*\n\n   • ${browserName}\n\n`;
+  } else if (testBrowser !== 'All' && browserMap[testBrowser]) {
+    // Desktop single browser
+    browserSection = `🌐 *BROWSER TESTED*\n\n   • ${browserMap[testBrowser].replace(/🌐|🦊|🧭 \*/g, '')}\n\n`;
+  } else {
+    // Desktop all browsers
+    browserSection = `🌐 *BROWSERS TESTED*\n\n   • Chromium (Chrome/Edge)\n   • Firefox\n   • WebKit (Safari)\n\n`;
+  }
   
   const detailedText = 
     `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
