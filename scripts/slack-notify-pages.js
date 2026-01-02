@@ -276,7 +276,6 @@ function extractTestedPages(results, testFile) {
   // Map of test file names to page URLs
   const pageMap = {
     'Ad-otp': '/ad/otp',
-    'Ad-cyber-monday-sale': '/ad/cyber-monday-sale',
     'Ad-med-spa': '/ad/med-spa',
     'Ad-med-spa1': '/en/ad/med-spa1',
     'Ad-med-spa3': '/es/ad/med-spa3 (Spanish)',

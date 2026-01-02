@@ -24,8 +24,6 @@ Quick reference for running Playwright tests with automatic Slack notifications.
 | Command | Description | Page URL |
 |---------|-------------|----------|
 | `npm run test:ad-otp` | OTP page functionality | /ad/otp |
-| `npm run test:ad-black-friday` | Black Friday sale page | /ad/black-friday-sale |
-| `npm run test:ad-cyber-monday` | Cyber Monday sale page | /ad/cyber-monday-sale |
 | `npm run test:ad-med-spa` | Med Spa page | /ad/med-spa |
 | `npm run test:ad-weight-loss-treatment` | Weight loss treatment page | /ad/weight-loss-treatment |
 | `npm run test:ad-sustained` | Sustained page | /ad/sustained |

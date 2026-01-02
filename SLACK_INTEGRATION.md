@@ -56,12 +56,6 @@ npm run test:checkout-prod-headed
 # OTP page
 npm run test:ad-otp
 
-# Black Friday Sale page
-npm run test:ad-black-friday
-
-# Cyber Monday Sale page
-npm run test:ad-cyber-monday
-
 # Med Spa page
 npm run test:ad-med-spa
 

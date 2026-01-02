@@ -7,12 +7,10 @@
 
 ## 📋 What's Included
 
-This branch contains **22 Ad Page Tests** for comprehensive testing of Lumimeds advertising pages:
+This branch contains **20 Ad Page Tests** for comprehensive testing of Lumimeds advertising pages:
 
 ### ✅ Ad Pages Tested:
 - `/ad/otp`
-- `/ad/black-friday-sale`
-- `/ad/cyber-monday-sale`
 - `/ad/med-spa`, `/ad/med-spa1`, `/ad/med-spa3`
 - `/ad/weight-loss-treatment`
 - `/ad/weight-loss-thanksgiving`
@@ -112,8 +110,6 @@ Lumimeds-Automation-Tests/
 ```bash
 # Run individual ad page tests
 npm run test:ad-otp
-npm run test:ad-black-friday
-npm run test:ad-cyber-monday
 npm run test:ad-med-spa
 npm run test:ad-weight-loss-treatment
 npm run test:ad-sustained
