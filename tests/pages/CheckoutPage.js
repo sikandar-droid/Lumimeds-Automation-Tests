@@ -564,6 +564,39 @@ class CheckoutPage {
         // Fill payment details AFTER coupon is applied
         await this.fillPaymentDetails(paymentData || defaultPayment);
         
+        // CRITICAL: Re-verify coupon is still applied after filling payment details
+        if (couponCode && expectedFinalPrice !== null) {
+            console.log('\n🛡️  ========== RE-VERIFYING COUPON AFTER PAYMENT DETAILS ==========');
+            
+            await this.page.waitForTimeout(2000); // Wait for any state updates
+            
+            const currentPrice = await this.getCurrentPrice();
+            console.log(`💰 Expected price: $${expectedFinalPrice.toFixed(2)}`);
+            console.log(`💰 Current price after payment: $${currentPrice.toFixed(2)}`);
+            
+            // Check if coupon was removed by payment details
+            if (Math.abs(currentPrice - expectedFinalPrice) > 0.10) {
+                console.log('⚠️  WARNING: Price changed after filling payment! Coupon may have been removed!');
+                console.log('🔄 Attempting to re-apply coupon...');
+                
+                // Try to re-apply the coupon
+                try {
+                    const reapplyResult = await this.applyCoupon(couponCode, expectedFinalPrice);
+                    expectedFinalPrice = reapplyResult.priceAfterCoupon;
+                    console.log(`✅ Coupon re-applied successfully: $${expectedFinalPrice.toFixed(2)}`);
+                } catch (e) {
+                    await this.page.screenshot({ 
+                        path: 'screenshots/coupon-removed-after-payment.png', 
+                        fullPage: true 
+                    });
+                    throw new Error(`🚨 CRITICAL: Coupon was removed after filling payment details! Current price: $${currentPrice.toFixed(2)}, Expected: $${expectedFinalPrice.toFixed(2)}. STOPPING CHECKOUT!`);
+                }
+            } else {
+                console.log('✅ Coupon still applied after payment details');
+            }
+            console.log('========================================\n');
+        }
+        
         // Submit checkout with final price verification
         await this.submitCheckout(expectedFinalPrice);
     }
