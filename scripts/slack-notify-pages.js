@@ -57,16 +57,16 @@ async function sendPageTestNotification() {
   // Get report URL
   const reportUrl = process.env.REPORT_URL || 'Run `npx playwright show-report` to view';
 
-  // Build message fields
+  // Build message fields (Status removed - shown in test breakdown at bottom)
   const fields = [
-    {
-      title: 'Status',
-      value: `${emoji} ${status}`,
-      short: true
-    },
     {
       title: 'Environment',
       value: environment,
+      short: true
+    },
+    {
+      title: '⏱️ Duration',
+      value: formatDuration(results.duration),
       short: true
     },
     {
@@ -82,11 +82,6 @@ async function sendPageTestNotification() {
     {
       title: '❌ Failed',
       value: `${stats.unexpected || 0}`,
-      short: true
-    },
-    {
-      title: '⏱️ Duration',
-      value: formatDuration(results.duration),
       short: true
     }
   ];
