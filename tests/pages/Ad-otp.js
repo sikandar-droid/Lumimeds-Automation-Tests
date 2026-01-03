@@ -372,10 +372,15 @@ class AdPage {
      * @returns {Promise<boolean>} True if navigated to FAQ page
      */
     async verifyViewFaqNavigation() {
-        const [response] = await Promise.all([
-            this.page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 30000 }),
-            this.clickViewFaq()
-        ]);
+        await this.clickViewFaq();
+        
+        // Wait for URL to change to FAQ page (more robust than waitForNavigation)
+        await this.page.waitForFunction(
+            () => window.location.href.includes('/faqs'),
+            { timeout: 30000 }
+        ).catch(() => {
+            console.log('⚠️ FAQ navigation timeout');
+        });
         
         await this.page.waitForTimeout(2000);
         const currentUrl = this.page.url();
@@ -514,12 +519,15 @@ class AdPage {
      * @returns {Promise<boolean>} True if navigated to plans page
      */
     async verifyLearnMoreNavigation() {
-        await Promise.all([
-            this.page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 30000 }).catch(e => {
-                console.log(`Navigation wait: ${e.message}`);
-            }),
-            this.clickLearnMore()
-        ]);
+        await this.clickLearnMore();
+        
+        // Wait for URL to change to plans page (more robust than waitForNavigation)
+        await this.page.waitForFunction(
+            () => window.location.href.includes('/products/glp-1') || window.location.href.includes('/products/glp-1-gip-plans'),
+            { timeout: 30000 }
+        ).catch(() => {
+            console.log('⚠️ Learn More navigation timeout');
+        });
         
         await this.page.waitForTimeout(2000);
         const currentUrl = this.page.url();
