@@ -44,7 +44,7 @@ jobs:
           npx playwright test tests/ad-pages/Ad-*.spec.js --project=webkit --grep "Laptop"
       
       - name: 📤 Send Slack Notification
-        if: false  # Disabled for manual testing
+        if: always()
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           TEST_FILE: 'Safari-Laptop'
