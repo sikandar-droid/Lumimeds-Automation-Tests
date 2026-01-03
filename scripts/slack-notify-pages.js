@@ -38,6 +38,7 @@ async function sendPageTestNotification() {
   const testDetails = extractTestDetails(results);
   
   // Determine status
+  // Flaky tests are treated as PASSED (they eventually passed on retry)
   const passed = stats.unexpected === 0;
   const hasFlaky = stats.flaky > 0;
   
@@ -49,11 +50,9 @@ async function sendPageTestNotification() {
     color = '#ff0000'; // red
     emoji = '❌';
     status = 'FAILED';
-  } else if (hasFlaky) {
-    color = '#ffaa00'; // orange
-    emoji = '⚠️';
-    status = 'PASSED (with flaky tests)';
   }
+  // Note: Flaky tests are now treated as PASSED (no special status)
+  // This prevents confusion for clients - if it passed on retry, it's a pass
 
   // Get report URL
   const reportUrl = process.env.REPORT_URL || 'Run `npx playwright show-report` to view';
@@ -77,17 +76,12 @@ async function sendPageTestNotification() {
     },
     {
       title: '✅ Passed',
-      value: `${stats.expected || 0}`,
+      value: `${(stats.expected || 0) + (stats.flaky || 0)}`, // Include flaky as passed
       short: true
     },
     {
       title: '❌ Failed',
       value: `${stats.unexpected || 0}`,
-      short: true
-    },
-    {
-      title: '⚠️ Flaky',
-      value: `${stats.flaky || 0}`,
       short: true
     },
     {
@@ -218,10 +212,9 @@ async function sendPageTestNotification() {
     `  Pages Tested:  ${pageCount}\n` +
     `  Browsers:      ${browserSummary}\n` +
     `  Viewports:     ${viewportSummary}\n` +
-    `  Test Cases:    ${stats.expected + stats.unexpected || 0}\n` +
-    `  Passed:        ${stats.expected || 0}\n` +
+    `  Test Cases:    ${(stats.expected || 0) + (stats.unexpected || 0) + (stats.flaky || 0)}\n` +
+    `  Passed:        ${(stats.expected || 0) + (stats.flaky || 0)}\n` + // Include flaky as passed
     `  Failed:        ${stats.unexpected || 0}\n` +
-    `  Flaky:         ${stats.flaky || 0}\n` +
     `  Environment:   ${environment}\n\n` +
     `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
 
@@ -364,9 +357,13 @@ function extractTestDetails(results) {
         obj.tests.forEach(test => {
           if (test.results && test.results.length > 0) {
             const lastResult = test.results[test.results.length - 1];
+            // Treat flaky tests as passed (they eventually passed on retry)
+            const isPassed = lastResult.status === 'passed' || 
+                           lastResult.status === 'expected' || 
+                           lastResult.status === 'flaky';
             details.testsRun.push({
               name: test.title || 'Unknown test',
-              passed: lastResult.status === 'passed' || lastResult.status === 'expected',
+              passed: isPassed,
               status: lastResult.status
             });
           }
