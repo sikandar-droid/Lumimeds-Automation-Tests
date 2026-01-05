@@ -11,7 +11,7 @@
     "grepInvert": null,
     "maxFailures": 0,
     "metadata": {
-      "actualWorkers": 3
+      "actualWorkers": 1
     },
     "preserveOutput": "always",
     "reporter": [
@@ -37,7 +37,7 @@
         "repeatEach": 1,
         "retries": 2,
         "metadata": {
-          "actualWorkers": 3
+          "actualWorkers": 1
         },
         "id": "chromium",
         "name": "chromium",
@@ -53,7 +53,7 @@
         "repeatEach": 1,
         "retries": 2,
         "metadata": {
-          "actualWorkers": 3
+          "actualWorkers": 1
         },
         "id": "firefox",
         "name": "firefox",
@@ -69,7 +69,7 @@
         "repeatEach": 1,
         "retries": 2,
         "metadata": {
-          "actualWorkers": 3
+          "actualWorkers": 1
         },
         "id": "webkit",
         "name": "webkit",
@@ -90,255 +90,144 @@
   },
   "suites": [
     {
-      "title": "ad-pages/Ad-otp.spec.js",
-      "file": "ad-pages/Ad-otp.spec.js",
+      "title": "checkout/checkout-prod.spec.js",
+      "file": "checkout/checkout-prod.spec.js",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "Live Ad Pages - Functional Tests [iPhone 15 Pro Max]",
-          "file": "ad-pages/Ad-otp.spec.js",
-          "line": 33,
-          "column": 10,
-          "specs": [],
-          "suites": [
+          "title": "Production Checkout Test",
+          "file": "checkout/checkout-prod.spec.js",
+          "line": 8,
+          "column": 6,
+          "specs": [
             {
-              "title": "Testing: /ad/otp",
-              "file": "ad-pages/Ad-otp.spec.js",
-              "line": 43,
-              "column": 14,
-              "specs": [
+              "title": "Complete Checkout Flow with Production Card",
+              "ok": false,
+              "tags": [],
+              "tests": [
                 {
-                  "title": "should verify Learn More navigates to plans page",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
                     {
-                      "timeout": 120000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "webkit",
-                      "projectName": "webkit",
-                      "results": [
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 105626,
+                      "error": {
+                        "message": "TimeoutError: locator.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('option', { name: 'Nevada' })\u001b[22m\n\u001b[2m    - locator resolved to <div tabindex=\"-1\" role=\"option\" aria-disabled=\"false\" aria-selected=\"false\" class=\"css-10wo9uf-option\" id=\"react-select-2-option-28\">Nevada</div>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m    - element is visible, enabled and stable\u001b[22m\n\u001b[2m    - scrolling into view if needed\u001b[22m\n\u001b[2m    - done scrolling\u001b[22m\n\u001b[2m    - <span class=\"tw-text-gray-600\">Loading Payment Options ...</span> from <div class=\"tw-flex tw-flex-col tw-gap-y-6 tw-relative\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m  - retrying click action\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m    - element is visible, enabled and stable\u001b[22m\n\u001b[2m    - scrolling into view if needed\u001b[22m\n\u001b[2m    - done scrolling\u001b[22m\n\u001b[2m    - element is outside of the viewport\u001b[22m\n\u001b[2m  - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not stable\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m    - element is not stable\u001b[22m\n\u001b[2m  - retrying click action\u001b[22m\n\u001b[2m    - waiting 500ms\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m    - element is visible, enabled and stable\u001b[22m\n\u001b[2m    - scrolling into view if needed\u001b[22m\n\u001b[2m    - done scrolling\u001b[22m\n\u001b[2m    - <div class=\"tw-absolute tw-inset-0 tw-bg-white/80 tw-z-10 tw-flex tw-items-center tw-justify-center tw-rounded-lg\">…</div> from <div class=\"tw-flex tw-flex-col tw-gap-y-6 tw-relative\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m  - retrying click action\u001b[22m\n\u001b[2m    - waiting 500ms\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m  - element was detached from the DOM, retrying\u001b[22m\n",
+                        "stack": "TimeoutError: locator.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('option', { name: 'Nevada' })\u001b[22m\n\u001b[2m    - locator resolved to <div tabindex=\"-1\" role=\"option\" aria-disabled=\"false\" aria-selected=\"false\" class=\"css-10wo9uf-option\" id=\"react-select-2-option-28\">Nevada</div>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m    - element is visible, enabled and stable\u001b[22m\n\u001b[2m    - scrolling into view if needed\u001b[22m\n\u001b[2m    - done scrolling\u001b[22m\n\u001b[2m    - <span class=\"tw-text-gray-600\">Loading Payment Options ...</span> from <div class=\"tw-flex tw-flex-col tw-gap-y-6 tw-relative\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m  - retrying click action\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m    - element is visible, enabled and stable\u001b[22m\n\u001b[2m    - scrolling into view if needed\u001b[22m\n\u001b[2m    - done scrolling\u001b[22m\n\u001b[2m    - element is outside of the viewport\u001b[22m\n\u001b[2m  - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not stable\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m    - element is not stable\u001b[22m\n\u001b[2m  - retrying click action\u001b[22m\n\u001b[2m    - waiting 500ms\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m    - element is visible, enabled and stable\u001b[22m\n\u001b[2m    - scrolling into view if needed\u001b[22m\n\u001b[2m    - done scrolling\u001b[22m\n\u001b[2m    - <div class=\"tw-absolute tw-inset-0 tw-bg-white/80 tw-z-10 tw-flex tw-items-center tw-justify-center tw-rounded-lg\">…</div> from <div class=\"tw-flex tw-flex-col tw-gap-y-6 tw-relative\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m  - retrying click action\u001b[22m\n\u001b[2m    - waiting 500ms\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m  - element was detached from the DOM, retrying\u001b[22m\n\n    at CheckoutPage.selectState (/Users/macbookpro/Desktop/Lumimeds/tests/pages/CheckoutPage.js:49:62)\n    at CheckoutPage.fillAddressDetails (/Users/macbookpro/Desktop/Lumimeds/tests/pages/CheckoutPage.js:72:9)\n    at CheckoutPage.completeCheckout (/Users/macbookpro/Desktop/Lumimeds/tests/pages/CheckoutPage.js:535:9)\n    at /Users/macbookpro/Desktop/Lumimeds/tests/checkout/checkout-prod.spec.js:48:13",
+                        "location": {
+                          "file": "/Users/macbookpro/Desktop/Lumimeds/tests/pages/CheckoutPage.js",
+                          "column": 62,
+                          "line": 49
+                        },
+                        "snippet": "   at pages/CheckoutPage.js:49\n\n  47 |     async selectState(state) {\n  48 |         await this.stateDropdown.click();\n> 49 |         await this.page.getByRole('option', { name: state }).click();\n     |                                                              ^\n  50 |     }\n  51 |\n  52 |     /**"
+                      },
+                      "errors": [
                         {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "passed",
-                          "duration": 26555,
-                          "errors": [],
-                          "stdout": [
-                            {
-                              "text": "🔍 Attempting to close any popup by clicking...\n"
-                            },
-                            {
-                              "text": "✅ Popup close sequence completed\n"
-                            },
-                            {
-                              "text": "\n📚 Testing Learn More → Plans page navigation...\n"
-                            },
-                            {
-                              "text": "✅ Learn More button/link found\n"
-                            },
-                            {
-                              "text": "✅ Clicked Learn More link\n"
-                            },
-                            {
-                              "text": "📍 Navigated to: https://lumimeds.com/products/glp-1-plans\n"
-                            },
-                            {
-                              "text": "✅ Learn More → Plans page navigation successful!\n"
-                            },
-                            {
-                              "text": "\n======================================================================\n"
-                            },
-                            {
-                              "text": "✅ All tests completed for /ad/otp\n"
-                            },
-                            {
-                              "text": "======================================================================\n\n"
-                            }
-                          ],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-01-03T15:34:35.919Z",
-                          "annotations": [],
-                          "attachments": []
+                          "location": {
+                            "file": "/Users/macbookpro/Desktop/Lumimeds/tests/pages/CheckoutPage.js",
+                            "column": 62,
+                            "line": 49
+                          },
+                          "message": "TimeoutError: locator.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('option', { name: 'Nevada' })\u001b[22m\n\u001b[2m    - locator resolved to <div tabindex=\"-1\" role=\"option\" aria-disabled=\"false\" aria-selected=\"false\" class=\"css-10wo9uf-option\" id=\"react-select-2-option-28\">Nevada</div>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m    - element is visible, enabled and stable\u001b[22m\n\u001b[2m    - scrolling into view if needed\u001b[22m\n\u001b[2m    - done scrolling\u001b[22m\n\u001b[2m    - <span class=\"tw-text-gray-600\">Loading Payment Options ...</span> from <div class=\"tw-flex tw-flex-col tw-gap-y-6 tw-relative\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m  - retrying click action\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m    - element is visible, enabled and stable\u001b[22m\n\u001b[2m    - scrolling into view if needed\u001b[22m\n\u001b[2m    - done scrolling\u001b[22m\n\u001b[2m    - element is outside of the viewport\u001b[22m\n\u001b[2m  - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not stable\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m    - element is not stable\u001b[22m\n\u001b[2m  - retrying click action\u001b[22m\n\u001b[2m    - waiting 500ms\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m    - element is visible, enabled and stable\u001b[22m\n\u001b[2m    - scrolling into view if needed\u001b[22m\n\u001b[2m    - done scrolling\u001b[22m\n\u001b[2m    - <div class=\"tw-absolute tw-inset-0 tw-bg-white/80 tw-z-10 tw-flex tw-items-center tw-justify-center tw-rounded-lg\">…</div> from <div class=\"tw-flex tw-flex-col tw-gap-y-6 tw-relative\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m  - retrying click action\u001b[22m\n\u001b[2m    - waiting 500ms\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m  - element was detached from the DOM, retrying\u001b[22m\n\n\n   at pages/CheckoutPage.js:49\n\n  47 |     async selectState(state) {\n  48 |         await this.stateDropdown.click();\n> 49 |         await this.page.getByRole('option', { name: state }).click();\n     |                                                              ^\n  50 |     }\n  51 |\n  52 |     /**\n    at CheckoutPage.selectState (/Users/macbookpro/Desktop/Lumimeds/tests/pages/CheckoutPage.js:49:62)\n    at CheckoutPage.fillAddressDetails (/Users/macbookpro/Desktop/Lumimeds/tests/pages/CheckoutPage.js:72:9)\n    at CheckoutPage.completeCheckout (/Users/macbookpro/Desktop/Lumimeds/tests/pages/CheckoutPage.js:535:9)\n    at /Users/macbookpro/Desktop/Lumimeds/tests/checkout/checkout-prod.spec.js:48:13"
                         }
                       ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "b8938e1bd7133b4a7853-d4cde47a223714619a01",
-                  "file": "ad-pages/Ad-otp.spec.js",
-                  "line": 286,
-                  "column": 13
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "title": "Live Ad Pages - Functional Tests [iPad Air]",
-          "file": "ad-pages/Ad-otp.spec.js",
-          "line": 33,
-          "column": 10,
-          "specs": [],
-          "suites": [
-            {
-              "title": "Testing: /ad/otp",
-              "file": "ad-pages/Ad-otp.spec.js",
-              "line": 43,
-              "column": 14,
-              "specs": [
-                {
-                  "title": "should verify Learn More navigates to plans page",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 120000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "webkit",
-                      "projectName": "webkit",
-                      "results": [
+                      "stdout": [
                         {
-                          "workerIndex": 1,
-                          "parallelIndex": 1,
-                          "status": "passed",
-                          "duration": 26431,
-                          "errors": [],
-                          "stdout": [
-                            {
-                              "text": "🔍 Attempting to close any popup by clicking...\n"
-                            },
-                            {
-                              "text": "✅ Popup close sequence completed\n"
-                            },
-                            {
-                              "text": "\n📚 Testing Learn More → Plans page navigation...\n"
-                            },
-                            {
-                              "text": "✅ Learn More button/link found\n"
-                            },
-                            {
-                              "text": "✅ Clicked Learn More link\n"
-                            },
-                            {
-                              "text": "📍 Navigated to: https://lumimeds.com/products/glp-1-plans\n"
-                            },
-                            {
-                              "text": "✅ Learn More → Plans page navigation successful!\n"
-                            },
-                            {
-                              "text": "\n======================================================================\n"
-                            },
-                            {
-                              "text": "✅ All tests completed for /ad/otp\n"
-                            },
-                            {
-                              "text": "======================================================================\n\n"
-                            }
-                          ],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-01-03T15:34:35.918Z",
-                          "annotations": [],
-                          "attachments": []
+                          "text": "⚠️ Network still active, proceeding anyway...\n"
+                        },
+                        {
+                          "text": "🔍 Attempting to close any popup by clicking...\n"
+                        },
+                        {
+                          "text": "✅ Popup close sequence completed\n"
+                        },
+                        {
+                          "text": "🔍 Attempting to close any popup by clicking...\n"
+                        },
+                        {
+                          "text": "✅ Popup close sequence completed\n"
+                        },
+                        {
+                          "text": "✅ Clicked Continue button\n"
+                        },
+                        {
+                          "text": "🚀 Starting checkout with email: sikandar.naeem+80977@devslooptech.com\n"
+                        },
+                        {
+                          "text": "⏳ Waiting for page to process motivation selection (mobile compatibility)...\n"
+                        },
+                        {
+                          "text": "⏳ Waiting for submit button to be ready...\n"
+                        },
+                        {
+                          "text": "🖱️  Clicking submit button...\n"
+                        },
+                        {
+                          "text": "⏳ Waiting for navigation to product selection...\n"
+                        },
+                        {
+                          "text": "⏳ Waiting for checkout/continue button...\n"
+                        },
+                        {
+                          "text": "✅ Found desktop \"Checkout\" button\n"
+                        },
+                        {
+                          "text": "🖱️  Clicking desktop \"Checkout\" button\n"
+                        },
+                        {
+                          "text": "\n❌ ========== PRODUCTION CHECKOUT FAILED ==========\n"
+                        },
+                        {
+                          "text": "❌ locator.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('option', { name: 'Nevada' })\u001b[22m\n\u001b[2m    - locator resolved to <div tabindex=\"-1\" role=\"option\" aria-disabled=\"false\" aria-selected=\"false\" class=\"css-10wo9uf-option\" id=\"react-select-2-option-28\">Nevada</div>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m    - element is visible, enabled and stable\u001b[22m\n\u001b[2m    - scrolling into view if needed\u001b[22m\n\u001b[2m    - done scrolling\u001b[22m\n\u001b[2m    - <span class=\"tw-text-gray-600\">Loading Payment Options ...</span> from <div class=\"tw-flex tw-flex-col tw-gap-y-6 tw-relative\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m  - retrying click action\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m    - element is visible, enabled and stable\u001b[22m\n\u001b[2m    - scrolling into view if needed\u001b[22m\n\u001b[2m    - done scrolling\u001b[22m\n\u001b[2m    - element is outside of the viewport\u001b[22m\n\u001b[2m  - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not stable\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m    - element is not stable\u001b[22m\n\u001b[2m  - retrying click action\u001b[22m\n\u001b[2m    - waiting 500ms\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m    - element is visible, enabled and stable\u001b[22m\n\u001b[2m    - scrolling into view if needed\u001b[22m\n\u001b[2m    - done scrolling\u001b[22m\n\u001b[2m    - <div class=\"tw-absolute tw-inset-0 tw-bg-white/80 tw-z-10 tw-flex tw-items-center tw-justify-center tw-rounded-lg\">…</div> from <div class=\"tw-flex tw-flex-col tw-gap-y-6 tw-relative\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m  - retrying click action\u001b[22m\n\u001b[2m    - waiting 500ms\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m  - element was detached from the DOM, retrying\u001b[22m\n\n"
+                        },
+                        {
+                          "text": "🛡️  Safety check prevented full payment charge\n"
+                        },
+                        {
+                          "text": "📧 Email (not charged): sikandar.naeem+80977@devslooptech.com\n"
+                        },
+                        {
+                          "text": "========================================\n\n"
                         }
                       ],
-                      "status": "expected"
-                    }
-                  ],
-                  "id": "b8938e1bd7133b4a7853-5e05742bc4e45d5e089a",
-                  "file": "ad-pages/Ad-otp.spec.js",
-                  "line": 286,
-                  "column": 13
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "title": "Live Ad Pages - Functional Tests [Laptop]",
-          "file": "ad-pages/Ad-otp.spec.js",
-          "line": 33,
-          "column": 10,
-          "specs": [],
-          "suites": [
-            {
-              "title": "Testing: /ad/otp",
-              "file": "ad-pages/Ad-otp.spec.js",
-              "line": 43,
-              "column": 14,
-              "specs": [
-                {
-                  "title": "should verify Learn More navigates to plans page",
-                  "ok": true,
-                  "tags": [],
-                  "tests": [
-                    {
-                      "timeout": 120000,
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-01-05T11:34:54.194Z",
                       "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "webkit",
-                      "projectName": "webkit",
-                      "results": [
+                      "attachments": [
                         {
-                          "workerIndex": 2,
-                          "parallelIndex": 2,
-                          "status": "passed",
-                          "duration": 27477,
-                          "errors": [],
-                          "stdout": [
-                            {
-                              "text": "🔍 Attempting to close any popup by clicking...\n"
-                            },
-                            {
-                              "text": "✅ Popup close sequence completed\n"
-                            },
-                            {
-                              "text": "\n📚 Testing Learn More → Plans page navigation...\n"
-                            },
-                            {
-                              "text": "✅ Learn More button/link found\n"
-                            },
-                            {
-                              "text": "✅ Clicked Learn More link\n"
-                            },
-                            {
-                              "text": "📍 Navigated to: https://lumimeds.com/products/glp-1-plans\n"
-                            },
-                            {
-                              "text": "✅ Learn More → Plans page navigation successful!\n"
-                            },
-                            {
-                              "text": "\n======================================================================\n"
-                            },
-                            {
-                              "text": "✅ All tests completed for /ad/otp\n"
-                            },
-                            {
-                              "text": "======================================================================\n\n"
-                            }
-                          ],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-01-03T15:34:35.919Z",
-                          "annotations": [],
-                          "attachments": []
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/macbookpro/Desktop/Lumimeds/test-results/checkout-checkout-prod-Pro-1132e-t-Flow-with-Production-Card-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/macbookpro/Desktop/Lumimeds/test-results/checkout-checkout-prod-Pro-1132e-t-Flow-with-Production-Card-chromium/error-context.md"
                         }
                       ],
-                      "status": "expected"
+                      "errorLocation": {
+                        "file": "/Users/macbookpro/Desktop/Lumimeds/tests/pages/CheckoutPage.js",
+                        "column": 62,
+                        "line": 49
+                      }
                     }
                   ],
-                  "id": "b8938e1bd7133b4a7853-1433f1bd9d3dd6365227",
-                  "file": "ad-pages/Ad-otp.spec.js",
-                  "line": 286,
-                  "column": 13
+                  "status": "unexpected"
                 }
-              ]
+              ],
+              "id": "ed82e8282114c429b742-bf9d98d5e4233cdf4d84",
+              "file": "checkout/checkout-prod.spec.js",
+              "line": 15,
+              "column": 5
             }
           ]
         }
@@ -347,11 +236,11 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-01-03T15:34:35.479Z",
-    "duration": 28239.235,
-    "expected": 3,
+    "startTime": "2026-01-05T11:34:53.816Z",
+    "duration": 109408.49500000001,
+    "expected": 0,
     "skipped": 0,
-    "unexpected": 0,
+    "unexpected": 1,
     "flaky": 0
   }
 }
