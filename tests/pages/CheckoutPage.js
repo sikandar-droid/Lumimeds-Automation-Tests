@@ -45,7 +45,20 @@ class CheckoutPage {
      * @param {string} state - State name (e.g., 'Arkansas')
      */
     async selectState(state) {
+        // Wait for any loading overlays to disappear before selecting state
+        await this.page.waitForTimeout(2000);
+        
+        // Wait for "Loading Payment Options..." to disappear if present
+        const loadingOverlay = this.page.locator('text="Loading Payment Options"');
+        const isLoading = await loadingOverlay.isVisible().catch(() => false);
+        if (isLoading) {
+            console.log('⏳ Waiting for payment options to load...');
+            await loadingOverlay.waitFor({ state: 'hidden', timeout: 30000 });
+            console.log('✅ Payment options loaded');
+        }
+        
         await this.stateDropdown.click();
+        await this.page.waitForTimeout(500);
         await this.page.getByRole('option', { name: state }).click();
     }
 
