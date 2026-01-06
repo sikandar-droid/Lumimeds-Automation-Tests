@@ -1,0 +1,169 @@
+name: 🎯 Run All Ad Pages Tests
+
+on:
+  workflow_dispatch:
+    inputs:
+      browsers:
+        description: 'Browsers to test (chrome, firefox, safari, or "all")'
+        required: false
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - chrome
+          - firefox
+          - safari
+      viewports:
+        description: 'Viewports to test (laptop, mobile, tablet, or "all")'
+        required: false
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - laptop
+          - mobile
+          - tablet
+
+jobs:
+  trigger-workflows:
+    name: Trigger Ad Pages Workflows
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 🎬 Trigger Chrome Laptop
+        if: (inputs.browsers == 'all' || inputs.browsers == 'chrome') && (inputs.viewports == 'all' || inputs.viewports == 'laptop')
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'chrome-laptop.yml',
+              ref: 'main'
+            });
+            console.log('✅ Triggered Chrome Laptop workflow');
+
+      - name: 🎬 Trigger Chrome Mobile
+        if: (inputs.browsers == 'all' || inputs.browsers == 'chrome') && (inputs.viewports == 'all' || inputs.viewports == 'mobile')
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'chrome-mobile.yml',
+              ref: 'main'
+            });
+            console.log('✅ Triggered Chrome Mobile workflow');
+
+      - name: 🎬 Trigger Chrome Tablet
+        if: (inputs.browsers == 'all' || inputs.browsers == 'chrome') && (inputs.viewports == 'all' || inputs.viewports == 'tablet')
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'chrome-tablet.yml',
+              ref: 'main'
+            });
+            console.log('✅ Triggered Chrome Tablet workflow');
+
+      - name: 🎬 Trigger Firefox Laptop
+        if: (inputs.browsers == 'all' || inputs.browsers == 'firefox') && (inputs.viewports == 'all' || inputs.viewports == 'laptop')
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'firefox-laptop.yml',
+              ref: 'main'
+            });
+            console.log('✅ Triggered Firefox Laptop workflow');
+
+      - name: 🎬 Trigger Firefox Mobile
+        if: (inputs.browsers == 'all' || inputs.browsers == 'firefox') && (inputs.viewports == 'all' || inputs.viewports == 'mobile')
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'firefox-mobile.yml',
+              ref: 'main'
+            });
+            console.log('✅ Triggered Firefox Mobile workflow');
+
+      - name: 🎬 Trigger Firefox Tablet
+        if: (inputs.browsers == 'all' || inputs.browsers == 'firefox') && (inputs.viewports == 'all' || inputs.viewports == 'tablet')
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'firefox-tablet.yml',
+              ref: 'main'
+            });
+            console.log('✅ Triggered Firefox Tablet workflow');
+
+      - name: 🎬 Trigger Safari Laptop
+        if: (inputs.browsers == 'all' || inputs.browsers == 'safari') && (inputs.viewports == 'all' || inputs.viewports == 'laptop')
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'safari-laptop.yml',
+              ref: 'main'
+            });
+            console.log('✅ Triggered Safari Laptop workflow');
+
+      - name: 🎬 Trigger Safari Mobile
+        if: (inputs.browsers == 'all' || inputs.browsers == 'safari') && (inputs.viewports == 'all' || inputs.viewports == 'mobile')
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'safari-mobile.yml',
+              ref: 'main'
+            });
+            console.log('✅ Triggered Safari Mobile workflow');
+
+      - name: 🎬 Trigger Safari Tablet
+        if: (inputs.browsers == 'all' || inputs.browsers == 'safari') && (inputs.viewports == 'all' || inputs.viewports == 'tablet')
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'safari-tablet.yml',
+              ref: 'main'
+            });
+            console.log('✅ Triggered Safari Tablet workflow');
+
+      - name: ✅ Summary
+        run: |
+          echo "🎯 All requested ad pages workflows have been triggered!"
+          echo ""
+          echo "📊 Configuration:"
+          echo "  Browsers: ${{ inputs.browsers }}"
+          echo "  Viewports: ${{ inputs.viewports }}"
+          echo ""
+          echo "🔍 Check the Actions tab to see individual workflow runs"
+          echo "💬 Each workflow will send its own Slack notification"
+
