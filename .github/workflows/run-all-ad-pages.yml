@@ -34,7 +34,7 @@ jobs:
         if: (inputs.browsers == 'all' || inputs.browsers == 'chrome') && (inputs.viewports == 'all' || inputs.viewports == 'laptop')
         uses: actions/github-script@v7
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.WORKFLOW_TRIGGER_TOKEN }}
           script: |
             await github.rest.actions.createWorkflowDispatch({
               owner: context.repo.owner,
@@ -48,7 +48,7 @@ jobs:
         if: (inputs.browsers == 'all' || inputs.browsers == 'chrome') && (inputs.viewports == 'all' || inputs.viewports == 'mobile')
         uses: actions/github-script@v7
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.WORKFLOW_TRIGGER_TOKEN }}
           script: |
             await github.rest.actions.createWorkflowDispatch({
               owner: context.repo.owner,
@@ -62,7 +62,7 @@ jobs:
         if: (inputs.browsers == 'all' || inputs.browsers == 'chrome') && (inputs.viewports == 'all' || inputs.viewports == 'tablet')
         uses: actions/github-script@v7
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.WORKFLOW_TRIGGER_TOKEN }}
           script: |
             await github.rest.actions.createWorkflowDispatch({
               owner: context.repo.owner,
@@ -76,7 +76,7 @@ jobs:
         if: (inputs.browsers == 'all' || inputs.browsers == 'firefox') && (inputs.viewports == 'all' || inputs.viewports == 'laptop')
         uses: actions/github-script@v7
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.WORKFLOW_TRIGGER_TOKEN }}
           script: |
             await github.rest.actions.createWorkflowDispatch({
               owner: context.repo.owner,
@@ -90,7 +90,7 @@ jobs:
         if: (inputs.browsers == 'all' || inputs.browsers == 'firefox') && (inputs.viewports == 'all' || inputs.viewports == 'mobile')
         uses: actions/github-script@v7
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.WORKFLOW_TRIGGER_TOKEN }}
           script: |
             await github.rest.actions.createWorkflowDispatch({
               owner: context.repo.owner,
@@ -104,7 +104,7 @@ jobs:
         if: (inputs.browsers == 'all' || inputs.browsers == 'firefox') && (inputs.viewports == 'all' || inputs.viewports == 'tablet')
         uses: actions/github-script@v7
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.WORKFLOW_TRIGGER_TOKEN }}
           script: |
             await github.rest.actions.createWorkflowDispatch({
               owner: context.repo.owner,
@@ -118,7 +118,7 @@ jobs:
         if: (inputs.browsers == 'all' || inputs.browsers == 'safari') && (inputs.viewports == 'all' || inputs.viewports == 'laptop')
         uses: actions/github-script@v7
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.WORKFLOW_TRIGGER_TOKEN }}
           script: |
             await github.rest.actions.createWorkflowDispatch({
               owner: context.repo.owner,
@@ -132,7 +132,7 @@ jobs:
         if: (inputs.browsers == 'all' || inputs.browsers == 'safari') && (inputs.viewports == 'all' || inputs.viewports == 'mobile')
         uses: actions/github-script@v7
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.WORKFLOW_TRIGGER_TOKEN }}
           script: |
             await github.rest.actions.createWorkflowDispatch({
               owner: context.repo.owner,
@@ -146,7 +146,7 @@ jobs:
         if: (inputs.browsers == 'all' || inputs.browsers == 'safari') && (inputs.viewports == 'all' || inputs.viewports == 'tablet')
         uses: actions/github-script@v7
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.WORKFLOW_TRIGGER_TOKEN }}
           script: |
             await github.rest.actions.createWorkflowDispatch({
               owner: context.repo.owner,
