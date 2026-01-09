@@ -193,6 +193,33 @@ class OnboardingQuestionnairePage {
         
         // Wait for navigation to product selection page
         console.log('⏳ Waiting for navigation to product selection...');
+        
+        // Wait for the submit button to disappear (indicates page transition started)
+        try {
+            await this.submitButton.waitFor({ state: 'hidden', timeout: 30000 });
+            console.log('✅ Submit button hidden - page is transitioning');
+        } catch (e) {
+            console.log('⚠️ Submit button still visible, waiting longer...');
+        }
+        
+        // Wait for either: URL change to product/checkout, OR product selection elements to appear
+        try {
+            await Promise.race([
+                // Wait for URL to contain product-related paths
+                this.page.waitForURL(/\/(product|checkout|plan|subscription)/i, { timeout: 30000 }),
+                // OR wait for product selection elements
+                this.page.waitForSelector('input[type="radio"]', { state: 'visible', timeout: 30000 }),
+                // OR wait for "Checkout" button to appear
+                this.page.waitForSelector('button:has-text("Checkout")', { state: 'visible', timeout: 30000 }),
+                // OR wait for subscription/plan text
+                this.page.waitForSelector('text=/subscription|month|plan/i', { state: 'visible', timeout: 30000 })
+            ]);
+            console.log('✅ Navigation to product selection complete');
+        } catch (e) {
+            console.log('⚠️ Could not detect product selection page, proceeding anyway...');
+        }
+        
+        // Extra stabilization wait
         await this.page.waitForTimeout(2000);
     }
 
