@@ -5,7 +5,11 @@ class CheckoutPage {
         // Locators
         this.addressInput = page.getByRole('textbox', { name: 'Address' });
         this.cityInput = page.getByRole('textbox', { name: 'City' });
-        this.stateDropdown = page.locator('.css-19bb58m').first();
+        // Use multiple fallback selectors for the state dropdown (react-select component)
+        this.stateDropdown = page.locator('[id*="state"]').filter({ has: page.locator('input') }).first()
+            .or(page.getByRole('combobox').filter({ hasText: /state|select/i }).first())
+            .or(page.locator('.css-19bb58m').first())
+            .or(page.locator('[class*="control"]').filter({ hasText: /state|select/i }).first());
         this.zipCodeInput = page.getByRole('textbox', { name: 'Zip Code' });
         this.checkoutButton = page.getByRole('button', { name: 'Checkout' });
         
@@ -70,8 +74,70 @@ class CheckoutPage {
         // Wait a bit more for page to stabilize
         await this.page.waitForTimeout(1000);
         
-        // Click the dropdown
-        await this.stateDropdown.click();
+        // Try multiple approaches to click the state dropdown
+        console.log('🔍 Looking for state dropdown...');
+        let dropdownClicked = false;
+        
+        // Approach 1: Try the defined stateDropdown locator
+        try {
+            const isVisible = await this.stateDropdown.isVisible().catch(() => false);
+            if (isVisible) {
+                await this.stateDropdown.click();
+                dropdownClicked = true;
+                console.log('✅ Clicked state dropdown (primary locator)');
+            }
+        } catch (e) {
+            console.log('ℹ️  Primary dropdown locator failed, trying alternatives...');
+        }
+        
+        // Approach 2: Find by label "State" and click the adjacent/child dropdown
+        if (!dropdownClicked) {
+            try {
+                const stateLabel = this.page.locator('label:has-text("State")').first();
+                const stateContainer = stateLabel.locator('..').locator('[class*="control"], [class*="select"], [role="combobox"]').first();
+                const containerVisible = await stateContainer.isVisible().catch(() => false);
+                if (containerVisible) {
+                    await stateContainer.click();
+                    dropdownClicked = true;
+                    console.log('✅ Clicked state dropdown (label-based)');
+                }
+            } catch (e) {
+                console.log('ℹ️  Label-based approach failed...');
+            }
+        }
+        
+        // Approach 3: Find react-select by its unique input placeholder or container
+        if (!dropdownClicked) {
+            try {
+                const reactSelect = this.page.locator('[class*="-control"]').filter({ hasText: /select/i }).first();
+                const selectVisible = await reactSelect.isVisible().catch(() => false);
+                if (selectVisible) {
+                    await reactSelect.click();
+                    dropdownClicked = true;
+                    console.log('✅ Clicked state dropdown (react-select)');
+                }
+            } catch (e) {
+                console.log('ℹ️  React-select approach failed...');
+            }
+        }
+        
+        // Approach 4: Click directly on "Select..." text in the dropdown area
+        if (!dropdownClicked) {
+            try {
+                const selectText = this.page.locator('text="Select..."').first()
+                    .or(this.page.locator('[class*="placeholder"]').filter({ hasText: /select/i }).first());
+                await selectText.click();
+                dropdownClicked = true;
+                console.log('✅ Clicked state dropdown (placeholder text)');
+            } catch (e) {
+                console.log('ℹ️  Placeholder text approach failed...');
+            }
+        }
+        
+        if (!dropdownClicked) {
+            throw new Error('❌ Could not find or click the state dropdown');
+        }
+        
         await this.page.waitForTimeout(500);
         
         // Wait again for any overlay that might appear after clicking dropdown
@@ -83,8 +149,23 @@ class CheckoutPage {
             console.log('✅ Overlay cleared');
         }
         
-        // Now click the state option
-        await this.page.getByRole('option', { name: state }).click();
+        // Now click the state option - try multiple approaches
+        console.log(`🔍 Looking for state option: ${state}`);
+        try {
+            // First try role-based
+            await this.page.getByRole('option', { name: state }).click();
+            console.log(`✅ Selected state: ${state}`);
+        } catch (e) {
+            // Fallback to text-based
+            try {
+                await this.page.locator(`[class*="option"]:has-text("${state}")`).first().click();
+                console.log(`✅ Selected state: ${state} (fallback)`);
+            } catch (e2) {
+                // Last resort - click text directly
+                await this.page.locator(`text="${state}"`).first().click();
+                console.log(`✅ Selected state: ${state} (text match)`);
+            }
+        }
     }
 
     /**
