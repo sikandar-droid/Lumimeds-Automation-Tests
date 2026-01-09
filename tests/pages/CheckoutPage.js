@@ -57,8 +57,33 @@ class CheckoutPage {
             console.log('✅ Payment options loaded');
         }
         
+        // Wait for any white loading overlays to disappear (tw-bg-white/80)
+        console.log('⏳ Checking for loading overlays...');
+        const whiteOverlay = this.page.locator('.tw-absolute.tw-inset-0.tw-bg-white\\/80');
+        const hasOverlay = await whiteOverlay.isVisible().catch(() => false);
+        if (hasOverlay) {
+            console.log('⏳ Waiting for loading overlay to disappear...');
+            await whiteOverlay.waitFor({ state: 'hidden', timeout: 30000 });
+            console.log('✅ Loading overlay removed');
+        }
+        
+        // Wait a bit more for page to stabilize
+        await this.page.waitForTimeout(1000);
+        
+        // Click the dropdown
         await this.stateDropdown.click();
         await this.page.waitForTimeout(500);
+        
+        // Wait again for any overlay that might appear after clicking dropdown
+        const overlayAfterClick = this.page.locator('.tw-absolute.tw-inset-0.tw-bg-white\\/80');
+        const hasOverlayAfterClick = await overlayAfterClick.isVisible().catch(() => false);
+        if (hasOverlayAfterClick) {
+            console.log('⏳ Waiting for overlay after dropdown click...');
+            await overlayAfterClick.waitFor({ state: 'hidden', timeout: 30000 });
+            console.log('✅ Overlay cleared');
+        }
+        
+        // Now click the state option
         await this.page.getByRole('option', { name: state }).click();
     }
 
