@@ -29,8 +29,9 @@ Run your Playwright tests automatically in the cloud using GitHub Actions - no n
 4. **Add New Secret**
    - Click **"New repository secret"**
    - Name: `SLACK_WEBHOOK_URL`
-   - Value: `https://hooks.slack.com/services/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`
+   - Value: `<YOUR_NEW_SLACK_WEBHOOK_URL_HERE>`
    - Click **"Add secret"**
+   - ⚠️ **NEVER** commit the actual webhook URL to your repository!
 
 ### Step 2: Push the Workflow to GitHub
 
