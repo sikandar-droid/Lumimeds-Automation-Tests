@@ -20,28 +20,130 @@ class CheckoutPage {
     }
 
     /**
-     * Wait for the checkout page to load
+     * Wait for the checkout page to load and stabilize
      */
     async waitForPageLoad() {
+        console.log('⏳ Waiting for checkout page to load...');
+        
+        // Wait for address input to appear
         await this.addressInput.waitFor({ state: 'visible', timeout: 30000 });
+        
+        // Wait for any loading overlays to disappear
+        const loadingOverlay = this.page.locator('.tw-absolute.tw-inset-0.tw-bg-white\\/80');
+        const hasOverlay = await loadingOverlay.isVisible().catch(() => false);
+        if (hasOverlay) {
+            console.log('⏳ Waiting for loading overlay to disappear...');
+            await loadingOverlay.waitFor({ state: 'hidden', timeout: 30000 });
+            console.log('✅ Loading overlay removed');
+        }
+        
+        // Wait for "Loading Payment Options..." to disappear
+        const loadingPayment = this.page.locator('text="Loading Payment Options"');
+        const isLoadingPayment = await loadingPayment.isVisible().catch(() => false);
+        if (isLoadingPayment) {
+            console.log('⏳ Waiting for payment options to load...');
+            await loadingPayment.waitFor({ state: 'hidden', timeout: 30000 });
+            console.log('✅ Payment options loaded');
+        }
+        
+        // Wait for page to stabilize - check that address input ID doesn't change
+        console.log('⏳ Waiting for form to stabilize...');
+        let lastId = '';
+        let stableCount = 0;
+        const maxChecks = 10;
+        
+        for (let i = 0; i < maxChecks; i++) {
+            await this.page.waitForTimeout(500);
+            try {
+                const currentId = await this.page.locator('input[name="shipping_address"]').getAttribute('id');
+                if (currentId === lastId) {
+                    stableCount++;
+                    if (stableCount >= 3) {
+                        console.log('✅ Form is stable');
+                        break;
+                    }
+                } else {
+                    stableCount = 0;
+                    lastId = currentId;
+                }
+            } catch (e) {
+                // Element might be detached, wait and retry
+                await this.page.waitForTimeout(500);
+            }
+        }
+        
+        // Extra wait for good measure
+        await this.page.waitForTimeout(1000);
+        console.log('✅ Checkout page ready');
     }
 
     /**
-     * Fill in the address
+     * Fill in the address with retry logic for unstable elements
      * @param {string} address - Street address
      */
     async fillAddress(address) {
-        await this.addressInput.click();
-        await this.addressInput.fill(address);
+        const maxRetries = 5;
+        let lastError = null;
+        
+        for (let attempt = 1; attempt <= maxRetries; attempt++) {
+            try {
+                // Wait a moment before each attempt
+                if (attempt > 1) {
+                    console.log(`🔄 Retry attempt ${attempt}/${maxRetries} for address input...`);
+                    await this.page.waitForTimeout(1000);
+                }
+                
+                // Use a fresh locator each time
+                const addressField = this.page.locator('input[name="shipping_address"]').first();
+                
+                // Wait for it to be stable
+                await addressField.waitFor({ state: 'visible', timeout: 5000 });
+                await this.page.waitForTimeout(300);
+                
+                // Try to interact
+                await addressField.click({ timeout: 5000 });
+                await addressField.fill(address);
+                
+                // Verify the value was set
+                const value = await addressField.inputValue();
+                if (value === address) {
+                    if (attempt > 1) console.log('✅ Address filled successfully on retry');
+                    return;
+                }
+            } catch (e) {
+                lastError = e;
+                console.log(`⚠️ Address input attempt ${attempt} failed: ${e.message.split('\n')[0]}`);
+            }
+        }
+        
+        throw new Error(`Failed to fill address after ${maxRetries} attempts: ${lastError?.message}`);
     }
 
     /**
-     * Fill in the city
+     * Fill in the city with retry logic
      * @param {string} city - City name
      */
     async fillCity(city) {
-        await this.cityInput.click();
-        await this.cityInput.fill(city);
+        const maxRetries = 3;
+        
+        for (let attempt = 1; attempt <= maxRetries; attempt++) {
+            try {
+                if (attempt > 1) {
+                    await this.page.waitForTimeout(500);
+                }
+                
+                const cityField = this.page.locator('input[name="shipping_city"]').first()
+                    .or(this.page.getByRole('textbox', { name: 'City' }));
+                
+                await cityField.waitFor({ state: 'visible', timeout: 5000 });
+                await cityField.click({ timeout: 5000 });
+                await cityField.fill(city);
+                return;
+            } catch (e) {
+                if (attempt === maxRetries) throw e;
+                console.log(`⚠️ City input attempt ${attempt} failed, retrying...`);
+            }
+        }
     }
 
     /**
