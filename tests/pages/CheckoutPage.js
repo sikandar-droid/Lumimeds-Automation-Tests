@@ -54,117 +54,43 @@ class CheckoutPage {
             console.log('ℹ️  Payment options check skipped');
         }
         
-        // Simple stabilization: wait for page to settle (longer for CI)
+        // Wait for page to fully stabilize (longer for CI environments)
         console.log('⏳ Waiting for form to stabilize...');
-        await this.page.waitForTimeout(5000);
+        await this.page.waitForTimeout(8000);
         console.log('✅ Checkout page ready');
     }
 
     /**
-     * Fill in the address with retry logic for unstable elements
+     * Fill in the address - simplified approach with longer waits
      * @param {string} address - Street address
      */
     async fillAddress(address) {
-        const maxRetries = 5;
-        let lastError = null;
+        console.log('📝 Filling address field...');
         
-        for (let attempt = 1; attempt <= maxRetries; attempt++) {
-            try {
-                // Wait longer between retries
-                if (attempt > 1) {
-                    console.log(`🔄 Retry attempt ${attempt}/${maxRetries} for address input...`);
-                    await this.page.waitForTimeout(2000);
-                }
-                
-                // Try multiple locator strategies
-                let addressField = null;
-                
-                // Strategy 1: By name attribute
-                const byName = this.page.locator('input[name="shipping_address"]').first();
-                if (await byName.isVisible().catch(() => false)) {
-                    addressField = byName;
-                    console.log('📍 Found address field by name attribute');
-                }
-                
-                // Strategy 2: By role (original)
-                if (!addressField) {
-                    const byRole = this.page.getByRole('textbox', { name: 'Address' });
-                    if (await byRole.isVisible().catch(() => false)) {
-                        addressField = byRole;
-                        console.log('📍 Found address field by role');
-                    }
-                }
-                
-                // Strategy 3: By placeholder
-                if (!addressField) {
-                    const byPlaceholder = this.page.locator('input[placeholder*="address" i]').first();
-                    if (await byPlaceholder.isVisible().catch(() => false)) {
-                        addressField = byPlaceholder;
-                        console.log('📍 Found address field by placeholder');
-                    }
-                }
-                
-                // Strategy 4: By class containing checkout-input
-                if (!addressField) {
-                    const byClass = this.page.locator('input.checkout-input').first();
-                    if (await byClass.isVisible().catch(() => false)) {
-                        addressField = byClass;
-                        console.log('📍 Found address field by class');
-                    }
-                }
-                
-                if (!addressField) {
-                    throw new Error('Could not find address field with any strategy');
-                }
-                
-                // Wait for it to be stable
-                await addressField.waitFor({ state: 'visible', timeout: 15000 });
-                await this.page.waitForTimeout(500);
-                
-                // Try to interact
-                await addressField.click({ timeout: 10000 });
-                await addressField.fill(address);
-                
-                // Verify the value was set
-                const value = await addressField.inputValue();
-                if (value === address) {
-                    console.log('✅ Address filled successfully');
-                    return;
-                }
-            } catch (e) {
-                lastError = e;
-                console.log(`⚠️ Address input attempt ${attempt} failed: ${e.message.split('\n')[0]}`);
-            }
-        }
+        // Use the original role-based locator but with longer timeout
+        const addressField = this.page.getByRole('textbox', { name: 'Address' });
         
-        throw new Error(`Failed to fill address after ${maxRetries} attempts: ${lastError?.message}`);
+        // Wait up to 30 seconds for the field to appear (CI can be slow)
+        console.log('⏳ Waiting for address field to be visible...');
+        await addressField.waitFor({ state: 'visible', timeout: 30000 });
+        
+        // Additional wait for stability
+        await this.page.waitForTimeout(1000);
+        
+        // Fill the field
+        await addressField.click();
+        await addressField.fill(address);
+        console.log('✅ Address filled');
     }
 
     /**
-     * Fill in the city with retry logic
+     * Fill in the city
      * @param {string} city - City name
      */
     async fillCity(city) {
-        const maxRetries = 3;
-        
-        for (let attempt = 1; attempt <= maxRetries; attempt++) {
-            try {
-                if (attempt > 1) {
-                    await this.page.waitForTimeout(500);
-                }
-                
-                const cityField = this.page.locator('input[name="shipping_city"]').first()
-                    .or(this.page.getByRole('textbox', { name: 'City' }));
-                
-                await cityField.waitFor({ state: 'visible', timeout: 5000 });
-                await cityField.click({ timeout: 5000 });
-                await cityField.fill(city);
-                return;
-            } catch (e) {
-                if (attempt === maxRetries) throw e;
-                console.log(`⚠️ City input attempt ${attempt} failed, retrying...`);
-            }
-        }
+        const cityField = this.page.getByRole('textbox', { name: 'City' });
+        await cityField.click();
+        await cityField.fill(city);
     }
 
     /**
