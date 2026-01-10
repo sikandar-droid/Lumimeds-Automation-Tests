@@ -61,18 +61,48 @@ class CheckoutPage {
     }
 
     /**
-     * Fill in the address
+     * Fill in the address with polling retry approach
      * @param {string} address - Street address
      */
     async fillAddress(address) {
         console.log('📝 Filling address field...');
-        // Wait for element to be ready again (page might re-render)
-        await this.addressInput.waitFor({ state: 'visible', timeout: 30000 });
-        await this.page.waitForTimeout(500);
-        // Use force:true to bypass actionability checks (CI has timing issues)
-        await this.addressInput.click({ force: true });
-        await this.addressInput.fill(address);
-        console.log('✅ Address filled');
+        
+        const maxAttempts = 10;
+        let lastError;
+        
+        for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+            try {
+                console.log(`🔄 Attempt ${attempt}/${maxAttempts} to fill address...`);
+                
+                // Create fresh locator each time
+                const addressField = this.page.locator('input[name="shipping_address"][placeholder="Street address, house number, or P.O. Box"]');
+                
+                // Short wait (5s) instead of long (30s)
+                await addressField.waitFor({ state: 'visible', timeout: 5000 });
+                await this.page.waitForTimeout(300);
+                
+                // Try to click and fill
+                await addressField.click({ force: true, timeout: 5000 });
+                await addressField.fill(address);
+                
+                // Verify it worked
+                const value = await addressField.inputValue();
+                if (value === address) {
+                    console.log('✅ Address filled successfully');
+                    return;
+                }
+                
+                console.log(`⚠️ Value mismatch, retrying...`);
+            } catch (e) {
+                lastError = e;
+                console.log(`⚠️ Attempt ${attempt} failed: ${e.message.split('\n')[0]}`);
+                
+                // Wait longer between retries
+                await this.page.waitForTimeout(2000);
+            }
+        }
+        
+        throw new Error(`Failed to fill address after ${maxAttempts} attempts: ${lastError?.message}`);
     }
 
     /**
