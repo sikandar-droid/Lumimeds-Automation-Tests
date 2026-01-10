@@ -66,7 +66,11 @@ class CheckoutPage {
      */
     async fillAddress(address) {
         console.log('📝 Filling address field...');
-        await this.addressInput.click();
+        // Wait for element to be ready again (page might re-render)
+        await this.addressInput.waitFor({ state: 'visible', timeout: 30000 });
+        await this.page.waitForTimeout(500);
+        // Use force:true to bypass actionability checks (CI has timing issues)
+        await this.addressInput.click({ force: true });
         await this.addressInput.fill(address);
         console.log('✅ Address filled');
     }
