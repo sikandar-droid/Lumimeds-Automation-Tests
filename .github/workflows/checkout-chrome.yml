@@ -74,16 +74,15 @@ jobs:
         run: |
           npx playwright test tests/checkout/checkout-prod.spec.js --project=chromium
       
-      # TEMPORARILY DISABLED FOR TESTING
-      # - name: 📤 Send Slack Notification (Production)
-      #   if: always() && github.event.inputs.environment != 'staging'
-      #   env:
-      #     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-      #     TEST_FILE: 'Checkout-Chrome-Production'
-      #     TEST_ENV: 'Production'
-      #     TEST_URL: 'https://lumimeds.com'
-      #     TEST_BROWSER: 'Chromium'
-      #   run: node scripts/slack-notify-checkout.js
+      - name: 📤 Send Slack Notification (Production)
+        if: always() && github.event.inputs.environment != 'staging'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          TEST_FILE: 'Checkout-Chrome-Production'
+          TEST_ENV: 'Production'
+          TEST_URL: 'https://lumimeds.com'
+          TEST_BROWSER: 'Chromium'
+        run: node scripts/slack-notify-checkout.js
       
       - name: 📊 Upload results
         if: always()
