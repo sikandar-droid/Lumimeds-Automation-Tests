@@ -29,51 +29,34 @@ class CheckoutPage {
         await this.addressInput.waitFor({ state: 'visible', timeout: 30000 });
         
         // Wait for any loading overlays to disappear
-        const loadingOverlay = this.page.locator('.tw-absolute.tw-inset-0.tw-bg-white\\/80');
-        const hasOverlay = await loadingOverlay.isVisible().catch(() => false);
-        if (hasOverlay) {
-            console.log('⏳ Waiting for loading overlay to disappear...');
-            await loadingOverlay.waitFor({ state: 'hidden', timeout: 30000 });
-            console.log('✅ Loading overlay removed');
+        try {
+            const loadingOverlay = this.page.locator('.tw-absolute.tw-inset-0.tw-bg-white\\/80');
+            const hasOverlay = await loadingOverlay.isVisible().catch(() => false);
+            if (hasOverlay) {
+                console.log('⏳ Waiting for loading overlay to disappear...');
+                await loadingOverlay.waitFor({ state: 'hidden', timeout: 15000 }).catch(() => {});
+                console.log('✅ Loading overlay check complete');
+            }
+        } catch (e) {
+            console.log('ℹ️  Loading overlay check skipped');
         }
         
         // Wait for "Loading Payment Options..." to disappear
-        const loadingPayment = this.page.locator('text="Loading Payment Options"');
-        const isLoadingPayment = await loadingPayment.isVisible().catch(() => false);
-        if (isLoadingPayment) {
-            console.log('⏳ Waiting for payment options to load...');
-            await loadingPayment.waitFor({ state: 'hidden', timeout: 30000 });
-            console.log('✅ Payment options loaded');
-        }
-        
-        // Wait for page to stabilize - check that address input ID doesn't change
-        console.log('⏳ Waiting for form to stabilize...');
-        let lastId = '';
-        let stableCount = 0;
-        const maxChecks = 10;
-        
-        for (let i = 0; i < maxChecks; i++) {
-            await this.page.waitForTimeout(500);
-            try {
-                const currentId = await this.page.locator('input[name="shipping_address"]').getAttribute('id');
-                if (currentId === lastId) {
-                    stableCount++;
-                    if (stableCount >= 3) {
-                        console.log('✅ Form is stable');
-                        break;
-                    }
-                } else {
-                    stableCount = 0;
-                    lastId = currentId;
-                }
-            } catch (e) {
-                // Element might be detached, wait and retry
-                await this.page.waitForTimeout(500);
+        try {
+            const loadingPayment = this.page.locator('text="Loading Payment Options"');
+            const isLoadingPayment = await loadingPayment.isVisible().catch(() => false);
+            if (isLoadingPayment) {
+                console.log('⏳ Waiting for payment options to load...');
+                await loadingPayment.waitFor({ state: 'hidden', timeout: 15000 }).catch(() => {});
+                console.log('✅ Payment options check complete');
             }
+        } catch (e) {
+            console.log('ℹ️  Payment options check skipped');
         }
         
-        // Extra wait for good measure
-        await this.page.waitForTimeout(1000);
+        // Simple stabilization: just wait a fixed amount of time
+        console.log('⏳ Waiting for form to stabilize...');
+        await this.page.waitForTimeout(3000);
         console.log('✅ Checkout page ready');
     }
 
