@@ -61,14 +61,14 @@ class CheckoutPage {
     }
 
     /**
-     * Fill in the address - simplified approach with longer waits
+     * Fill in the address using stable selectors
      * @param {string} address - Street address
      */
     async fillAddress(address) {
         console.log('📝 Filling address field...');
         
-        // Use the original role-based locator but with longer timeout
-        const addressField = this.page.getByRole('textbox', { name: 'Address' });
+        // Use name + placeholder for stable selection (ID is dynamic)
+        const addressField = this.page.locator('input[name="shipping_address"][placeholder="Street address, house number, or P.O. Box"]');
         
         // Wait up to 30 seconds for the field to appear (CI can be slow)
         console.log('⏳ Waiting for address field to be visible...');
