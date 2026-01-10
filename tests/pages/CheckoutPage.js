@@ -2,9 +2,9 @@ class CheckoutPage {
     constructor(page) {
         this.page = page;
         
-        // Locators
-        this.addressInput = page.getByRole('textbox', { name: 'Address' });
-        this.cityInput = page.getByRole('textbox', { name: 'City' });
+        // Locators - using exact name+placeholder selectors for stability
+        this.addressInput = page.locator('input[name="shipping_address"][placeholder="Street address, house number, or P.O. Box"]');
+        this.cityInput = page.locator('input[name="shipping_city"]');
         // Use multiple fallback selectors for the state dropdown (react-select component)
         this.stateDropdown = page.locator('[id*="state"]').filter({ has: page.locator('input') }).first()
             .or(page.getByRole('combobox').filter({ hasText: /state|select/i }).first())
@@ -61,25 +61,13 @@ class CheckoutPage {
     }
 
     /**
-     * Fill in the address using stable selectors
+     * Fill in the address
      * @param {string} address - Street address
      */
     async fillAddress(address) {
         console.log('📝 Filling address field...');
-        
-        // Use name + placeholder for stable selection (ID is dynamic)
-        const addressField = this.page.locator('input[name="shipping_address"][placeholder="Street address, house number, or P.O. Box"]');
-        
-        // Wait up to 30 seconds for the field to appear (CI can be slow)
-        console.log('⏳ Waiting for address field to be visible...');
-        await addressField.waitFor({ state: 'visible', timeout: 30000 });
-        
-        // Additional wait for stability
-        await this.page.waitForTimeout(1000);
-        
-        // Fill the field
-        await addressField.click();
-        await addressField.fill(address);
+        await this.addressInput.click();
+        await this.addressInput.fill(address);
         console.log('✅ Address filled');
     }
 
@@ -88,9 +76,8 @@ class CheckoutPage {
      * @param {string} city - City name
      */
     async fillCity(city) {
-        const cityField = this.page.getByRole('textbox', { name: 'City' });
-        await cityField.click();
-        await cityField.fill(city);
+        await this.cityInput.click();
+        await this.cityInput.fill(city);
     }
 
     /**
