@@ -74,7 +74,7 @@ jobs:
           npx playwright test tests/checkout/checkout-prod.spec.js --project=chromium
       
       - name: 🎬 Upload Test Video
-        if: success() && github.event.inputs.record_video == 'true'
+        if: always() && github.event.inputs.record_video == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: checkout-video-${{ github.run_number }}
@@ -83,7 +83,7 @@ jobs:
           if-no-files-found: ignore
       
       - name: 📤 Send Slack Notification (Staging)
-        if: false && always() && github.event.inputs.environment == 'staging'
+        if: always() && github.event.inputs.environment == 'staging'
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           TEST_FILE: 'Checkout-Chrome-Staging'
@@ -97,7 +97,7 @@ jobs:
         run: node scripts/slack-notify-checkout.js
       
       - name: 📤 Send Slack Notification (Production)
-        if: false && always() && github.event.inputs.environment != 'staging'
+        if: always() && github.event.inputs.environment != 'staging'
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           TEST_FILE: 'Checkout-Chrome-Production'
