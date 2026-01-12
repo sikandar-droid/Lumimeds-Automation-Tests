@@ -49,11 +49,29 @@ async function uploadToGoogleDrive() {
     const stats = fs.statSync(videoPath);
     const fileSize = stats.size;
     console.log(`📹 Uploading ${(fileSize / 1024 / 1024).toFixed(2)} MB to Google Drive...`);
+    console.log(`📁 Target folder ID: ${folderId.substring(0, 10)}...`);
+
+    // Verify folder exists and is accessible
+    try {
+      const folderInfo = await drive.files.get({
+        fileId: folderId,
+        fields: 'id, name, mimeType, capabilities',
+        supportsAllDrives: true,
+        supportsTeamDrives: true,
+      });
+      console.log(`✅ Folder verified: "${folderInfo.data.name}" (${folderInfo.data.mimeType})`);
+    } catch (verifyError) {
+      console.error('❌ Cannot access folder:', verifyError.message);
+      if (verifyError.code === 404) {
+        throw new Error(`Folder not found. Please check that:\n1. The folder ID is correct\n2. The service account has access to the folder\n3. The folder is in a Shared Drive (if using service account)`);
+      }
+      throw verifyError;
+    }
 
     // Create file metadata (folderId is required)
     const fileMetadata = {
       name: fileName,
-      parents: [folderId], // Required - service accounts need a folder in user's Drive
+      parents: [folderId],
     };
 
     // Create readable stream
