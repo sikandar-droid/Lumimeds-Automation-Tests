@@ -51,7 +51,7 @@ jobs:
         if: github.event.inputs.environment == 'staging'
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          RECORD_VIDEO: ${{ github.event.inputs.record_video }}
+          RECORD_VIDEO: ${{ github.event.inputs.record_video || 'true' }}
           MASK_PAYMENT: 'true'
           TEST_FILE: 'Checkout-Firefox-Staging'
           TEST_ENV: 'Staging'
@@ -64,7 +64,7 @@ jobs:
         if: github.event.inputs.environment != 'staging'
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          RECORD_VIDEO: ${{ github.event.inputs.record_video }}
+          RECORD_VIDEO: ${{ github.event.inputs.record_video || 'true' }}
           MASK_PAYMENT: 'true'
           TEST_FILE: 'Checkout-Firefox-Production'
           TEST_ENV: 'Production'
@@ -75,7 +75,7 @@ jobs:
       
       - name: 🎬 Upload Test Video to Slack
         id: upload_slack
-        if: success() && github.event.inputs.record_video == 'true'
+        if: success()
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
           SLACK_CHANNEL: ${{ secrets.SLACK_CHANNEL }}
@@ -84,20 +84,12 @@ jobs:
         run: |
           VIDEO_FILE=$(find test-results -name "video.webm" -type f | head -1)
           if [ -n "$VIDEO_FILE" ] && [ -n "$SLACK_BOT_TOKEN" ]; then
+            echo "✅ Found video file, uploading to Slack..."
             npm install form-data
             node scripts/upload-video-to-slack.js "$VIDEO_FILE"
           else
-            echo "⚠️ Slack not configured or missing SLACK_BOT_TOKEN. Skipping upload."
-            exit 1
+            echo "⚠️ No video file found or Slack not configured. Skipping upload."
           fi
-      
-      - name: 🎬 Upload Test Video (GitHub Artifact Backup)
-        if: success() && github.event.inputs.record_video == 'true'
-        uses: actions/upload-artifact@v4
-        with:
-          name: checkout-video-firefox-${{ github.run_number }}
-          path: test-results/**/video.webm
-          retention-days: 30
           if-no-files-found: ignore
       
       - name: 📤 Send Slack Notification (Staging)
@@ -108,7 +100,7 @@ jobs:
           TEST_ENV: 'Staging'
           TEST_URL: 'https://staging.lumimeds.com'
           TEST_BROWSER: 'Firefox'
-          RECORD_VIDEO: ${{ github.event.inputs.record_video }}
+          RECORD_VIDEO: ${{ github.event.inputs.record_video || 'true' }}
           GITHUB_RUN_ID: ${{ github.run_id }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           GITHUB_RUN_NUMBER: ${{ github.run_number }}
@@ -123,7 +115,7 @@ jobs:
           TEST_ENV: 'Production'
           TEST_URL: 'https://lumimeds.com'
           TEST_BROWSER: 'Firefox'
-          RECORD_VIDEO: ${{ github.event.inputs.record_video }}
+          RECORD_VIDEO: ${{ github.event.inputs.record_video || 'true' }}
           GITHUB_RUN_ID: ${{ github.run_id }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           GITHUB_RUN_NUMBER: ${{ github.run_number }}
