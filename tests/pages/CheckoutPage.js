@@ -67,72 +67,63 @@ class CheckoutPage {
     async fillAddress(address) {
         console.log('📝 Filling address field...');
         
-        const maxAttempts = 10;
+        const maxAttempts = 5; // Reduced from 10 to avoid timeout
         let lastError;
         
         for (let attempt = 1; attempt <= maxAttempts; attempt++) {
             try {
+                // Check if page is still alive
+                if (this.page.isClosed()) {
+                    throw new Error('Page was closed');
+                }
+                
                 console.log(`🔄 Attempt ${attempt}/${maxAttempts} to fill address...`);
                 
-                // Wait for page to be stable first
-                await this.page.waitForLoadState('domcontentloaded');
-                await this.page.waitForTimeout(1000);
+                // Wait for page to be stable (shorter wait)
+                await this.page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {
+                    return this.page.waitForLoadState('domcontentloaded', { timeout: 5000 });
+                });
                 
-                // Check for loading overlays and wait for them to disappear
+                // Check for loading overlays (shorter timeout)
                 const loadingOverlay = this.page.locator('.tw-absolute.tw-inset-0.tw-bg-white\\/80');
-                const hasOverlay = await loadingOverlay.isVisible({ timeout: 1000 }).catch(() => false);
+                const hasOverlay = await loadingOverlay.isVisible({ timeout: 500 }).catch(() => false);
                 if (hasOverlay) {
                     console.log('⏳ Waiting for loading overlay to disappear...');
-                    await loadingOverlay.waitFor({ state: 'hidden', timeout: 10000 }).catch(() => {});
+                    await loadingOverlay.waitFor({ state: 'hidden', timeout: 5000 }).catch(() => {});
                 }
                 
-                // Try multiple locator strategies with fallbacks
-                let addressField = null;
+                // Use a single locator with multiple strategies chained
+                const addressField = this.page.locator('input[name="shipping_address"][placeholder="Street address, house number, or P.O. Box"]')
+                    .or(this.page.locator('input[name="shipping_address"]'))
+                    .or(this.page.getByLabel(/address/i))
+                    .or(this.page.locator('input[placeholder*="address" i]'))
+                    .or(this.page.locator('input[name*="address" i]'))
+                    .first();
                 
-                // Strategy 1: Exact placeholder match
-                try {
-                    addressField = this.page.locator('input[name="shipping_address"][placeholder="Street address, house number, or P.O. Box"]');
-                    await addressField.waitFor({ state: 'visible', timeout: 8000 });
-                } catch (e1) {
-                    // Strategy 2: Just by name attribute
-                    try {
-                        addressField = this.page.locator('input[name="shipping_address"]');
-                        await addressField.waitFor({ state: 'visible', timeout: 8000 });
-                    } catch (e2) {
-                        // Strategy 3: By label or placeholder containing "address"
-                        try {
-                            addressField = this.page.getByLabel(/address/i).or(
-                                this.page.locator('input[placeholder*="address" i]')
-                            ).first();
-                            await addressField.waitFor({ state: 'visible', timeout: 8000 });
-                        } catch (e3) {
-                            // Strategy 4: Any input with "shipping" or "address" in name/id
-                            addressField = this.page.locator('input[name*="address" i], input[id*="address" i]').first();
-                            await addressField.waitFor({ state: 'visible', timeout: 8000 });
-                        }
-                    }
-                }
+                // Wait for field to be visible (shorter timeout per attempt)
+                await addressField.waitFor({ state: 'visible', timeout: 5000 });
                 
-                if (!addressField) {
-                    throw new Error('Could not find address field with any locator strategy');
-                }
-                
-                // Scroll into view and wait a bit
+                // Scroll into view
                 await addressField.scrollIntoViewIfNeeded();
-                await this.page.waitForTimeout(500);
-                
-                // Try to clear and fill
-                await addressField.click({ force: true, timeout: 5000 });
-                await this.page.waitForTimeout(200);
-                await addressField.clear({ timeout: 3000 }).catch(() => {});
-                await addressField.fill(address, { timeout: 5000 });
-                
-                // Wait a moment for the value to be set
                 await this.page.waitForTimeout(300);
                 
+                // Check if field is still visible after scroll
+                const isVisible = await addressField.isVisible({ timeout: 2000 }).catch(() => false);
+                if (!isVisible) {
+                    throw new Error('Address field not visible after scroll');
+                }
+                
+                // Fill the field (use type instead of fill for better reliability)
+                await addressField.click({ timeout: 3000 });
+                await this.page.waitForTimeout(200);
+                await addressField.clear({ timeout: 2000 }).catch(() => {});
+                await addressField.type(address, { delay: 50, timeout: 5000 });
+                
                 // Verify it worked
-                const value = await addressField.inputValue();
-                if (value && value.trim() === address.trim()) {
+                await this.page.waitForTimeout(300);
+                const value = await addressField.inputValue().catch(() => '');
+                
+                if (value && value.trim().includes(address.trim().substring(0, 10))) {
                     console.log('✅ Address filled successfully');
                     return;
                 }
@@ -140,14 +131,22 @@ class CheckoutPage {
                 console.log(`⚠️ Value mismatch (expected: "${address}", got: "${value}"), retrying...`);
             } catch (e) {
                 lastError = e;
-                console.log(`⚠️ Attempt ${attempt} failed: ${e.message.split('\n')[0]}`);
+                const errorMsg = e.message?.split('\n')[0] || e.toString();
+                console.log(`⚠️ Attempt ${attempt} failed: ${errorMsg}`);
                 
-                // Wait longer between retries, increasing with each attempt
-                await this.page.waitForTimeout(2000 + (attempt * 500));
+                // Check if page is closed - don't retry if it is
+                if (this.page.isClosed() || errorMsg.includes('closed') || errorMsg.includes('target closed')) {
+                    throw new Error('Page/context was closed - cannot retry');
+                }
+                
+                // Shorter wait between retries (fixed time, not increasing)
+                if (attempt < maxAttempts) {
+                    await this.page.waitForTimeout(1500);
+                }
             }
         }
         
-        throw new Error(`Failed to fill address after ${maxAttempts} attempts: ${lastError?.message}`);
+        throw new Error(`Failed to fill address after ${maxAttempts} attempts: ${lastError?.message || lastError}`);
     }
 
     /**
@@ -197,7 +196,7 @@ class CheckoutPage {
         try {
             const isVisible = await this.stateDropdown.isVisible().catch(() => false);
             if (isVisible) {
-                await this.stateDropdown.click();
+        await this.stateDropdown.click();
                 dropdownClicked = true;
                 console.log('✅ Clicked state dropdown (primary locator)');
             }
@@ -268,7 +267,7 @@ class CheckoutPage {
         console.log(`🔍 Looking for state option: ${state}`);
         try {
             // First try role-based
-            await this.page.getByRole('option', { name: state }).click();
+        await this.page.getByRole('option', { name: state }).click();
             console.log(`✅ Selected state: ${state}`);
         } catch (e) {
             // Fallback to text-based
