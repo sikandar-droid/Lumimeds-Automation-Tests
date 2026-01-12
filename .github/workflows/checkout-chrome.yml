@@ -74,7 +74,7 @@ jobs:
           npx playwright test tests/checkout/checkout-prod.spec.js --project=chromium
       
       - name: 🎬 Upload Test Video
-        if: always() && github.event.inputs.record_video == 'true'
+        if: success() && github.event.inputs.record_video == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: checkout-video-${{ github.run_number }}
