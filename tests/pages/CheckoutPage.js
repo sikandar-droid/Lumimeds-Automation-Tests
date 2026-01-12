@@ -704,22 +704,25 @@ class CheckoutPage {
         // If recording video, scroll to top to hide card details from view
         const isRecording = process.env.RECORD_VIDEO === 'true' || process.env.MASK_PAYMENT === 'true';
         if (isRecording) {
-            console.log('📹 Video recording: Scrolling to top to hide card details...');
+            console.log('📹 Video recording: Scrolling to top of page to hide card fields...');
             
-            // Scroll to the very top of the page
+            // Scroll to the very top of the page (position 0)
             await this.page.evaluate(() => {
-                window.scrollTo({
-                    top: 0,
-                    behavior: 'smooth'
-                });
+                // Instant scroll to top (no smooth animation)
+                window.scrollTo(0, 0);
+                document.documentElement.scrollTop = 0;
+                document.body.scrollTop = 0;
             });
             
-            // Wait for scroll to complete
-            await this.page.waitForTimeout(1000);
-            console.log('✅ Scrolled to top - card fields now out of view');
+            // Wait to ensure scroll is complete
+            await this.page.waitForTimeout(1500);
+            
+            // Verify we're at the top
+            const scrollPosition = await this.page.evaluate(() => window.pageYOffset);
+            console.log(`✅ Scrolled to position: ${scrollPosition} (card fields hidden)`);
         }
         
-        // Fill each field with extra wait between them
+        // Fill each field with extra wait between them (fields are off-screen if recording)
         await this.fillCardNumber(paymentData.cardNumber);
         await this.page.waitForTimeout(1000);
         
@@ -732,7 +735,7 @@ class CheckoutPage {
         console.log('⏳ Waiting for Stripe to validate card...');
         await this.page.waitForTimeout(3000);
         
-        console.log('✅ Payment details completed\n');
+        console.log('✅ Payment details completed (filled off-screen)\n');
     }
 
     /**
