@@ -1,9 +1,8 @@
 const fs = require('fs');
-const path = require('path');
 
 /**
- * Upload video file directly to Slack
- * Requires SLACK_BOT_TOKEN (not webhook URL)
+ * Upload video file directly to Slack using files_upload_v2
+ * This is the new recommended method
  */
 async function uploadVideoToSlack() {
   const videoPath = process.argv[2];
@@ -24,45 +23,92 @@ async function uploadVideoToSlack() {
   try {
     const stats = fs.statSync(videoPath);
     const fileSize = stats.size;
+    const fileName = process.env.FILE_NAME || 'checkout-video.webm';
+    
     console.log(`📹 Uploading ${(fileSize / 1024 / 1024).toFixed(2)} MB to Slack...`);
 
-    const FormData = require('form-data');
-    const form = new FormData();
-    
-    form.append('file', fs.createReadStream(videoPath));
-    form.append('channels', slackChannel);
-    form.append('title', process.env.FILE_NAME || 'Checkout Test Video');
-    form.append('filename', process.env.FILE_NAME || 'checkout-video.webm');
-    form.append('initial_comment', `🎬 Checkout Test Video - Run #${process.env.GITHUB_RUN_NUMBER || 'local'}`);
-
-    const response = await fetch('https://slack.com/api/files.upload', {
+    // Step 1: Get upload URL using files.getUploadURLExternal
+    const uploadUrlResponse = await fetch('https://slack.com/api/files.getUploadURLExternal', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${slackToken}`,
-        ...form.getHeaders(),
+        'Content-Type': 'application/x-www-form-urlencoded',
       },
-      body: form,
+      body: new URLSearchParams({
+        filename: fileName,
+        length: fileSize.toString(),
+      }),
     });
 
-    const data = await response.json();
+    const uploadUrlData = await uploadUrlResponse.json();
+    
+    if (!uploadUrlData.ok) {
+      console.error('Upload URL response:', uploadUrlData);
+      throw new Error(`Failed to get upload URL: ${uploadUrlData.error}`);
+    }
 
-    if (!data.ok) {
-      throw new Error(`Slack API error: ${data.error}`);
+    console.log('✅ Got upload URL');
+
+    // Step 2: Upload file to the URL
+    const fileBuffer = fs.readFileSync(videoPath);
+    
+    const uploadResponse = await fetch(uploadUrlData.upload_url, {
+      method: 'POST',
+      body: fileBuffer,
+    });
+
+    if (!uploadResponse.ok) {
+      throw new Error(`Failed to upload file: ${uploadResponse.statusText}`);
+    }
+
+    console.log('✅ File uploaded');
+
+    // Step 3: Complete the upload and share to channel
+    const completeResponse = await fetch('https://slack.com/api/files.completeUploadExternal', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${slackToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        files: [
+          {
+            id: uploadUrlData.file_id,
+            title: process.env.FILE_NAME || 'Checkout Test Video',
+          }
+        ],
+        channel_id: slackChannel,
+        initial_comment: `🎬 Checkout Test Video - Run #${process.env.GITHUB_RUN_NUMBER || 'local'}`,
+      }),
+    });
+
+    const completeData = await completeResponse.json();
+
+    if (!completeData.ok) {
+      console.error('Complete upload response:', completeData);
+      throw new Error(`Failed to complete upload: ${completeData.error}`);
     }
 
     console.log('✅ Video uploaded to Slack!');
-    console.log('🔗 File URL:', data.file.permalink);
+    
+    const fileUrl = completeData.files[0].permalink;
+    const fileId = completeData.files[0].id;
+    
+    console.log('🔗 File URL:', fileUrl);
 
     // Output to GITHUB_OUTPUT file
     const outputFile = process.env.GITHUB_OUTPUT;
     if (outputFile) {
-      fs.appendFileSync(outputFile, `slack_file_url=${data.file.permalink}\n`);
-      fs.appendFileSync(outputFile, `slack_file_id=${data.file.id}\n`);
+      fs.appendFileSync(outputFile, `slack_file_url=${fileUrl}\n`);
+      fs.appendFileSync(outputFile, `slack_file_id=${fileId}\n`);
     }
 
-    return { fileUrl: data.file.permalink, fileId: data.file.id };
+    return { fileUrl, fileId };
   } catch (error) {
     console.error('❌ Failed to upload to Slack:', error.message);
+    if (error.stack) {
+      console.error(error.stack);
+    }
     process.exit(1);
   }
 }
@@ -71,4 +117,3 @@ uploadVideoToSlack().catch((error) => {
   console.error('Fatal error:', error);
   process.exit(1);
 });
-

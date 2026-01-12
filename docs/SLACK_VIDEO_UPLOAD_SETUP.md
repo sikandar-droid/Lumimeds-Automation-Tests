@@ -24,9 +24,10 @@ This guide explains how to upload test videos directly to Slack (simpler than Go
 
 1. In your app settings, go to **"OAuth & Permissions"** (left sidebar)
 2. Scroll to **"Scopes"** → **"Bot Token Scopes"**
-3. Click **"Add an OAuth Scope"** and add:
+3. Click **"Add an OAuth Scope"** and add these **REQUIRED** scopes:
    - `files:write` (required - to upload files)
-   - `chat:write` (optional - for text messages)
+   - `files:read` (required - to complete upload)
+   - `chat:write` (required - to post messages with files)
    - `channels:read` (optional - to list channels)
 
 ### 3. Install App to Workspace
@@ -54,7 +55,7 @@ This guide explains how to upload test videos directly to Slack (simpler than Go
 **Option B: From URL**
 1. Open your channel in Slack
 2. Look at the URL: `https://app.slack.com/client/T07JLMUGJQM/C08479Z15N9`
-3. The last part is your Channel ID: `C08479Z15N9`
+  3. The last part is your Channel ID: `C08479Z15N9`
 
 ### 6. Add Secrets to GitHub
 
