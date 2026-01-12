@@ -13,6 +13,11 @@ on:
         options:
           - staging
           - production
+      record_video:
+        description: 'Record video of test'
+        required: false
+        default: true
+        type: boolean
 
 jobs:
   test:
@@ -46,6 +51,7 @@ jobs:
         if: github.event.inputs.environment == 'staging'
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          RECORD_VIDEO: ${{ github.event.inputs.record_video }}
           TEST_FILE: 'Checkout-Chrome-Staging'
           TEST_ENV: 'Staging'
           TEST_URL: 'https://staging.lumimeds.com'
@@ -53,20 +59,11 @@ jobs:
         run: |
           npx playwright test tests/checkout/checkout.spec.js --project=chromium
       
-      - name: 📤 Send Slack Notification (Staging)
-        if: always() && github.event.inputs.environment == 'staging'
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          TEST_FILE: 'Checkout-Chrome-Staging'
-          TEST_ENV: 'Staging'
-          TEST_URL: 'https://staging.lumimeds.com'
-          TEST_BROWSER: 'Chromium'
-        run: node scripts/slack-notify-checkout.js
-      
       - name: 🚀 Run Production Checkout
         if: github.event.inputs.environment != 'staging'
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          RECORD_VIDEO: ${{ github.event.inputs.record_video }}
           TEST_FILE: 'Checkout-Chrome-Production'
           TEST_ENV: 'Production'
           TEST_URL: 'https://lumimeds.com'
@@ -74,7 +71,42 @@ jobs:
         run: |
           npx playwright test tests/checkout/checkout-prod.spec.js --project=chromium
       
-      - name: 📤 Send Slack Notification (Production)
+      - name: 🎬 Upload Video to Secure Storage
+        id: upload_video
+        if: success() && github.event.inputs.record_video == 'true'
+        run: |
+          VIDEO_FILE=$(find test-results -name "video.webm" -type f | head -1)
+          if [ -n "$VIDEO_FILE" ]; then
+            echo "📹 Found video: $VIDEO_FILE"
+            
+            # Generate unique filename with date
+            DATE=$(date +%Y-%m-%d_%H-%M)
+            FILENAME="lumimeds-checkout-${DATE}.webm"
+            
+            # Upload to transfer.sh (14-day expiry, max 1 download)
+            UPLOAD_URL=$(curl --upload-file "$VIDEO_FILE" "https://transfer.sh/$FILENAME" -H "Max-Downloads: 5" -H "Max-Days: 7")
+            
+            echo "✅ Video uploaded!"
+            echo "video_url=$UPLOAD_URL" >> $GITHUB_OUTPUT
+            echo "VIDEO_URL=$UPLOAD_URL" >> $GITHUB_ENV
+          else
+            echo "⚠️ No video file found"
+            echo "video_url=" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: 📤 Send Slack Notification with Video (Staging)
+        if: always() && github.event.inputs.environment == 'staging'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          TEST_FILE: 'Checkout-Chrome-Staging'
+          TEST_ENV: 'Staging'
+          TEST_URL: 'https://staging.lumimeds.com'
+          TEST_BROWSER: 'Chromium'
+          RECORD_VIDEO: ${{ github.event.inputs.record_video }}
+          VIDEO_URL: ${{ env.VIDEO_URL }}
+        run: node scripts/slack-notify-checkout.js
+      
+      - name: 📤 Send Slack Notification with Video (Production)
         if: always() && github.event.inputs.environment != 'staging'
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
@@ -82,6 +114,8 @@ jobs:
           TEST_ENV: 'Production'
           TEST_URL: 'https://lumimeds.com'
           TEST_BROWSER: 'Chromium'
+          RECORD_VIDEO: ${{ github.event.inputs.record_video }}
+          VIDEO_URL: ${{ env.VIDEO_URL }}
         run: node scripts/slack-notify-checkout.js
       
       - name: 📊 Upload results
@@ -91,4 +125,3 @@ jobs:
           name: checkout-chrome-results
           path: test-results.json
           retention-days: 30
-

@@ -5,9 +5,12 @@ const path = require('path');
 /**
  * Enhanced Slack notification for checkout tests
  * Extracts email, coupon code, and other checkout-specific details
+ * Supports video upload to Slack
  */
 async function sendCheckoutNotification() {
   const webhookUrl = process.env.SLACK_WEBHOOK_URL;
+  const recordVideo = process.env.RECORD_VIDEO === 'true';
+  const videoUrl = process.env.VIDEO_URL;
   
   if (!webhookUrl) {
     console.error('❌ SLACK_WEBHOOK_URL environment variable not set');
@@ -24,6 +27,12 @@ async function sendCheckoutNotification() {
   } catch (error) {
     console.error('❌ Could not read test results:', error.message);
     process.exit(1);
+  }
+  
+  // Find video file if recording was enabled
+  let videoPath = null;
+  if (recordVideo) {
+    videoPath = findVideoFile();
   }
 
   // Parse results
@@ -181,10 +190,27 @@ async function sendCheckoutNotification() {
     
     `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
 
+  // Add video section if recording was enabled
+  let videoSection = '';
+  if (videoUrl) {
+    videoSection = `\n\n` +
+      `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n` +
+      `🎬 *TEST VIDEO RECORDING*\n\n` +
+      `   📹 <${videoUrl}|⬇️ Download Video>\n\n` +
+      `   🔒 _Secure link • Expires in 7 days • Max 5 downloads_\n\n` +
+      `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
+  } else if (recordVideo && videoPath) {
+    videoSection = `\n\n` +
+      `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n` +
+      `🎬 *TEST VIDEO RECORDED*\n\n` +
+      `   📹 Video saved locally\n\n` +
+      `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
+  }
+
   const message = {
     username: 'Lumimeds Automation',
     icon_emoji: ':robot_face:',
-    text: detailedText
+    text: detailedText + videoSection
   };
 
   // Send to Slack
@@ -288,6 +314,42 @@ function formatDuration(ms) {
   }
   return `${seconds}s`;
 }
+
+/**
+ * Find the video file in test-results directory
+ */
+function findVideoFile() {
+  const testResultsDir = path.join(__dirname, '../test-results');
+  
+  try {
+    if (!fs.existsSync(testResultsDir)) {
+      return null;
+    }
+    
+    // Recursively find .webm files
+    const findVideos = (dir) => {
+      const files = fs.readdirSync(dir);
+      for (const file of files) {
+        const filePath = path.join(dir, file);
+        const stat = fs.statSync(filePath);
+        
+        if (stat.isDirectory()) {
+          const found = findVideos(filePath);
+          if (found) return found;
+        } else if (file.endsWith('.webm')) {
+          return filePath;
+        }
+      }
+      return null;
+    };
+    
+    return findVideos(testResultsDir);
+  } catch (error) {
+    console.log('ℹ️  Could not find video file:', error.message);
+    return null;
+  }
+}
+
 
 // Run the notification
 sendCheckoutNotification().catch((error) => {

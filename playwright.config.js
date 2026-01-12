@@ -42,6 +42,8 @@ export default defineConfig({
     trace: 'on-first-retry',
     /* Screenshot on failure */
     screenshot: 'only-on-failure',
+    /* Video recording - enable via RECORD_VIDEO env var */
+    video: process.env.RECORD_VIDEO === 'true' ? 'on' : 'off',
     /* Action timeout */
     actionTimeout: 30000, // 30 seconds for actions
     /* Navigation timeout */
