@@ -51,21 +51,19 @@ async function uploadToGoogleDrive() {
     console.log(`📹 Uploading ${(fileSize / 1024 / 1024).toFixed(2)} MB to Google Drive...`);
     console.log(`📁 Target folder ID: ${folderId.substring(0, 10)}...`);
 
-    // Verify folder exists and is accessible
+    // Verify folder exists and is accessible (skip if fails, try upload anyway)
     try {
       const folderInfo = await drive.files.get({
         fileId: folderId,
-        fields: 'id, name, mimeType, capabilities',
+        fields: 'id, name, mimeType',
         supportsAllDrives: true,
         supportsTeamDrives: true,
       });
-      console.log(`✅ Folder verified: "${folderInfo.data.name}" (${folderInfo.data.mimeType})`);
+      console.log(`✅ Folder verified: "${folderInfo.data.name}"`);
     } catch (verifyError) {
-      console.error('❌ Cannot access folder:', verifyError.message);
-      if (verifyError.code === 404) {
-        throw new Error(`Folder not found. Please check that:\n1. The folder ID is correct\n2. The service account has access to the folder\n3. The folder is in a Shared Drive (if using service account)`);
-      }
-      throw verifyError;
+      console.log(`⚠️  Folder verification failed: ${verifyError.message}`);
+      console.log(`⚠️  Attempting upload anyway - verification can fail even if upload works...`);
+      // Don't throw - sometimes verification fails but upload works
     }
 
     // Create file metadata (folderId is required)
