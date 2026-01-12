@@ -198,15 +198,13 @@ async function sendCheckoutNotification() {
     const artifactUrl = `https://github.com/${githubRepository}/actions/runs/${githubRunId}`;
     videoSection = `\n\n` +
       `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n` +
-      `🎬 *TEST VIDEO RECORDING*\n\n` +
+      `🎬 *VIDEO RECORDING*\n\n` +
       `   📹 <${artifactUrl}|⬇️ Download Video (Run #${githubRunNumber})>\n\n` +
-      `   📁 _Video available in Artifacts section_\n` +
-      `   🔒 _Card details masked for security_\n\n` +
       `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
   } else if (recordVideo && videoPath) {
     videoSection = `\n\n` +
       `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n` +
-      `🎬 *TEST VIDEO RECORDED*\n\n` +
+      `🎬 *VIDEO RECORDING*\n\n` +
       `   📹 Video saved locally\n\n` +
       `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
   }
