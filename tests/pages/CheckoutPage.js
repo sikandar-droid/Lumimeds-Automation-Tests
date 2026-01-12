@@ -788,16 +788,32 @@ class CheckoutPage {
         console.log('⏳ Waiting for Stripe to validate card...');
         await this.page.waitForTimeout(5000);
         
-        // Remove blur after card is validated (so success shows clearly)
+        // Remove mask after card is validated (so success shows clearly)
         if (shouldMask) {
+            console.log('🔓 Removing mask after card validation...');
+            
+            // Remove all overlay elements
+            await this.page.evaluate(() => {
+                const overlays = document.querySelectorAll('.card-mask-overlay');
+                overlays.forEach(overlay => overlay.remove());
+            });
+            
+            // Remove blur
             await this.page.addStyleTag({
                 content: `
                     iframe[name*="stripe"], 
                     iframe[src*="stripe"],
+                    iframe[name*="__privateStripeFrame"],
                     [class*="StripeElement"],
                     .stripe-card-element,
-                    [data-stripe] {
+                    [data-stripe],
+                    #card-element,
+                    [id*="card"] iframe,
+                    [class*="card"] iframe,
+                    div:has(> iframe[name*="stripe"]),
+                    div:has(> iframe[src*="stripe"]) {
                         filter: none !important;
+                        pointer-events: auto !important;
                     }
                 `
             });
