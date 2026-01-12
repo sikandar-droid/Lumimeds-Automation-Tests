@@ -13,6 +13,11 @@ on:
         options:
           - staging
           - production
+      record_video:
+        description: 'Record video of test'
+        required: false
+        default: true
+        type: boolean
 
 jobs:
   test:
@@ -46,12 +51,36 @@ jobs:
         if: github.event.inputs.environment == 'staging'
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          RECORD_VIDEO: ${{ github.event.inputs.record_video }}
+          MASK_PAYMENT: 'true'
           TEST_FILE: 'Checkout-Safari-Staging'
           TEST_ENV: 'Staging'
           TEST_URL: 'https://staging.lumimeds.com'
           TEST_BROWSER: 'WebKit'
         run: |
           npx playwright test tests/checkout/checkout.spec.js --project=webkit
+      
+      - name: 🚀 Run Production Checkout
+        if: github.event.inputs.environment != 'staging'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          RECORD_VIDEO: ${{ github.event.inputs.record_video }}
+          MASK_PAYMENT: 'true'
+          TEST_FILE: 'Checkout-Safari-Production'
+          TEST_ENV: 'Production'
+          TEST_URL: 'https://lumimeds.com'
+          TEST_BROWSER: 'WebKit'
+        run: |
+          npx playwright test tests/checkout/checkout-prod.spec.js --project=webkit
+      
+      - name: 🎬 Upload Test Video
+        if: success() && github.event.inputs.record_video == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: checkout-video-safari-${{ github.run_number }}
+          path: test-results/**/video.webm
+          retention-days: 30
+          if-no-files-found: ignore
       
       - name: 📤 Send Slack Notification (Staging)
         if: always() && github.event.inputs.environment == 'staging'
@@ -61,18 +90,11 @@ jobs:
           TEST_ENV: 'Staging'
           TEST_URL: 'https://staging.lumimeds.com'
           TEST_BROWSER: 'WebKit'
+          RECORD_VIDEO: ${{ github.event.inputs.record_video }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_RUN_NUMBER: ${{ github.run_number }}
         run: node scripts/slack-notify-checkout.js
-      
-      - name: 🚀 Run Production Checkout
-        if: github.event.inputs.environment != 'staging'
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          TEST_FILE: 'Checkout-Safari-Production'
-          TEST_ENV: 'Production'
-          TEST_URL: 'https://lumimeds.com'
-          TEST_BROWSER: 'WebKit'
-        run: |
-          npx playwright test tests/checkout/checkout-prod.spec.js --project=webkit
       
       - name: 📤 Send Slack Notification (Production)
         if: always() && github.event.inputs.environment != 'staging'
@@ -82,6 +104,10 @@ jobs:
           TEST_ENV: 'Production'
           TEST_URL: 'https://lumimeds.com'
           TEST_BROWSER: 'WebKit'
+          RECORD_VIDEO: ${{ github.event.inputs.record_video }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_RUN_NUMBER: ${{ github.run_number }}
         run: node scripts/slack-notify-checkout.js
       
       - name: 📊 Upload results
@@ -91,4 +117,3 @@ jobs:
           name: checkout-safari-results
           path: test-results.json
           retention-days: 30
-
