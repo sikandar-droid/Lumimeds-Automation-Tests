@@ -192,16 +192,16 @@ async function sendCheckoutNotification() {
     
     `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
 
-  // Add video section if recording was enabled
+  // Add video section only if recording was enabled AND tests passed
   let videoSection = '';
-  if (recordVideo && githubRunId && githubRepository) {
+  if (passed && recordVideo && githubRunId && githubRepository) {
     const artifactUrl = `https://github.com/${githubRepository}/actions/runs/${githubRunId}`;
     videoSection = `\n\n` +
       `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n` +
       `🎬 *VIDEO RECORDING*\n\n` +
       `   📹 <${artifactUrl}|⬇️ Download Video (Run #${githubRunNumber})>\n\n` +
       `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
-  } else if (recordVideo && videoPath) {
+  } else if (passed && recordVideo && videoPath) {
     videoSection = `\n\n` +
       `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n` +
       `🎬 *VIDEO RECORDING*\n\n` +
