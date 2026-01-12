@@ -62,17 +62,19 @@ async function uploadToGoogleDrive() {
       body: fs.createReadStream(videoPath),
     };
 
-    // Upload file
+    // Upload file (support Shared Drives)
     const response = await drive.files.create({
       requestBody: fileMetadata,
       media: media,
       fields: 'id, name, webViewLink, webContentLink',
+      supportsAllDrives: true,
+      supportsTeamDrives: true,
     });
 
     const fileId = response.data.id;
     console.log('✅ File uploaded! ID:', fileId);
 
-    // Make the file publicly viewable (optional - can be removed if you want to share manually)
+    // Make the file publicly viewable (support Shared Drives)
     try {
       await drive.permissions.create({
         fileId: fileId,
@@ -80,16 +82,20 @@ async function uploadToGoogleDrive() {
           role: 'reader',
           type: 'anyone',
         },
+        supportsAllDrives: true,
+        supportsTeamDrives: true,
       });
       console.log('✅ File made publicly viewable');
     } catch (permError) {
       console.log('⚠️  Could not set public permissions:', permError.message);
     }
 
-    // Get the shareable link
+    // Get the shareable link (support Shared Drives)
     const fileDetails = await drive.files.get({
       fileId: fileId,
       fields: 'webViewLink, webContentLink, id',
+      supportsAllDrives: true,
+      supportsTeamDrives: true,
     });
 
     const viewLink = fileDetails.data.webViewLink;

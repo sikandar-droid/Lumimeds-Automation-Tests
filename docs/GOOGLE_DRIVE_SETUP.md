@@ -1,10 +1,8 @@
-# Google Drive Upload Setup (Advanced - Optional)
+# Google Drive Upload Setup
 
-⚠️ **Note:** Google Drive upload requires **Google Workspace with Shared Drives** or **OAuth delegation**. Service accounts don't have storage quota.
+This guide explains how to set up Google Drive upload for checkout test videos.
 
-**Most users should use GitHub Artifacts instead** (which is the default fallback).
-
-This guide explains how to set up Google Drive upload for checkout test videos if you have Google Workspace.
+⚠️ **Important:** Service accounts don't have storage quota. You must use a **Shared Drive** (Google Workspace feature) or OAuth delegation.
 
 ## Steps to Set Up:
 
@@ -34,19 +32,23 @@ This guide explains how to set up Google Drive upload for checkout test videos i
 4. Select "JSON" format
 5. Download the JSON file
 
-### 4. Create and Share Google Drive Folder (REQUIRED)
+### 4. Create Shared Drive Folder (REQUIRED)
 
-**This step is REQUIRED** - Service accounts don't have storage quota, so videos must be uploaded to a folder in your personal Google Drive.
+**This step is REQUIRED** - Service accounts don't have storage quota, so videos must be uploaded to a **Shared Drive** (Google Workspace feature).
 
-1. Create a folder in **your personal Google Drive** (e.g., "Lumimeds Test Videos")
-2. Right-click the folder → "Share"
-3. Add the service account email (found in the JSON file as `client_email`)
-4. Give it **"Editor"** permissions
-5. Click "Send" (or "Done")
-6. Copy the **Folder ID** from the URL:
+**Option A: Using Shared Drive (Recommended)**
+1. In Google Drive, click **"Shared drives"** (or "Shared with me" → "Shared drives")
+2. Create a new Shared Drive OR use an existing one
+3. Create a folder inside the Shared Drive (e.g., "Lumimeds Test Videos")
+4. Right-click the folder → **"Share"**
+5. Add the service account email (found in the JSON file as `client_email`)
+6. Give it **"Content Manager"** or **"Editor"** permissions
+7. Copy the **Folder ID** from the URL:
    - URL format: `https://drive.google.com/drive/folders/FOLDER_ID_HERE`
    - The Folder ID is the long string after `/folders/`
-   - Example: If URL is `https://drive.google.com/drive/folders/1a2b3c4d5e6f7g8h9i0j`, then Folder ID is `1a2b3c4d5e6f7g8h9i0j`
+
+**Option B: Using Regular Drive Folder (Requires Google Workspace Admin)**
+If you have Google Workspace, you can use OAuth delegation instead of Shared Drives (see Google's OAuth delegation guide).
 
 ### 5. Add Secrets to GitHub
 

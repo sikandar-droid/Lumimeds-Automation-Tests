@@ -76,27 +76,18 @@ jobs:
       - name: 🎬 Upload Test Video to Google Drive
         id: upload_gdrive
         if: success() && github.event.inputs.record_video == 'true'
-        continue-on-error: true
         env:
           GOOGLE_DRIVE_CREDENTIALS: ${{ secrets.GOOGLE_DRIVE_CREDENTIALS }}
           GOOGLE_DRIVE_FOLDER_ID: ${{ secrets.GOOGLE_DRIVE_FOLDER_ID }}
           FILE_NAME: checkout-video-run-${{ github.run_number }}.webm
         run: |
           VIDEO_FILE=$(find test-results -name "video.webm" -type f | head -1)
-          if [ -n "$VIDEO_FILE" ] && [ -n "$GOOGLE_DRIVE_CREDENTIALS" ] && [ -n "$GOOGLE_DRIVE_FOLDER_ID" ]; then
-            node scripts/upload-to-google-drive.js "$VIDEO_FILE" || echo "⚠️ Google Drive upload failed, will use GitHub artifacts"
+          if [ -n "$VIDEO_FILE" ]; then
+            node scripts/upload-to-google-drive.js "$VIDEO_FILE"
           else
-            echo "⚠️ Google Drive not configured, will use GitHub artifacts"
+            echo "❌ No video file found"
+            exit 1
           fi
-      
-      - name: 🎬 Upload Test Video (GitHub Artifact Backup)
-        if: success() && github.event.inputs.record_video == 'true'
-        uses: actions/upload-artifact@v4
-        with:
-          name: checkout-video-${{ github.run_number }}
-          path: test-results/**/video.webm
-          retention-days: 30
-          if-no-files-found: ignore
       
       - name: 📤 Send Slack Notification (Staging)
         if: always() && github.event.inputs.environment == 'staging'
