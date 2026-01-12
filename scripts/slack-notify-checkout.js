@@ -196,11 +196,18 @@ async function sendCheckoutNotification() {
   let videoSection = '';
   if (passed && recordVideo && githubRunId && githubRepository) {
     const artifactUrl = `https://github.com/${githubRepository}/actions/runs/${githubRunId}`;
+    const artifactName = process.env.ARTIFACT_NAME || `checkout-video-${githubRunNumber}`;
     videoSection = `\n\n` +
       `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n` +
       `🎬 *VIDEO RECORDING*\n\n` +
-      `   📹 <${artifactUrl}|⬇️ View Run & Download Video (Run #${githubRunNumber})>\n` +
-      `   💡 _Scroll to "Artifacts" section and click "checkout-video-${githubRunNumber}"_\n\n` +
+      `   📹 <${artifactUrl}|⬇️ View Run #${githubRunNumber}>\n\n` +
+      `   📥 *How to Download:*\n` +
+      `   1. Click the link above\n` +
+      `   2. Scroll to "Artifacts" section\n` +
+      `   3. Click "${artifactName}"\n` +
+      `   4. If nothing happens, try:\n` +
+      `      • Right-click → "Save link as"\n` +
+      `      • Or use: \`gh run download ${githubRunId} --name ${artifactName}\`\n\n` +
       `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
   } else if (passed && recordVideo && videoPath) {
     videoSection = `\n\n` +
