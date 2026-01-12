@@ -56,7 +56,7 @@ This guide explains how to set up Google Drive upload for checkout test videos.
    - Value: Copy the entire contents of the downloaded JSON file
    
    **Secret 2: `GOOGLE_DRIVE_FOLDER_ID`** (REQUIRED)
-   - Name: `GOOGLE_DRIVE_FOLDER_ID`
+    - Name: `GOOGLE_DRIVE_FOLDER_ID`
    - Value: The Folder ID from step 4
    - **This is REQUIRED** - Service accounts don't have storage quota, so videos must be uploaded to a folder in your personal Google Drive
 
