@@ -67,7 +67,21 @@ class CheckoutPage {
     async fillAddress(address) {
         console.log('📝 Filling address field...');
         
-        const maxAttempts = 5; // Reduced from 10 to avoid timeout
+        // Detect if we're running on Chromium/Chrome
+        let isChrome = false;
+        try {
+            const userAgent = await this.page.evaluate(() => navigator.userAgent);
+            isChrome = userAgent.includes('Chrome') && !userAgent.includes('Edg');
+            if (isChrome) {
+                console.log('🌐 Chrome detected - using Chrome-specific handling');
+            }
+        } catch (e) {
+            // Fallback: assume Chrome if detection fails (most common case)
+            isChrome = true;
+            console.log('🌐 Assuming Chrome - using Chrome-specific handling');
+        }
+        
+        const maxAttempts = 5;
         let lastError;
         
         for (let attempt = 1; attempt <= maxAttempts; attempt++) {
@@ -79,17 +93,34 @@ class CheckoutPage {
                 
                 console.log(`🔄 Attempt ${attempt}/${maxAttempts} to fill address...`);
                 
-                // Wait for page to be stable (shorter wait)
-                await this.page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {
-                    return this.page.waitForLoadState('domcontentloaded', { timeout: 5000 });
-                });
+                // Chrome needs more time for form rendering
+                if (isChrome) {
+                    await this.page.waitForLoadState('networkidle', { timeout: 15000 }).catch(() => {
+                        return this.page.waitForLoadState('domcontentloaded', { timeout: 8000 });
+                    });
+                } else {
+                    await this.page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {
+                        return this.page.waitForLoadState('domcontentloaded', { timeout: 5000 });
+                    });
+                }
                 
-                // Check for loading overlays (shorter timeout)
+                // Check for loading overlays
                 const loadingOverlay = this.page.locator('.tw-absolute.tw-inset-0.tw-bg-white\\/80');
                 const hasOverlay = await loadingOverlay.isVisible({ timeout: 500 }).catch(() => false);
                 if (hasOverlay) {
                     console.log('⏳ Waiting for loading overlay to disappear...');
-                    await loadingOverlay.waitFor({ state: 'hidden', timeout: 5000 }).catch(() => {});
+                    await loadingOverlay.waitFor({ state: 'hidden', timeout: isChrome ? 8000 : 5000 }).catch(() => {});
+                }
+                
+                // Chrome-specific: Wait for any autocomplete dropdowns to disappear
+                if (isChrome) {
+                    const autocompleteDropdown = this.page.locator('[role="listbox"], .pac-container, [class*="autocomplete"]');
+                    const hasAutocomplete = await autocompleteDropdown.isVisible({ timeout: 500 }).catch(() => false);
+                    if (hasAutocomplete) {
+                        console.log('⏳ Waiting for Chrome autocomplete to disappear...');
+                        await this.page.keyboard.press('Escape').catch(() => {});
+                        await this.page.waitForTimeout(500);
+                    }
                 }
                 
                 // Use a single locator with multiple strategies chained
@@ -100,12 +131,12 @@ class CheckoutPage {
                     .or(this.page.locator('input[name*="address" i]'))
                     .first();
                 
-                // Wait for field to be visible (shorter timeout per attempt)
-                await addressField.waitFor({ state: 'visible', timeout: 5000 });
+                // Chrome needs longer timeout for field visibility
+                await addressField.waitFor({ state: 'visible', timeout: isChrome ? 8000 : 5000 });
                 
                 // Scroll into view
                 await addressField.scrollIntoViewIfNeeded();
-                await this.page.waitForTimeout(300);
+                await this.page.waitForTimeout(isChrome ? 500 : 300);
                 
                 // Check if field is still visible after scroll
                 const isVisible = await addressField.isVisible({ timeout: 2000 }).catch(() => false);
@@ -113,11 +144,38 @@ class CheckoutPage {
                     throw new Error('Address field not visible after scroll');
                 }
                 
-                // Fill the field (use type instead of fill for better reliability)
+                // Chrome-specific: Disable autocomplete before filling
+                if (isChrome) {
+                    await this.page.evaluate((selector) => {
+                        const field = document.querySelector(selector);
+                        if (field) {
+                            field.setAttribute('autocomplete', 'off');
+                            field.setAttribute('data-autocomplete', 'off');
+                        }
+                    }, 'input[name="shipping_address"]').catch(() => {});
+                }
+                
+                // Fill the field - Chrome works better with fill() after disabling autocomplete
                 await addressField.click({ timeout: 3000 });
-                await this.page.waitForTimeout(200);
+                await this.page.waitForTimeout(isChrome ? 400 : 200);
+                
+                // Clear any existing value
                 await addressField.clear({ timeout: 2000 }).catch(() => {});
-                await addressField.type(address, { delay: 50, timeout: 5000 });
+                await this.page.waitForTimeout(200);
+                
+                // Chrome: Use fill() instead of type() to avoid autocomplete interference
+                if (isChrome) {
+                    await addressField.fill(address, { timeout: 5000 });
+                } else {
+                    await addressField.type(address, { delay: 50, timeout: 5000 });
+                }
+                
+                // Chrome: Press Tab to dismiss any autocomplete
+                if (isChrome) {
+                    await this.page.waitForTimeout(300);
+                    await this.page.keyboard.press('Tab').catch(() => {});
+                    await this.page.waitForTimeout(200);
+                }
                 
                 // Verify it worked
                 await this.page.waitForTimeout(300);
@@ -139,9 +197,9 @@ class CheckoutPage {
                     throw new Error('Page/context was closed - cannot retry');
                 }
                 
-                // Shorter wait between retries (fixed time, not increasing)
+                // Chrome needs slightly longer wait between retries
                 if (attempt < maxAttempts) {
-                    await this.page.waitForTimeout(1500);
+                    await this.page.waitForTimeout(isChrome ? 2000 : 1500);
                 }
             }
         }
