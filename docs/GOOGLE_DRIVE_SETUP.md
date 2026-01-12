@@ -30,17 +30,19 @@ This guide explains how to set up Google Drive upload for checkout test videos.
 4. Select "JSON" format
 5. Download the JSON file
 
-### 4. Share Google Drive Folder (Optional)
+### 4. Create and Share Google Drive Folder (REQUIRED)
 
-If you want videos uploaded to a specific folder:
+**This step is REQUIRED** - Service accounts don't have storage quota, so videos must be uploaded to a folder in your personal Google Drive.
 
-1. Create a folder in Google Drive
+1. Create a folder in **your personal Google Drive** (e.g., "Lumimeds Test Videos")
 2. Right-click the folder → "Share"
 3. Add the service account email (found in the JSON file as `client_email`)
-4. Give it "Editor" permissions
-5. Copy the Folder ID from the URL:
+4. Give it **"Editor"** permissions
+5. Click "Send" (or "Done")
+6. Copy the **Folder ID** from the URL:
    - URL format: `https://drive.google.com/drive/folders/FOLDER_ID_HERE`
    - The Folder ID is the long string after `/folders/`
+   - Example: If URL is `https://drive.google.com/drive/folders/1a2b3c4d5e6f7g8h9i0j`, then Folder ID is `1a2b3c4d5e6f7g8h9i0j`
 
 ### 5. Add Secrets to GitHub
 
