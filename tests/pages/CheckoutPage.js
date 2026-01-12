@@ -709,7 +709,7 @@ class CheckoutPage {
             // Add blur and overlay to card section
             await this.page.addStyleTag({
                 content: `
-                    /* Blur all Stripe iframes and their containers */
+                    /* Completely hide and blur all Stripe iframes and their containers */
                     iframe[name*="stripe"], 
                     iframe[src*="stripe"],
                     iframe[name*="__privateStripeFrame"],
@@ -719,15 +719,27 @@ class CheckoutPage {
                     #card-element,
                     [id*="card"] iframe,
                     [class*="card"] iframe {
-                        filter: blur(10px) !important;
+                        filter: blur(15px) !important;
+                        opacity: 0.3 !important;
                         pointer-events: none !important;
+                        visibility: hidden !important;
                     }
                     
-                    /* Blur parent containers */
+                    /* Blur and hide parent containers */
                     div:has(> iframe[name*="stripe"]),
                     div:has(> iframe[src*="stripe"]) {
                         position: relative !important;
-                        filter: blur(10px) !important;
+                        filter: blur(15px) !important;
+                        opacity: 0.3 !important;
+                    }
+                    
+                    /* Hide any input fields that might show card data */
+                    input[name*="card"],
+                    input[id*="card"],
+                    input[placeholder*="card" i],
+                    input[autocomplete*="cc-"] {
+                        filter: blur(15px) !important;
+                        opacity: 0 !important;
                     }
                 `
             });
@@ -742,21 +754,23 @@ class CheckoutPage {
                         // Create overlay
                         const overlay = document.createElement('div');
                         overlay.style.cssText = `
-                            position: absolute;
-                            top: 0;
-                            left: 0;
-                            right: 0;
-                            bottom: 0;
-                            background: rgba(255, 255, 255, 0.9);
-                            backdrop-filter: blur(10px);
-                            z-index: 9999;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            font-size: 14px;
-                            font-weight: bold;
-                            color: #666;
-                            pointer-events: none;
+                            position: absolute !important;
+                            top: 0 !important;
+                            left: 0 !important;
+                            right: 0 !important;
+                            bottom: 0 !important;
+                            background: rgba(255, 255, 255, 0.98) !important;
+                            backdrop-filter: blur(15px) !important;
+                            z-index: 999999 !important;
+                            display: flex !important;
+                            align-items: center !important;
+                            justify-content: center !important;
+                            font-size: 16px !important;
+                            font-weight: bold !important;
+                            color: #333 !important;
+                            pointer-events: none !important;
+                            border: 2px solid #ddd !important;
+                            border-radius: 8px !important;
                         `;
                         overlay.textContent = '🔒 CARD DETAILS HIDDEN FOR SECURITY';
                         overlay.className = 'card-mask-overlay';
@@ -788,37 +802,9 @@ class CheckoutPage {
         console.log('⏳ Waiting for Stripe to validate card...');
         await this.page.waitForTimeout(5000);
         
-        // Remove mask after card is validated (so success shows clearly)
-        if (shouldMask) {
-            console.log('🔓 Removing mask after card validation...');
-            
-            // Remove all overlay elements
-            await this.page.evaluate(() => {
-                const overlays = document.querySelectorAll('.card-mask-overlay');
-                overlays.forEach(overlay => overlay.remove());
-            });
-            
-            // Remove blur
-            await this.page.addStyleTag({
-                content: `
-                    iframe[name*="stripe"], 
-                    iframe[src*="stripe"],
-                    iframe[name*="__privateStripeFrame"],
-                    [class*="StripeElement"],
-                    .stripe-card-element,
-                    [data-stripe],
-                    #card-element,
-                    [id*="card"] iframe,
-                    [class*="card"] iframe,
-                    div:has(> iframe[name*="stripe"]),
-                    div:has(> iframe[src*="stripe"]) {
-                        filter: none !important;
-                        pointer-events: auto !important;
-                    }
-                `
-            });
-            console.log('✅ Payment mask removed');
-        }
+        // Keep mask on during video recording - don't remove it
+        // The mask stays on to protect card details in the recording
+        console.log('🔒 Keeping card details masked for security (video recording)');
         
         console.log('✅ Payment details completed\n');
     }
