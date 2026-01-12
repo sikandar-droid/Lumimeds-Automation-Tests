@@ -29,8 +29,8 @@
     "@types/node": "^24.10.1"
   },
   "dependencies": {
+    "googleapis": "^144.0.0",
     "playwright-extra": "^4.3.6",
-    "puppeteer-extra-plugin-stealth": "^2.11.2",
-    "googleapis": "^144.0.0"
+    "puppeteer-extra-plugin-stealth": "^2.11.2"
   }
 }

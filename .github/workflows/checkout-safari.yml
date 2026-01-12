@@ -73,19 +73,21 @@ jobs:
         run: |
           npx playwright test tests/checkout/checkout-prod.spec.js --project=webkit
       
-      - name: 🎬 Upload Test Video to Google Drive
-        id: upload_gdrive
+      - name: 🎬 Upload Test Video to Slack
+        id: upload_slack
         if: success() && github.event.inputs.record_video == 'true'
         env:
-          GOOGLE_DRIVE_CREDENTIALS: ${{ secrets.GOOGLE_DRIVE_CREDENTIALS }}
-          GOOGLE_DRIVE_FOLDER_ID: ${{ secrets.GOOGLE_DRIVE_FOLDER_ID }}
-          FILE_NAME: checkout-video-safari-run-${{ github.run_number }}.webm
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_CHANNEL: ${{ secrets.SLACK_CHANNEL }}
+          FILE_NAME: checkout-safari-run-${{ github.run_number }}.webm
+          GITHUB_RUN_NUMBER: ${{ github.run_number }}
         run: |
           VIDEO_FILE=$(find test-results -name "video.webm" -type f | head -1)
-          if [ -n "$VIDEO_FILE" ]; then
-            node scripts/upload-to-google-drive.js "$VIDEO_FILE"
+          if [ -n "$VIDEO_FILE" ] && [ -n "$SLACK_BOT_TOKEN" ]; then
+            npm install form-data
+            node scripts/upload-video-to-slack.js "$VIDEO_FILE"
           else
-            echo "⚠️ No video file found"
+            echo "⚠️ Slack not configured or missing SLACK_BOT_TOKEN. Skipping upload."
             exit 1
           fi
       
@@ -110,8 +112,7 @@ jobs:
           GITHUB_RUN_ID: ${{ github.run_id }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           GITHUB_RUN_NUMBER: ${{ github.run_number }}
-          GOOGLE_DRIVE_VIDEO_URL: ${{ steps.upload_gdrive.outputs.download_url }}
-          GOOGLE_DRIVE_VIEW_URL: ${{ steps.upload_gdrive.outputs.view_url }}
+          SLACK_FILE_URL: ${{ steps.upload_slack.outputs.slack_file_url }}
         run: node scripts/slack-notify-checkout.js
       
       - name: 📤 Send Slack Notification (Production)
@@ -126,8 +127,7 @@ jobs:
           GITHUB_RUN_ID: ${{ github.run_id }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           GITHUB_RUN_NUMBER: ${{ github.run_number }}
-          GOOGLE_DRIVE_VIDEO_URL: ${{ steps.upload_gdrive.outputs.download_url }}
-          GOOGLE_DRIVE_VIEW_URL: ${{ steps.upload_gdrive.outputs.view_url }}
+          SLACK_FILE_URL: ${{ steps.upload_slack.outputs.slack_file_url }}
         run: node scripts/slack-notify-checkout.js
       
       - name: 📊 Upload results

@@ -11,27 +11,38 @@ if (ADMIN_EMAIL === 'your-admin-email@example.com' || ADMIN_PASSWORD === 'your-p
   console.warn('⚠️  WARNING: Using default credentials. Set ADMIN_EMAIL and ADMIN_PASSWORD environment variables.');
 }
 
-// List of all 19 ad pages to test (correct routes)
+// Complete list of all 27 ad pages to test
 const AD_PAGES = [
-  '/ad/best-weight-loss-medication',
-  '/ad/easy-weight-loss',
+  // ========== NEW/ACTIVE LPs ==========
+  '/ad/new-year-new-you',        // NEW
+  '/ad/longevity-nad',           // NEW
   '/ad/for-women',
-  '/ad/free',
-  '/ad/glow-up',
-  '/ad/glp1-gip-treatment',
-  '/ad/holiday-weight-goals',
   '/ad/how-to-start',
   '/ad/journey',
-  '/ad/med-spa',
-  '/ad/otp',
   '/ad/redefined',
-  '/ad/science',
+  '/ad/med-spa1',
+  '/ad/best-weight-loss-medication',
+  '/ad/starter-pack',            // NEW
+  '/ad/holiday-weight-goals',
+  
+  // ========== OLD LPs ==========
   '/ad/stay-on-track',
-  '/ad/sustainable-weight-loss',
+  '/ad/glow-up',
+  '/ad/free',
+  '/ad/science',
+  '/ad/otp',
+  '/ad/tirz',                    // NEW
+  '/ad/glp1-gip-treatment',
   '/ad/sustained',
+  '/ad/sustainable-weight-loss',
   '/ad/weight-loss-treatment',
-  '/en/ad/med-spa1',
-  '/es/ad/med-spa3'  // Spanish page - uses "Comenzar"
+  '/ad/easy-weight-loss',
+  '/ad/med-spa',
+  '/ad/med-spa2',                // NEW
+  '/ad/med-spa3',
+  '/ad/healthy-weight-loss',     // NEW
+  '/ad/sem',                     // NEW
+  '/es/ad/med-spa1',             // Spanish version - uses "Comenzar"
 ];
 
 // Helper function to close pop-ups on ad pages
@@ -428,19 +439,13 @@ test.describe('Individual Ad Page Tests - Admin Modal', () => {
         
         if (!modalVisible && urlBeforeCancel === urlAfterCancel) {
           console.log('✅ PASS: Modal closed, stayed on ad page');
-          pageResult.cancelTest.passed = true;
-          pageResult.cancelTest.reason = 'Modal closed correctly';
         } else {
           console.log(`❌ FAIL: Modal visible=${modalVisible}, URL changed=${urlBeforeCancel !== urlAfterCancel}`);
-          pageResult.cancelTest.passed = false;
-          pageResult.cancelTest.reason = `Modal still visible or URL changed`;
         }
       } else {
         console.log('❌ FAIL: Modal did not appear');
-        pageResult.cancelTest.passed = false;
-        pageResult.cancelTest.reason = 'Modal did not appear';
-        results.push(pageResult);
-        continue; // Skip to next page
+        // Skip Part B if modal didn't appear in Part A
+        return;
       }
       
       // Wait a moment before Part B
@@ -469,10 +474,7 @@ test.describe('Individual Ad Page Tests - Admin Modal', () => {
       
       if (!buttonClicked) {
         console.log('❌ FAIL: Could not find clickable Get Started button');
-        pageResult.proceedTest.passed = false;
-        pageResult.proceedTest.reason = 'Could not click Get Started button';
-        results.push(pageResult);
-        continue; // Skip to next page
+        return; // Skip rest of test
       }
       
       await page.waitForTimeout(2000);
@@ -493,72 +495,17 @@ test.describe('Individual Ad Page Tests - Admin Modal', () => {
         if (urlAfter.includes('patient/login') && urlAfter.includes('intent=patient-login')) {
           console.log(`✅ PASS: Redirected to patient login`);
           console.log(`   URL: ${urlAfter}`);
-          pageResult.proceedTest.passed = true;
-          pageResult.proceedTest.reason = 'Redirected correctly';
         } else {
           console.log(`❌ FAIL: Did not redirect to patient login`);
           console.log(`   Expected: /patient/login?intent=patient-login`);
           console.log(`   Got: ${urlAfter}`);
-          pageResult.proceedTest.passed = false;
-          pageResult.proceedTest.reason = `Wrong redirect: ${urlAfter}`;
         }
       } else {
         console.log('❌ FAIL: Modal did not appear');
-        pageResult.proceedTest.passed = false;
-        pageResult.proceedTest.reason = 'Modal did not appear';
       }
       
-      results.push(pageResult);
-      console.log(`\n✅ Completed testing: ${testPage}`);
-    }
-    
-    console.log('\n' + '='.repeat(80));
-    console.log('📊 COMPREHENSIVE TEST REPORT');
-    console.log('='.repeat(80));
-    
-    // Calculate statistics
-    const totalPages = results.length;
-    const cancelPassed = results.filter(r => r.cancelTest.passed).length;
-    const proceedPassed = results.filter(r => r.proceedTest.passed).length;
-    const bothPassed = results.filter(r => r.cancelTest.passed && r.proceedTest.passed).length;
-    
-    console.log(`\n📈 SUMMARY STATISTICS:`);
-    console.log(`   Total Ad Pages Tested: ${totalPages}`);
-    console.log(`   Cancel Button Tests Passed: ${cancelPassed}/${totalPages} (${Math.round(cancelPassed/totalPages*100)}%)`);
-    console.log(`   Proceed Button Tests Passed: ${proceedPassed}/${totalPages} (${Math.round(proceedPassed/totalPages*100)}%)`);
-    console.log(`   Both Tests Passed: ${bothPassed}/${totalPages} (${Math.round(bothPassed/totalPages*100)}%)`);
-    
-    console.log(`\n📋 DETAILED RESULTS:`);
-    console.log('─'.repeat(80));
-    
-    results.forEach((result, index) => {
-      const pageName = result.page.split('/').pop();
-      const cancelIcon = result.cancelTest.passed ? '✅' : '❌';
-      const proceedIcon = result.proceedTest.passed ? '✅' : '❌';
-      
-      console.log(`\n${index + 1}. ${pageName}`);
-      console.log(`   Cancel Test: ${cancelIcon} ${result.cancelTest.reason}`);
-      console.log(`   Proceed Test: ${proceedIcon} ${result.proceedTest.reason}`);
+      console.log(`\n✅ Completed testing: ${adPagePath}`);
     });
-    
-    console.log('\n' + '─'.repeat(80));
-    console.log('\n✅ PASSED PAGES:');
-    results.filter(r => r.cancelTest.passed && r.proceedTest.passed).forEach(r => {
-      console.log(`   ✅ ${r.page}`);
-    });
-    
-    if (results.some(r => !r.cancelTest.passed || !r.proceedTest.passed)) {
-      console.log('\n❌ FAILED PAGES:');
-      results.filter(r => !r.cancelTest.passed || !r.proceedTest.passed).forEach(r => {
-        console.log(`   ❌ ${r.page}`);
-        if (!r.cancelTest.passed) console.log(`      - Cancel: ${r.cancelTest.reason}`);
-        if (!r.proceedTest.passed) console.log(`      - Proceed: ${r.proceedTest.reason}`);
-      });
-    }
-    
-    console.log('\n' + '='.repeat(80));
-    console.log('🎉 ALL TESTS COMPLETE!');
-    console.log('='.repeat(80));
   });
 
   test('Test single ad page with admin login', async ({ page }) => {

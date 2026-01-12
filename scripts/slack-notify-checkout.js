@@ -194,12 +194,21 @@ async function sendCheckoutNotification() {
 
   // Add video section only if recording was enabled AND tests passed
   let videoSection = '';
+  const slackFileUrl = process.env.SLACK_FILE_URL;
   const googleDriveUrl = process.env.GOOGLE_DRIVE_VIDEO_URL;
   const googleDriveViewUrl = process.env.GOOGLE_DRIVE_VIEW_URL;
-  
+
   if (passed && recordVideo) {
-    if (googleDriveUrl || googleDriveViewUrl) {
-      // Google Drive link (preferred - easier to download)
+    if (slackFileUrl) {
+      // Slack file upload (preferred - appears in thread)
+      videoSection = `\n\n` +
+        `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n` +
+        `🎬 *VIDEO RECORDING*\n\n` +
+        `   📹 <${slackFileUrl}|View Video in Slack>\n\n` +
+        `   ✨ Video uploaded to this channel!\n\n` +
+        `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
+    } else if (googleDriveUrl || googleDriveViewUrl) {
+      // Google Drive link (fallback)
       const downloadUrl = googleDriveUrl || googleDriveViewUrl;
       const viewUrl = googleDriveViewUrl || googleDriveUrl;
       videoSection = `\n\n` +
@@ -219,10 +228,7 @@ async function sendCheckoutNotification() {
         `   📥 *How to Download:*\n` +
         `   1. Click the link above\n` +
         `   2. Scroll to "Artifacts" section\n` +
-        `   3. Click "${artifactName}"\n` +
-        `   4. If nothing happens, try:\n` +
-        `      • Right-click → "Save link as"\n` +
-        `      • Or use: \`gh run download ${githubRunId} --name ${artifactName}\`\n\n` +
+        `   3. Click "${artifactName}"\n\n` +
         `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
     } else if (videoPath) {
       // Local video

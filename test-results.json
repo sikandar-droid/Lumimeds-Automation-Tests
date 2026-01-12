@@ -104,7 +104,7 @@
           "specs": [
             {
               "title": "Complete Checkout Flow with Production Card",
-              "ok": false,
+              "ok": true,
               "tags": [],
               "tests": [
                 {
@@ -117,32 +117,10 @@
                     {
                       "workerIndex": 0,
                       "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 105626,
-                      "error": {
-                        "message": "TimeoutError: locator.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('option', { name: 'Nevada' })\u001b[22m\n\u001b[2m    - locator resolved to <div tabindex=\"-1\" role=\"option\" aria-disabled=\"false\" aria-selected=\"false\" class=\"css-10wo9uf-option\" id=\"react-select-2-option-28\">Nevada</div>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m    - element is visible, enabled and stable\u001b[22m\n\u001b[2m    - scrolling into view if needed\u001b[22m\n\u001b[2m    - done scrolling\u001b[22m\n\u001b[2m    - <span class=\"tw-text-gray-600\">Loading Payment Options ...</span> from <div class=\"tw-flex tw-flex-col tw-gap-y-6 tw-relative\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m  - retrying click action\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m    - element is visible, enabled and stable\u001b[22m\n\u001b[2m    - scrolling into view if needed\u001b[22m\n\u001b[2m    - done scrolling\u001b[22m\n\u001b[2m    - element is outside of the viewport\u001b[22m\n\u001b[2m  - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not stable\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m    - element is not stable\u001b[22m\n\u001b[2m  - retrying click action\u001b[22m\n\u001b[2m    - waiting 500ms\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m    - element is visible, enabled and stable\u001b[22m\n\u001b[2m    - scrolling into view if needed\u001b[22m\n\u001b[2m    - done scrolling\u001b[22m\n\u001b[2m    - <div class=\"tw-absolute tw-inset-0 tw-bg-white/80 tw-z-10 tw-flex tw-items-center tw-justify-center tw-rounded-lg\">…</div> from <div class=\"tw-flex tw-flex-col tw-gap-y-6 tw-relative\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m  - retrying click action\u001b[22m\n\u001b[2m    - waiting 500ms\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m  - element was detached from the DOM, retrying\u001b[22m\n",
-                        "stack": "TimeoutError: locator.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('option', { name: 'Nevada' })\u001b[22m\n\u001b[2m    - locator resolved to <div tabindex=\"-1\" role=\"option\" aria-disabled=\"false\" aria-selected=\"false\" class=\"css-10wo9uf-option\" id=\"react-select-2-option-28\">Nevada</div>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m    - element is visible, enabled and stable\u001b[22m\n\u001b[2m    - scrolling into view if needed\u001b[22m\n\u001b[2m    - done scrolling\u001b[22m\n\u001b[2m    - <span class=\"tw-text-gray-600\">Loading Payment Options ...</span> from <div class=\"tw-flex tw-flex-col tw-gap-y-6 tw-relative\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m  - retrying click action\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m    - element is visible, enabled and stable\u001b[22m\n\u001b[2m    - scrolling into view if needed\u001b[22m\n\u001b[2m    - done scrolling\u001b[22m\n\u001b[2m    - element is outside of the viewport\u001b[22m\n\u001b[2m  - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not stable\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m    - element is not stable\u001b[22m\n\u001b[2m  - retrying click action\u001b[22m\n\u001b[2m    - waiting 500ms\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m    - element is visible, enabled and stable\u001b[22m\n\u001b[2m    - scrolling into view if needed\u001b[22m\n\u001b[2m    - done scrolling\u001b[22m\n\u001b[2m    - <div class=\"tw-absolute tw-inset-0 tw-bg-white/80 tw-z-10 tw-flex tw-items-center tw-justify-center tw-rounded-lg\">…</div> from <div class=\"tw-flex tw-flex-col tw-gap-y-6 tw-relative\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m  - retrying click action\u001b[22m\n\u001b[2m    - waiting 500ms\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m  - element was detached from the DOM, retrying\u001b[22m\n\n    at CheckoutPage.selectState (/Users/macbookpro/Desktop/Lumimeds/tests/pages/CheckoutPage.js:49:62)\n    at CheckoutPage.fillAddressDetails (/Users/macbookpro/Desktop/Lumimeds/tests/pages/CheckoutPage.js:72:9)\n    at CheckoutPage.completeCheckout (/Users/macbookpro/Desktop/Lumimeds/tests/pages/CheckoutPage.js:535:9)\n    at /Users/macbookpro/Desktop/Lumimeds/tests/checkout/checkout-prod.spec.js:48:13",
-                        "location": {
-                          "file": "/Users/macbookpro/Desktop/Lumimeds/tests/pages/CheckoutPage.js",
-                          "column": 62,
-                          "line": 49
-                        },
-                        "snippet": "   at pages/CheckoutPage.js:49\n\n  47 |     async selectState(state) {\n  48 |         await this.stateDropdown.click();\n> 49 |         await this.page.getByRole('option', { name: state }).click();\n     |                                                              ^\n  50 |     }\n  51 |\n  52 |     /**"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "/Users/macbookpro/Desktop/Lumimeds/tests/pages/CheckoutPage.js",
-                            "column": 62,
-                            "line": 49
-                          },
-                          "message": "TimeoutError: locator.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('option', { name: 'Nevada' })\u001b[22m\n\u001b[2m    - locator resolved to <div tabindex=\"-1\" role=\"option\" aria-disabled=\"false\" aria-selected=\"false\" class=\"css-10wo9uf-option\" id=\"react-select-2-option-28\">Nevada</div>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m    - element is visible, enabled and stable\u001b[22m\n\u001b[2m    - scrolling into view if needed\u001b[22m\n\u001b[2m    - done scrolling\u001b[22m\n\u001b[2m    - <span class=\"tw-text-gray-600\">Loading Payment Options ...</span> from <div class=\"tw-flex tw-flex-col tw-gap-y-6 tw-relative\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m  - retrying click action\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m    - element is visible, enabled and stable\u001b[22m\n\u001b[2m    - scrolling into view if needed\u001b[22m\n\u001b[2m    - done scrolling\u001b[22m\n\u001b[2m    - element is outside of the viewport\u001b[22m\n\u001b[2m  - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not stable\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m    - element is not stable\u001b[22m\n\u001b[2m  - retrying click action\u001b[22m\n\u001b[2m    - waiting 500ms\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m    - element is visible, enabled and stable\u001b[22m\n\u001b[2m    - scrolling into view if needed\u001b[22m\n\u001b[2m    - done scrolling\u001b[22m\n\u001b[2m    - <div class=\"tw-absolute tw-inset-0 tw-bg-white/80 tw-z-10 tw-flex tw-items-center tw-justify-center tw-rounded-lg\">…</div> from <div class=\"tw-flex tw-flex-col tw-gap-y-6 tw-relative\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m  - retrying click action\u001b[22m\n\u001b[2m    - waiting 500ms\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m  - element was detached from the DOM, retrying\u001b[22m\n\n\n   at pages/CheckoutPage.js:49\n\n  47 |     async selectState(state) {\n  48 |         await this.stateDropdown.click();\n> 49 |         await this.page.getByRole('option', { name: state }).click();\n     |                                                              ^\n  50 |     }\n  51 |\n  52 |     /**\n    at CheckoutPage.selectState (/Users/macbookpro/Desktop/Lumimeds/tests/pages/CheckoutPage.js:49:62)\n    at CheckoutPage.fillAddressDetails (/Users/macbookpro/Desktop/Lumimeds/tests/pages/CheckoutPage.js:72:9)\n    at CheckoutPage.completeCheckout (/Users/macbookpro/Desktop/Lumimeds/tests/pages/CheckoutPage.js:535:9)\n    at /Users/macbookpro/Desktop/Lumimeds/tests/checkout/checkout-prod.spec.js:48:13"
-                        }
-                      ],
+                      "status": "passed",
+                      "duration": 138497,
+                      "errors": [],
                       "stdout": [
-                        {
-                          "text": "⚠️ Network still active, proceeding anyway...\n"
-                        },
                         {
                           "text": "🔍 Attempting to close any popup by clicking...\n"
                         },
@@ -159,7 +137,7 @@
                           "text": "✅ Clicked Continue button\n"
                         },
                         {
-                          "text": "🚀 Starting checkout with email: sikandar.naeem+80977@devslooptech.com\n"
+                          "text": "🚀 Starting checkout with email: sikandar.naeem+88716@devslooptech.com\n"
                         },
                         {
                           "text": "⏳ Waiting for page to process motivation selection (mobile compatibility)...\n"
@@ -174,6 +152,27 @@
                           "text": "⏳ Waiting for navigation to product selection...\n"
                         },
                         {
+                          "text": "✅ Submit button hidden - page is transitioning\n"
+                        },
+                        {
+                          "text": "✅ Navigation to product selection complete\n"
+                        },
+                        {
+                          "text": "🔍 Looking for plan: 3-Month Subscription\n"
+                        },
+                        {
+                          "text": "✅ Found plan radio (with \"value\" prefix)\n"
+                        },
+                        {
+                          "text": "✅ Plan selected using check()\n"
+                        },
+                        {
+                          "text": "⏳ Verifying plan selection...\n"
+                        },
+                        {
+                          "text": "✅ Plan selection verified\n"
+                        },
+                        {
                           "text": "⏳ Waiting for checkout/continue button...\n"
                         },
                         {
@@ -183,16 +182,229 @@
                           "text": "🖱️  Clicking desktop \"Checkout\" button\n"
                         },
                         {
-                          "text": "\n❌ ========== PRODUCTION CHECKOUT FAILED ==========\n"
+                          "text": "⏳ Waiting for checkout page to load...\n"
                         },
                         {
-                          "text": "❌ locator.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('option', { name: 'Nevada' })\u001b[22m\n\u001b[2m    - locator resolved to <div tabindex=\"-1\" role=\"option\" aria-disabled=\"false\" aria-selected=\"false\" class=\"css-10wo9uf-option\" id=\"react-select-2-option-28\">Nevada</div>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m    - element is visible, enabled and stable\u001b[22m\n\u001b[2m    - scrolling into view if needed\u001b[22m\n\u001b[2m    - done scrolling\u001b[22m\n\u001b[2m    - <span class=\"tw-text-gray-600\">Loading Payment Options ...</span> from <div class=\"tw-flex tw-flex-col tw-gap-y-6 tw-relative\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m  - retrying click action\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m    - element is visible, enabled and stable\u001b[22m\n\u001b[2m    - scrolling into view if needed\u001b[22m\n\u001b[2m    - done scrolling\u001b[22m\n\u001b[2m    - element is outside of the viewport\u001b[22m\n\u001b[2m  - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not stable\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m    - element is not stable\u001b[22m\n\u001b[2m  - retrying click action\u001b[22m\n\u001b[2m    - waiting 500ms\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m    - element is visible, enabled and stable\u001b[22m\n\u001b[2m    - scrolling into view if needed\u001b[22m\n\u001b[2m    - done scrolling\u001b[22m\n\u001b[2m    - <div class=\"tw-absolute tw-inset-0 tw-bg-white/80 tw-z-10 tw-flex tw-items-center tw-justify-center tw-rounded-lg\">…</div> from <div class=\"tw-flex tw-flex-col tw-gap-y-6 tw-relative\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m  - retrying click action\u001b[22m\n\u001b[2m    - waiting 500ms\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m  - element was detached from the DOM, retrying\u001b[22m\n\n"
+                          "text": "⏳ Waiting for form to stabilize...\n"
                         },
                         {
-                          "text": "🛡️  Safety check prevented full payment charge\n"
+                          "text": "✅ Checkout page ready\n"
                         },
                         {
-                          "text": "📧 Email (not charged): sikandar.naeem+80977@devslooptech.com\n"
+                          "text": "📝 Filling address field...\n"
+                        },
+                        {
+                          "text": "🔄 Attempt 1/10 to fill address...\n"
+                        },
+                        {
+                          "text": "✅ Address filled successfully\n"
+                        },
+                        {
+                          "text": "⏳ Checking for loading overlays...\n"
+                        },
+                        {
+                          "text": "🔍 Looking for state dropdown...\n"
+                        },
+                        {
+                          "text": "✅ Clicked state dropdown (label-based)\n"
+                        },
+                        {
+                          "text": "🔍 Looking for state option: Nevada\n"
+                        },
+                        {
+                          "text": "✅ Selected state: Nevada\n"
+                        },
+                        {
+                          "text": "\n🛡️  ========== SAFETY CHECK: COUPON VERIFICATION ==========\n\n"
+                        },
+                        {
+                          "text": "🗑️ Attempting to remove existing coupon...\n"
+                        },
+                        {
+                          "text": "✅ Existing coupon removed successfully\n"
+                        },
+                        {
+                          "text": "🎯 Expected discount: 99% off (based on coupon code)\n"
+                        },
+                        {
+                          "text": "🎫 Applying coupon code: 99offfromjustin\n"
+                        },
+                        {
+                          "text": "🗑️ Checking for and removing any auto-applied coupons...\n"
+                        },
+                        {
+                          "text": "🗑️ Attempting to remove existing coupon...\n"
+                        },
+                        {
+                          "text": "ℹ️  No existing coupon to remove\n"
+                        },
+                        {
+                          "text": "💰 Current total price: $649.00\n"
+                        },
+                        {
+                          "text": "📊 Price BEFORE coupon: $649.00\n"
+                        },
+                        {
+                          "text": "ℹ️  Coupon field already visible\n"
+                        },
+                        {
+                          "text": "📝 Coupon code entered: 99offfromjustin\n"
+                        },
+                        {
+                          "text": "✅ Clicked Apply button\n"
+                        },
+                        {
+                          "text": "💰 Current total price: $6.49\n"
+                        },
+                        {
+                          "text": "📊 Price AFTER coupon: $6.49\n"
+                        },
+                        {
+                          "text": "💵 Discount applied: $642.51 (99.0% off)\n"
+                        },
+                        {
+                          "text": "✅ Coupon verification PASSED - Discount is within expected range\n"
+                        },
+                        {
+                          "text": "\n✅ ========== COUPON VERIFICATION PASSED ==========\n"
+                        },
+                        {
+                          "text": "   Original price: $649.00\n"
+                        },
+                        {
+                          "text": "   Discounted price: $6.49\n"
+                        },
+                        {
+                          "text": "   Discount: 99.0% off\n"
+                        },
+                        {
+                          "text": "   Savings: $642.51\n"
+                        },
+                        {
+                          "text": "✅ Safe to proceed with checkout\n\n"
+                        },
+                        {
+                          "text": "\n💳 Starting payment details entry...\n"
+                        },
+                        {
+                          "text": "⏳ Waiting for Stripe iframes to load...\n"
+                        },
+                        {
+                          "text": "✅ Stripe iframes loaded\n"
+                        },
+                        {
+                          "text": "🔒 Masking payment details for video recording...\n"
+                        },
+                        {
+                          "text": "📝 Filling card number: 4246315431366655\n"
+                        },
+                        {
+                          "text": "✅ Card number filled\n"
+                        },
+                        {
+                          "text": "📝 Filling expiry date: 1229\n"
+                        },
+                        {
+                          "text": "✅ Expiry date filled\n"
+                        },
+                        {
+                          "text": "📝 Filling CVC: 948\n"
+                        },
+                        {
+                          "text": "✅ CVC filled\n"
+                        },
+                        {
+                          "text": "⏳ Waiting for Stripe to validate card...\n"
+                        },
+                        {
+                          "text": "✅ Payment mask removed\n"
+                        },
+                        {
+                          "text": "✅ Payment details completed\n\n"
+                        },
+                        {
+                          "text": "\n🛡️  ========== RE-VERIFYING COUPON AFTER PAYMENT DETAILS ==========\n"
+                        },
+                        {
+                          "text": "💰 Current total price: $6.49\n"
+                        },
+                        {
+                          "text": "💰 Expected price: $6.49\n"
+                        },
+                        {
+                          "text": "💰 Current price after payment: $6.49\n"
+                        },
+                        {
+                          "text": "✅ Coupon still applied after payment details\n"
+                        },
+                        {
+                          "text": "========================================\n\n"
+                        },
+                        {
+                          "text": "⏳ Waiting for Stripe to finish tokenizing...\n"
+                        },
+                        {
+                          "text": "✅ Checkout button is ready\n"
+                        },
+                        {
+                          "text": "\n🛡️  ========== FINAL PRICE VERIFICATION BEFORE CHECKOUT ==========\n"
+                        },
+                        {
+                          "text": "💰 Current total price: $6.49\n"
+                        },
+                        {
+                          "text": "💰 Expected price: $6.49\n"
+                        },
+                        {
+                          "text": "💰 Current price: $6.49\n"
+                        },
+                        {
+                          "text": "✅ Final price verification passed - safe to proceed\n"
+                        },
+                        {
+                          "text": "========================================\n\n"
+                        },
+                        {
+                          "text": "📜 Scrolling to checkout button...\n"
+                        },
+                        {
+                          "text": "📍 Current URL before checkout: https://lumimeds.com/checkout/7e286dbd-bc44-4130-baf5-07e8e7efc88a?priceId=price_prod_M745E6Si1Rstpd6E&mode=subscription\n"
+                        },
+                        {
+                          "text": "🛒 Clicking checkout button...\n"
+                        },
+                        {
+                          "text": "⏳ Waiting for checkout to process...\n"
+                        },
+                        {
+                          "text": "⏳ Waiting for redirect to success page...\n"
+                        },
+                        {
+                          "text": "✅ Redirect detected via waitForURL\n"
+                        },
+                        {
+                          "text": "✅ Checkout completed successfully!\n"
+                        },
+                        {
+                          "text": "📍 Success page URL: https://lumimeds.com/checkout/success?priceId=price_prod_M745E6Si1Rstpd6E&mode=subscription\n"
+                        },
+                        {
+                          "text": "✅ Success URL validation passed (contains \"success\")\n"
+                        },
+                        {
+                          "text": "\n✅ ========== PRODUCTION CHECKOUT SUCCESS ==========\n"
+                        },
+                        {
+                          "text": "✅ Coupon verified and applied correctly\n"
+                        },
+                        {
+                          "text": "✅ Checkout completed with 99% discount!\n"
+                        },
+                        {
+                          "text": "📧 Email: sikandar.naeem+88716@devslooptech.com\n"
+                        },
+                        {
+                          "text": "💳 Charged: ~$6.49 (99% off)\n"
                         },
                         {
                           "text": "========================================\n\n"
@@ -200,28 +412,18 @@
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-01-05T11:34:54.194Z",
+                      "startTime": "2026-01-12T19:12:39.862Z",
                       "annotations": [],
                       "attachments": [
                         {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "/Users/macbookpro/Desktop/Lumimeds/test-results/checkout-checkout-prod-Pro-1132e-t-Flow-with-Production-Card-chromium/test-failed-1.png"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/Users/macbookpro/Desktop/Lumimeds/test-results/checkout-checkout-prod-Pro-1132e-t-Flow-with-Production-Card-chromium/error-context.md"
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/macbookpro/Desktop/Lumimeds/test-results/checkout-checkout-prod-Pro-1132e-t-Flow-with-Production-Card-chromium/video.webm"
                         }
-                      ],
-                      "errorLocation": {
-                        "file": "/Users/macbookpro/Desktop/Lumimeds/tests/pages/CheckoutPage.js",
-                        "column": 62,
-                        "line": 49
-                      }
+                      ]
                     }
                   ],
-                  "status": "unexpected"
+                  "status": "expected"
                 }
               ],
               "id": "ed82e8282114c429b742-bf9d98d5e4233cdf4d84",
@@ -236,11 +438,11 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-01-05T11:34:53.816Z",
-    "duration": 109408.49500000001,
-    "expected": 0,
+    "startTime": "2026-01-12T19:12:39.439Z",
+    "duration": 140980.909,
+    "expected": 1,
     "skipped": 0,
-    "unexpected": 1,
+    "unexpected": 0,
     "flaky": 0
   }
 }
