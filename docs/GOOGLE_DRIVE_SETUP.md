@@ -1,6 +1,10 @@
-# Google Drive Upload Setup
+# Google Drive Upload Setup (Advanced - Optional)
 
-This guide explains how to set up Google Drive upload for checkout test videos.
+⚠️ **Note:** Google Drive upload requires **Google Workspace with Shared Drives** or **OAuth delegation**. Service accounts don't have storage quota.
+
+**Most users should use GitHub Artifacts instead** (which is the default fallback).
+
+This guide explains how to set up Google Drive upload for checkout test videos if you have Google Workspace.
 
 ## Steps to Set Up:
 
