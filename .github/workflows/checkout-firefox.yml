@@ -90,7 +90,6 @@ jobs:
           else
             echo "⚠️ No video file found or Slack not configured. Skipping upload."
           fi
-          if-no-files-found: ignore
       
       - name: 📤 Send Slack Notification (Staging)
         if: always() && github.event.inputs.environment == 'staging'

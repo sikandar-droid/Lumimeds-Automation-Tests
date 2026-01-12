@@ -705,30 +705,74 @@ class CheckoutPage {
         const shouldMask = process.env.MASK_PAYMENT === 'true';
         if (shouldMask) {
             console.log('🔒 Masking payment details for video recording...');
+            
+            // Add blur and overlay to card section
             await this.page.addStyleTag({
                 content: `
-                    /* Blur Stripe iframes during card entry */
+                    /* Blur all Stripe iframes and their containers */
                     iframe[name*="stripe"], 
                     iframe[src*="stripe"],
+                    iframe[name*="__privateStripeFrame"],
                     [class*="StripeElement"],
                     .stripe-card-element,
-                    [data-stripe] {
-                        filter: blur(8px) !important;
-                        transition: filter 0.3s ease;
+                    [data-stripe],
+                    #card-element,
+                    [id*="card"] iframe,
+                    [class*="card"] iframe {
+                        filter: blur(10px) !important;
+                        pointer-events: none !important;
                     }
-                    /* Add overlay text */
-                    iframe[name*="stripe"]::after,
-                    [class*="StripeElement"]::after {
-                        content: "CARD DETAILS HIDDEN";
-                        position: absolute;
-                        top: 50%;
-                        left: 50%;
-                        transform: translate(-50%, -50%);
-                        color: #666;
-                        font-weight: bold;
+                    
+                    /* Blur parent containers */
+                    div:has(> iframe[name*="stripe"]),
+                    div:has(> iframe[src*="stripe"]) {
+                        position: relative !important;
+                        filter: blur(10px) !important;
                     }
                 `
             });
+            
+            // Add overlay div on top of card section
+            await this.page.evaluate(() => {
+                // Find all Stripe iframe containers
+                const iframes = document.querySelectorAll('iframe[name*="stripe"], iframe[src*="stripe"], iframe[name*="__privateStripeFrame"]');
+                iframes.forEach(iframe => {
+                    const container = iframe.closest('div, form, section') || iframe.parentElement;
+                    if (container) {
+                        // Create overlay
+                        const overlay = document.createElement('div');
+                        overlay.style.cssText = `
+                            position: absolute;
+                            top: 0;
+                            left: 0;
+                            right: 0;
+                            bottom: 0;
+                            background: rgba(255, 255, 255, 0.9);
+                            backdrop-filter: blur(10px);
+                            z-index: 9999;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-size: 14px;
+                            font-weight: bold;
+                            color: #666;
+                            pointer-events: none;
+                        `;
+                        overlay.textContent = '🔒 CARD DETAILS HIDDEN FOR SECURITY';
+                        overlay.className = 'card-mask-overlay';
+                        
+                        // Make container relative if it's not
+                        const containerStyle = window.getComputedStyle(container);
+                        if (containerStyle.position === 'static') {
+                            container.style.position = 'relative';
+                        }
+                        
+                        container.appendChild(overlay);
+                    }
+                });
+            });
+            
+            console.log('✅ Card details masked');
         }
         
         // Fill each field with extra wait between them
