@@ -1,0 +1,123 @@
+const fs = require('fs');
+const path = require('path');
+const { google } = require('googleapis');
+
+/**
+ * Upload video file to Google Drive and return a shareable link
+ */
+async function uploadToGoogleDrive() {
+  const videoPath = process.argv[2];
+  const fileName = process.env.FILE_NAME || 'checkout-video.webm';
+  const folderId = process.env.GOOGLE_DRIVE_FOLDER_ID || null;
+
+  if (!videoPath || !fs.existsSync(videoPath)) {
+    console.error('❌ Video file not found:', videoPath);
+    process.exit(1);
+  }
+
+  // Get service account credentials from environment variable
+  const credentialsJson = process.env.GOOGLE_DRIVE_CREDENTIALS;
+  if (!credentialsJson) {
+    console.error('❌ GOOGLE_DRIVE_CREDENTIALS environment variable not set');
+    process.exit(1);
+  }
+
+  let credentials;
+  try {
+    credentials = JSON.parse(credentialsJson);
+  } catch (error) {
+    console.error('❌ Failed to parse GOOGLE_DRIVE_CREDENTIALS:', error.message);
+    process.exit(1);
+  }
+
+  try {
+    // Authenticate with Google Drive API
+    const auth = new google.auth.GoogleAuth({
+      credentials: credentials,
+      scopes: ['https://www.googleapis.com/auth/drive.file'],
+    });
+
+    const drive = google.drive({ version: 'v3', auth });
+
+    // Get file stats
+    const stats = fs.statSync(videoPath);
+    const fileSize = stats.size;
+    console.log(`📹 Uploading ${(fileSize / 1024 / 1024).toFixed(2)} MB to Google Drive...`);
+
+    // Create file metadata
+    const fileMetadata = {
+      name: fileName,
+      ...(folderId && { parents: [folderId] }),
+    };
+
+    // Create readable stream
+    const media = {
+      mimeType: 'video/webm',
+      body: fs.createReadStream(videoPath),
+    };
+
+    // Upload file
+    const response = await drive.files.create({
+      requestBody: fileMetadata,
+      media: media,
+      fields: 'id, name, webViewLink, webContentLink',
+    });
+
+    const fileId = response.data.id;
+    console.log('✅ File uploaded! ID:', fileId);
+
+    // Make the file publicly viewable (optional - can be removed if you want to share manually)
+    try {
+      await drive.permissions.create({
+        fileId: fileId,
+        requestBody: {
+          role: 'reader',
+          type: 'anyone',
+        },
+      });
+      console.log('✅ File made publicly viewable');
+    } catch (permError) {
+      console.log('⚠️  Could not set public permissions:', permError.message);
+    }
+
+    // Get the shareable link
+    const fileDetails = await drive.files.get({
+      fileId: fileId,
+      fields: 'webViewLink, webContentLink, id',
+    });
+
+    const viewLink = fileDetails.data.webViewLink;
+    const downloadLink = fileDetails.data.webContentLink || viewLink;
+
+    console.log('✅ Upload complete!');
+    console.log('🔗 View link:', viewLink);
+    console.log('⬇️  Download link:', downloadLink);
+
+    // Output to GITHUB_OUTPUT file (GitHub Actions format)
+    const outputFile = process.env.GITHUB_OUTPUT;
+    if (outputFile) {
+      fs.appendFileSync(outputFile, `file_id=${fileId}\n`);
+      fs.appendFileSync(outputFile, `view_url=${viewLink}\n`);
+      fs.appendFileSync(outputFile, `download_url=${downloadLink}\n`);
+    } else {
+      // Fallback for older GitHub Actions (deprecated but still works)
+      console.log(`::set-output name=file_id::${fileId}`);
+      console.log(`::set-output name=view_url::${viewLink}`);
+      console.log(`::set-output name=download_url::${downloadLink}`);
+    }
+
+    return { fileId, viewLink, downloadLink };
+  } catch (error) {
+    console.error('❌ Failed to upload to Google Drive:', error.message);
+    if (error.response) {
+      console.error('Response:', error.response.data);
+    }
+    process.exit(1);
+  }
+}
+
+uploadToGoogleDrive().catch((error) => {
+  console.error('Fatal error:', error);
+  process.exit(1);
+});
+

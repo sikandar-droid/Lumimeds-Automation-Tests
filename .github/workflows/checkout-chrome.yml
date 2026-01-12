@@ -73,7 +73,23 @@ jobs:
         run: |
           npx playwright test tests/checkout/checkout-prod.spec.js --project=chromium
       
-      - name: 🎬 Upload Test Video
+      - name: 🎬 Upload Test Video to Google Drive
+        id: upload_gdrive
+        if: success() && github.event.inputs.record_video == 'true'
+        env:
+          GOOGLE_DRIVE_CREDENTIALS: ${{ secrets.GOOGLE_DRIVE_CREDENTIALS }}
+          GOOGLE_DRIVE_FOLDER_ID: ${{ secrets.GOOGLE_DRIVE_FOLDER_ID }}
+          FILE_NAME: checkout-video-run-${{ github.run_number }}.webm
+        run: |
+          VIDEO_FILE=$(find test-results -name "video.webm" -type f | head -1)
+          if [ -n "$VIDEO_FILE" ]; then
+            node scripts/upload-to-google-drive.js "$VIDEO_FILE"
+          else
+            echo "⚠️ No video file found"
+            exit 1
+          fi
+      
+      - name: 🎬 Upload Test Video (GitHub Artifact Backup)
         if: success() && github.event.inputs.record_video == 'true'
         uses: actions/upload-artifact@v4
         with:
@@ -81,15 +97,6 @@ jobs:
           path: test-results/**/video.webm
           retention-days: 30
           if-no-files-found: ignore
-      
-      - name: 🔗 Get Artifact Download URL
-        id: artifact_url
-        if: success() && github.event.inputs.record_video == 'true'
-        run: |
-          ARTIFACT_NAME="checkout-video-${{ github.run_number }}"
-          ARTIFACT_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts"
-          echo "artifact_download_url=$ARTIFACT_URL" >> $GITHUB_OUTPUT
-          echo "artifact_name=$ARTIFACT_NAME" >> $GITHUB_OUTPUT
       
       - name: 📤 Send Slack Notification (Staging)
         if: always() && github.event.inputs.environment == 'staging'
@@ -103,8 +110,8 @@ jobs:
           GITHUB_RUN_ID: ${{ github.run_id }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           GITHUB_RUN_NUMBER: ${{ github.run_number }}
-          ARTIFACT_DOWNLOAD_URL: ${{ steps.artifact_url.outputs.artifact_download_url }}
-          ARTIFACT_NAME: ${{ steps.artifact_url.outputs.artifact_name }}
+          GOOGLE_DRIVE_VIDEO_URL: ${{ steps.upload_gdrive.outputs.download_url }}
+          GOOGLE_DRIVE_VIEW_URL: ${{ steps.upload_gdrive.outputs.view_url }}
         run: node scripts/slack-notify-checkout.js
       
       - name: 📤 Send Slack Notification (Production)
@@ -119,8 +126,8 @@ jobs:
           GITHUB_RUN_ID: ${{ github.run_id }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           GITHUB_RUN_NUMBER: ${{ github.run_number }}
-          ARTIFACT_DOWNLOAD_URL: ${{ steps.artifact_url.outputs.artifact_download_url }}
-          ARTIFACT_NAME: ${{ steps.artifact_url.outputs.artifact_name }}
+          GOOGLE_DRIVE_VIDEO_URL: ${{ steps.upload_gdrive.outputs.download_url }}
+          GOOGLE_DRIVE_VIEW_URL: ${{ steps.upload_gdrive.outputs.view_url }}
         run: node scripts/slack-notify-checkout.js
       
       - name: 📊 Upload results
