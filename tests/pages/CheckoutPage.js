@@ -701,92 +701,22 @@ class CheckoutPage {
         console.log('\n💳 Starting payment details entry...');
         await this.waitForStripeIframes();
         
-        // Mask payment section if MASK_PAYMENT env is set (for video recording)
-        const shouldMask = process.env.MASK_PAYMENT === 'true';
-        if (shouldMask) {
-            console.log('🔒 Masking payment details for video recording...');
+        // If recording video, scroll to top to hide card details from view
+        const isRecording = process.env.RECORD_VIDEO === 'true' || process.env.MASK_PAYMENT === 'true';
+        if (isRecording) {
+            console.log('📹 Video recording: Scrolling to top to hide card details...');
             
-            // Add blur and overlay to card section
-            await this.page.addStyleTag({
-                content: `
-                    /* Completely hide and blur all Stripe iframes and their containers */
-                    iframe[name*="stripe"], 
-                    iframe[src*="stripe"],
-                    iframe[name*="__privateStripeFrame"],
-                    [class*="StripeElement"],
-                    .stripe-card-element,
-                    [data-stripe],
-                    #card-element,
-                    [id*="card"] iframe,
-                    [class*="card"] iframe {
-                        filter: blur(15px) !important;
-                        opacity: 0.3 !important;
-                        pointer-events: none !important;
-                        visibility: hidden !important;
-                    }
-                    
-                    /* Blur and hide parent containers */
-                    div:has(> iframe[name*="stripe"]),
-                    div:has(> iframe[src*="stripe"]) {
-                        position: relative !important;
-                        filter: blur(15px) !important;
-                        opacity: 0.3 !important;
-                    }
-                    
-                    /* Hide any input fields that might show card data */
-                    input[name*="card"],
-                    input[id*="card"],
-                    input[placeholder*="card" i],
-                    input[autocomplete*="cc-"] {
-                        filter: blur(15px) !important;
-                        opacity: 0 !important;
-                    }
-                `
-            });
-            
-            // Add overlay div on top of card section
+            // Scroll to the very top of the page
             await this.page.evaluate(() => {
-                // Find all Stripe iframe containers
-                const iframes = document.querySelectorAll('iframe[name*="stripe"], iframe[src*="stripe"], iframe[name*="__privateStripeFrame"]');
-                iframes.forEach(iframe => {
-                    const container = iframe.closest('div, form, section') || iframe.parentElement;
-                    if (container) {
-                        // Create overlay
-                        const overlay = document.createElement('div');
-                        overlay.style.cssText = `
-                            position: absolute !important;
-                            top: 0 !important;
-                            left: 0 !important;
-                            right: 0 !important;
-                            bottom: 0 !important;
-                            background: rgba(255, 255, 255, 0.98) !important;
-                            backdrop-filter: blur(15px) !important;
-                            z-index: 999999 !important;
-                            display: flex !important;
-                            align-items: center !important;
-                            justify-content: center !important;
-                            font-size: 16px !important;
-                            font-weight: bold !important;
-                            color: #333 !important;
-                            pointer-events: none !important;
-                            border: 2px solid #ddd !important;
-                            border-radius: 8px !important;
-                        `;
-                        overlay.textContent = '🔒 CARD DETAILS HIDDEN FOR SECURITY';
-                        overlay.className = 'card-mask-overlay';
-                        
-                        // Make container relative if it's not
-                        const containerStyle = window.getComputedStyle(container);
-                        if (containerStyle.position === 'static') {
-                            container.style.position = 'relative';
-                        }
-                        
-                        container.appendChild(overlay);
-                    }
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
                 });
             });
             
-            console.log('✅ Card details masked');
+            // Wait for scroll to complete
+            await this.page.waitForTimeout(1000);
+            console.log('✅ Scrolled to top - card fields now out of view');
         }
         
         // Fill each field with extra wait between them
