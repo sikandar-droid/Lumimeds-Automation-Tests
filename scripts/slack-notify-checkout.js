@@ -199,7 +199,8 @@ async function sendCheckoutNotification() {
     videoSection = `\n\n` +
       `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n` +
       `🎬 *VIDEO RECORDING*\n\n` +
-      `   📹 <${artifactUrl}|⬇️ Download Video (Run #${githubRunNumber})>\n\n` +
+      `   📹 <${artifactUrl}|⬇️ View Run & Download Video (Run #${githubRunNumber})>\n` +
+      `   💡 _Scroll to "Artifacts" section and click "checkout-video-${githubRunNumber}"_\n\n` +
       `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
   } else if (passed && recordVideo && videoPath) {
     videoSection = `\n\n` +
