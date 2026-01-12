@@ -730,11 +730,7 @@ class CheckoutPage {
         
         // Wait for Stripe to validate card
         console.log('⏳ Waiting for Stripe to validate card...');
-        await this.page.waitForTimeout(5000);
-        
-        // Keep mask on during video recording - don't remove it
-        // The mask stays on to protect card details in the recording
-        console.log('🔒 Keeping card details masked for security (video recording)');
+        await this.page.waitForTimeout(3000);
         
         console.log('✅ Payment details completed\n');
     }
