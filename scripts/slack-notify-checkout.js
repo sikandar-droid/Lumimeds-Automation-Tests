@@ -207,7 +207,6 @@ async function sendCheckoutNotification() {
         `🎬 *VIDEO RECORDING*\n\n` +
         `   📹 <${downloadUrl}|⬇️ Download Video from Google Drive>\n` +
         `   👁️  <${viewUrl}|View in Google Drive>\n\n` +
-        `   🔒 _Card details masked for security_\n\n` +
         `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
     } else if (githubRunId && githubRepository) {
       // Fallback to GitHub artifacts

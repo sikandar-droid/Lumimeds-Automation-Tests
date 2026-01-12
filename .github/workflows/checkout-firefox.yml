@@ -73,7 +73,23 @@ jobs:
         run: |
           npx playwright test tests/checkout/checkout-prod.spec.js --project=firefox
       
-      - name: 🎬 Upload Test Video
+      - name: 🎬 Upload Test Video to Google Drive
+        id: upload_gdrive
+        if: success() && github.event.inputs.record_video == 'true'
+        env:
+          GOOGLE_DRIVE_CREDENTIALS: ${{ secrets.GOOGLE_DRIVE_CREDENTIALS }}
+          GOOGLE_DRIVE_FOLDER_ID: ${{ secrets.GOOGLE_DRIVE_FOLDER_ID }}
+          FILE_NAME: checkout-video-firefox-run-${{ github.run_number }}.webm
+        run: |
+          VIDEO_FILE=$(find test-results -name "video.webm" -type f | head -1)
+          if [ -n "$VIDEO_FILE" ]; then
+            node scripts/upload-to-google-drive.js "$VIDEO_FILE"
+          else
+            echo "⚠️ No video file found"
+            exit 1
+          fi
+      
+      - name: 🎬 Upload Test Video (GitHub Artifact Backup)
         if: success() && github.event.inputs.record_video == 'true'
         uses: actions/upload-artifact@v4
         with:
@@ -94,6 +110,8 @@ jobs:
           GITHUB_RUN_ID: ${{ github.run_id }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           GITHUB_RUN_NUMBER: ${{ github.run_number }}
+          GOOGLE_DRIVE_VIDEO_URL: ${{ steps.upload_gdrive.outputs.download_url }}
+          GOOGLE_DRIVE_VIEW_URL: ${{ steps.upload_gdrive.outputs.view_url }}
         run: node scripts/slack-notify-checkout.js
       
       - name: 📤 Send Slack Notification (Production)
@@ -108,6 +126,8 @@ jobs:
           GITHUB_RUN_ID: ${{ github.run_id }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           GITHUB_RUN_NUMBER: ${{ github.run_number }}
+          GOOGLE_DRIVE_VIDEO_URL: ${{ steps.upload_gdrive.outputs.download_url }}
+          GOOGLE_DRIVE_VIEW_URL: ${{ steps.upload_gdrive.outputs.view_url }}
         run: node scripts/slack-notify-checkout.js
       
       - name: 📊 Upload results
