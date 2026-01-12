@@ -15,6 +15,12 @@ async function uploadToGoogleDrive() {
     process.exit(1);
   }
 
+  if (!folderId) {
+    console.error('❌ GOOGLE_DRIVE_FOLDER_ID is required. Service accounts don\'t have storage quota.');
+    console.error('   Please create a folder in your Google Drive and share it with the service account.');
+    process.exit(1);
+  }
+
   // Get service account credentials from environment variable
   const credentialsJson = process.env.GOOGLE_DRIVE_CREDENTIALS;
   if (!credentialsJson) {
@@ -44,10 +50,10 @@ async function uploadToGoogleDrive() {
     const fileSize = stats.size;
     console.log(`📹 Uploading ${(fileSize / 1024 / 1024).toFixed(2)} MB to Google Drive...`);
 
-    // Create file metadata
+    // Create file metadata (folderId is required)
     const fileMetadata = {
       name: fileName,
-      ...(folderId && { parents: [folderId] }),
+      parents: [folderId], // Required - service accounts need a folder in user's Drive
     };
 
     // Create readable stream

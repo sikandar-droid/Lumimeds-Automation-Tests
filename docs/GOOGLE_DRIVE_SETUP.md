@@ -53,10 +53,10 @@ If you want videos uploaded to a specific folder:
    - Name: `GOOGLE_DRIVE_CREDENTIALS`
    - Value: Copy the entire contents of the downloaded JSON file
    
-   **Secret 2: `GOOGLE_DRIVE_FOLDER_ID`** (Optional)
+   **Secret 2: `GOOGLE_DRIVE_FOLDER_ID`** (REQUIRED)
    - Name: `GOOGLE_DRIVE_FOLDER_ID`
-   - Value: The Folder ID from step 4 (if using a specific folder)
-   - If not set, videos will be uploaded to the service account's root Drive folder
+   - Value: The Folder ID from step 4
+   - **This is REQUIRED** - Service accounts don't have storage quota, so videos must be uploaded to a folder in your personal Google Drive
 
 ### 6. Install Dependencies
 
