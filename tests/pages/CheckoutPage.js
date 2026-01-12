@@ -599,6 +599,36 @@ class CheckoutPage {
         console.log('\n💳 Starting payment details entry...');
         await this.waitForStripeIframes();
         
+        // Mask payment section if MASK_PAYMENT env is set (for video recording)
+        const shouldMask = process.env.MASK_PAYMENT === 'true';
+        if (shouldMask) {
+            console.log('🔒 Masking payment details for video recording...');
+            await this.page.addStyleTag({
+                content: `
+                    /* Blur Stripe iframes during card entry */
+                    iframe[name*="stripe"], 
+                    iframe[src*="stripe"],
+                    [class*="StripeElement"],
+                    .stripe-card-element,
+                    [data-stripe] {
+                        filter: blur(8px) !important;
+                        transition: filter 0.3s ease;
+                    }
+                    /* Add overlay text */
+                    iframe[name*="stripe"]::after,
+                    [class*="StripeElement"]::after {
+                        content: "CARD DETAILS HIDDEN";
+                        position: absolute;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                        color: #666;
+                        font-weight: bold;
+                    }
+                `
+            });
+        }
+        
         // Fill each field with extra wait between them
         await this.fillCardNumber(paymentData.cardNumber);
         await this.page.waitForTimeout(1000);
@@ -608,9 +638,26 @@ class CheckoutPage {
         
         await this.fillCardCvc(paymentData.cvc);
         
-        // Wait for Stripe to validate the card
+        // Wait for Stripe to validate card
         console.log('⏳ Waiting for Stripe to validate card...');
         await this.page.waitForTimeout(5000);
+        
+        // Remove blur after card is validated (so success shows clearly)
+        if (shouldMask) {
+            await this.page.addStyleTag({
+                content: `
+                    iframe[name*="stripe"], 
+                    iframe[src*="stripe"],
+                    [class*="StripeElement"],
+                    .stripe-card-element,
+                    [data-stripe] {
+                        filter: none !important;
+                    }
+                `
+            });
+            console.log('✅ Payment mask removed');
+        }
+        
         console.log('✅ Payment details completed\n');
     }
 

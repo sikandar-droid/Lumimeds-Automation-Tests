@@ -10,7 +10,9 @@ const path = require('path');
 async function sendCheckoutNotification() {
   const webhookUrl = process.env.SLACK_WEBHOOK_URL;
   const recordVideo = process.env.RECORD_VIDEO === 'true';
-  const videoUrl = process.env.VIDEO_URL;
+  const githubRunId = process.env.GITHUB_RUN_ID;
+  const githubRepository = process.env.GITHUB_REPOSITORY;
+  const githubRunNumber = process.env.GITHUB_RUN_NUMBER;
   
   if (!webhookUrl) {
     console.error('❌ SLACK_WEBHOOK_URL environment variable not set');
@@ -192,12 +194,14 @@ async function sendCheckoutNotification() {
 
   // Add video section if recording was enabled
   let videoSection = '';
-  if (videoUrl) {
+  if (recordVideo && githubRunId && githubRepository) {
+    const artifactUrl = `https://github.com/${githubRepository}/actions/runs/${githubRunId}`;
     videoSection = `\n\n` +
       `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n` +
       `🎬 *TEST VIDEO RECORDING*\n\n` +
-      `   📹 <${videoUrl}|⬇️ Download Video>\n\n` +
-      `   🔒 _Secure link • Expires in 7 days • Max 5 downloads_\n\n` +
+      `   📹 <${artifactUrl}|⬇️ Download Video (Run #${githubRunNumber})>\n\n` +
+      `   📁 _Video available in Artifacts section_\n` +
+      `   🔒 _Card details masked for security_\n\n` +
       `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
   } else if (recordVideo && videoPath) {
     videoSection = `\n\n` +
