@@ -79,62 +79,75 @@ async function uploadToGoogleDrive() {
     };
 
     // Upload file (support Shared Drives)
-    const response = await drive.files.create({
-      requestBody: fileMetadata,
-      media: media,
-      fields: 'id, name, webViewLink, webContentLink',
-      supportsAllDrives: true,
-      supportsTeamDrives: true,
-    });
-
-    const fileId = response.data.id;
-    console.log('✅ File uploaded! ID:', fileId);
-
-    // Make the file publicly viewable (support Shared Drives)
     try {
-      await drive.permissions.create({
-        fileId: fileId,
-        requestBody: {
-          role: 'reader',
-          type: 'anyone',
-        },
+      const response = await drive.files.create({
+        requestBody: fileMetadata,
+        media: media,
+        fields: 'id, name, webViewLink, webContentLink',
         supportsAllDrives: true,
         supportsTeamDrives: true,
       });
-      console.log('✅ File made publicly viewable');
-    } catch (permError) {
-      console.log('⚠️  Could not set public permissions:', permError.message);
+      
+      const fileId = response.data.id;
+      console.log('✅ File uploaded! ID:', fileId);
+      
+      // Make the file publicly viewable (support Shared Drives)
+      try {
+        await drive.permissions.create({
+          fileId: fileId,
+          requestBody: {
+            role: 'reader',
+            type: 'anyone',
+          },
+          supportsAllDrives: true,
+          supportsTeamDrives: true,
+        });
+        console.log('✅ File made publicly viewable');
+      } catch (permError) {
+        console.log('⚠️  Could not set public permissions:', permError.message);
+      }
+
+      // Get the shareable link (support Shared Drives)
+      const fileDetails = await drive.files.get({
+        fileId: fileId,
+        fields: 'webViewLink, webContentLink, id',
+        supportsAllDrives: true,
+        supportsTeamDrives: true,
+      });
+
+      const viewLink = fileDetails.data.webViewLink;
+      const downloadLink = fileDetails.data.webContentLink || viewLink;
+
+      console.log('✅ Upload complete!');
+      console.log('🔗 View link:', viewLink);
+      console.log('⬇️  Download link:', downloadLink);
+
+      // Output to GITHUB_OUTPUT file (GitHub Actions format)
+      const outputFile = process.env.GITHUB_OUTPUT;
+      if (outputFile) {
+        fs.appendFileSync(outputFile, `file_id=${fileId}\n`);
+        fs.appendFileSync(outputFile, `view_url=${viewLink}\n`);
+        fs.appendFileSync(outputFile, `download_url=${downloadLink}\n`);
+      } else {
+        // Fallback for older GitHub Actions (deprecated but still works)
+        console.log(`::set-output name=file_id::${fileId}`);
+        console.log(`::set-output name=view_url::${viewLink}`);
+        console.log(`::set-output name=download_url::${downloadLink}`);
+      }
+
+      return { fileId, viewLink, downloadLink };
+    } catch (uploadError) {
+      console.error('❌ Upload failed:', uploadError.message);
+      if (uploadError.response) {
+        console.error('Response:', JSON.stringify(uploadError.response.data, null, 2));
+      }
+      
+      // Provide helpful error message
+      if (uploadError.code === 404) {
+        throw new Error(`Folder not found (404). Please verify:\n1. Folder ID is correct: ${folderId.substring(0, 20)}...\n2. Service account (${credentials.client_email}) is a Manager of the Shared Drive\n3. Folder is inside the Shared Drive, not regular Drive\n4. Wait a few minutes after sharing for permissions to propagate`);
+      }
+      throw uploadError;
     }
-
-    // Get the shareable link (support Shared Drives)
-    const fileDetails = await drive.files.get({
-      fileId: fileId,
-      fields: 'webViewLink, webContentLink, id',
-      supportsAllDrives: true,
-      supportsTeamDrives: true,
-    });
-
-    const viewLink = fileDetails.data.webViewLink;
-    const downloadLink = fileDetails.data.webContentLink || viewLink;
-
-    console.log('✅ Upload complete!');
-    console.log('🔗 View link:', viewLink);
-    console.log('⬇️  Download link:', downloadLink);
-
-    // Output to GITHUB_OUTPUT file (GitHub Actions format)
-    const outputFile = process.env.GITHUB_OUTPUT;
-    if (outputFile) {
-      fs.appendFileSync(outputFile, `file_id=${fileId}\n`);
-      fs.appendFileSync(outputFile, `view_url=${viewLink}\n`);
-      fs.appendFileSync(outputFile, `download_url=${downloadLink}\n`);
-    } else {
-      // Fallback for older GitHub Actions (deprecated but still works)
-      console.log(`::set-output name=file_id::${fileId}`);
-      console.log(`::set-output name=view_url::${viewLink}`);
-      console.log(`::set-output name=download_url::${downloadLink}`);
-    }
-
-    return { fileId, viewLink, downloadLink };
   } catch (error) {
     console.error('❌ Failed to upload to Google Drive:', error.message);
     if (error.response) {
