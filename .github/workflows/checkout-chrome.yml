@@ -18,6 +18,11 @@ on:
         required: false
         default: true
         type: boolean
+      send_slack:
+        description: 'Send Slack notifications'
+        required: false
+        default: false
+        type: boolean
 
 jobs:
   test:
@@ -75,7 +80,7 @@ jobs:
       
       - name: 🎬 Upload Test Video to Slack
         id: upload_slack
-        if: success()
+        if: success() && github.event.inputs.send_slack == 'true'
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
           SLACK_CHANNEL: ${{ secrets.SLACK_CHANNEL }}
@@ -92,7 +97,7 @@ jobs:
           fi
       
       - name: 📤 Send Slack Notification (Staging)
-        if: always() && github.event.inputs.environment == 'staging'
+        if: always() && github.event.inputs.environment == 'staging' && github.event.inputs.send_slack == 'true'
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           TEST_FILE: 'Checkout-Chrome-Staging'
@@ -107,7 +112,7 @@ jobs:
         run: node scripts/slack-notify-checkout.js
       
       - name: 📤 Send Slack Notification (Production)
-        if: always() && github.event.inputs.environment != 'staging'
+        if: always() && github.event.inputs.environment != 'staging' && github.event.inputs.send_slack == 'true'
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           TEST_FILE: 'Checkout-Chrome-Production'
