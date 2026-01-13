@@ -76,15 +76,37 @@ export default defineConfig({
       use: { ...devices['Desktop Safari'] },
     },
 
-    /* Test against mobile viewports. */
-    // {
-    //   name: 'Mobile Chrome',
-    //   use: { ...devices['Pixel 5'] },
-    // },
-    // {
-    //   name: 'Mobile Safari',
-    //   use: { ...devices['iPhone 12'] },
-    // },
+    /* Test against mobile viewports - iPhone 15 Pro Max */
+    {
+      name: 'mobile-safari',
+      use: { 
+        ...devices['iPhone 15 Pro Max'],
+        // iPhone 15 Pro Max uses WebKit (Safari)
+      },
+    },
+    {
+      name: 'mobile-chrome',
+      use: { 
+        ...devices['iPhone 15 Pro Max'],
+        // Override to use Chromium engine
+        channel: undefined,
+        launchOptions: {
+          args: [
+            '--disable-notifications',
+            '--disable-popup-blocking',
+            '--disable-blink-features=AutomationControlled',
+          ],
+        },
+      },
+    },
+    {
+      name: 'mobile-firefox',
+      use: { 
+        ...devices['iPhone 15 Pro Max'],
+        // Override to use Firefox engine  
+        defaultBrowserType: 'firefox',
+      },
+    },
 
     /* Test against branded browsers. */
     // {

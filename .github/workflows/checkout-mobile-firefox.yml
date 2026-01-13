@@ -1,8 +1,8 @@
-name: Mobile Checkout - Firefox
+name: Checkout - Mobile Firefox (iPhone 15 Pro Max)
 
 on:
-  # schedule:
-  #   - cron: '30 8 * * *'  # 3:30 AM EST daily (8:30 AM UTC) - DISABLED for now
+  schedule:
+    - cron: '30 8 * * *'  # 3:30 AM EST daily (8:30 AM UTC)
   workflow_dispatch:
     inputs:
       environment:
@@ -13,10 +13,20 @@ on:
         options:
           - staging
           - production
+      record_video:
+        description: 'Record video of test'
+        required: false
+        default: true
+        type: boolean
+      send_slack:
+        description: 'Send Slack notifications'
+        required: false
+        default: true
+        type: boolean
 
 jobs:
   test:
-    name: Firefox Mobile Checkout Test (iPhone 15 Pro Max)
+    name: Mobile Firefox Checkout Test
     runs-on: ubuntu-latest
     timeout-minutes: 15
     
@@ -37,39 +47,89 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-firefox-v2-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-playwright-firefox-mobile-v2-${{ hashFiles('**/package-lock.json') }}
       
       - name: 🎭 Install Firefox
         run: npx playwright install firefox --with-deps
       
-      - name: 🚀 Run Production Mobile Checkout
+      - name: 🧪 Run Staging Checkout
+        if: github.event.inputs.environment == 'staging'
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          TEST_FILE: 'Mobile-Checkout-Firefox-Production'
-          TEST_ENV: 'Production'
-          TEST_URL: 'https://lumimeds.com'
-          TEST_BROWSER: 'Firefox'
-          TEST_DEVICE: 'iPhone 15 Pro Max'
+          RECORD_VIDEO: ${{ github.event.inputs.record_video || 'true' }}
+          MASK_PAYMENT: 'true'
+          TEST_FILE: 'Checkout-Mobile-Firefox-Staging'
+          TEST_ENV: 'Staging'
+          TEST_URL: 'https://staging.lumimeds.com'
+          TEST_BROWSER: 'Mobile Firefox (iPhone 15 Pro Max)'
         run: |
-          npx playwright test tests/checkout/checkout-prod-mobile.spec.js --project=firefox
+          npx playwright test tests/checkout/checkout.spec.js --project=mobile-firefox
       
-      - name: 📤 Send Slack Notification
-        if: always()
+      - name: 🚀 Run Production Checkout
+        if: github.event.inputs.environment != 'staging'
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          TEST_FILE: 'Mobile-Checkout-Firefox-Production'
+          RECORD_VIDEO: ${{ github.event.inputs.record_video || 'true' }}
+          MASK_PAYMENT: 'true'
+          TEST_FILE: 'Checkout-Mobile-Firefox-Production'
           TEST_ENV: 'Production'
           TEST_URL: 'https://lumimeds.com'
-          TEST_BROWSER: 'Firefox'
-          TEST_DEVICE: 'iPhone 15 Pro Max'
+          TEST_BROWSER: 'Mobile Firefox (iPhone 15 Pro Max)'
+        run: |
+          npx playwright test tests/checkout/checkout-prod.spec.js --project=mobile-firefox
+      
+      - name: 🎬 Upload Test Video to Slack
+        id: upload_slack
+        if: success() && github.event.inputs.send_slack != 'false'
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_CHANNEL: ${{ secrets.SLACK_CHANNEL }}
+          FILE_NAME: checkout-mobile-firefox-run-${{ github.run_number }}.webm
+          GITHUB_RUN_NUMBER: ${{ github.run_number }}
+        run: |
+          VIDEO_FILE=$(find test-results -name "video.webm" -type f | head -1)
+          if [ -n "$VIDEO_FILE" ] && [ -n "$SLACK_BOT_TOKEN" ]; then
+            echo "✅ Found video file, uploading to Slack..."
+            npm install form-data
+            node scripts/upload-video-to-slack.js "$VIDEO_FILE"
+          else
+            echo "⚠️ No video file found or Slack not configured. Skipping upload."
+          fi
+      
+      - name: 📤 Send Slack Notification (Staging)
+        if: always() && github.event.inputs.environment == 'staging' && github.event.inputs.send_slack != 'false'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          TEST_FILE: 'Checkout-Mobile-Firefox-Staging'
+          TEST_ENV: 'Staging'
+          TEST_URL: 'https://staging.lumimeds.com'
+          TEST_BROWSER: 'Mobile Firefox (iPhone 15 Pro Max)'
+          RECORD_VIDEO: ${{ github.event.inputs.record_video || 'true' }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_RUN_NUMBER: ${{ github.run_number }}
+          SLACK_FILE_URL: ${{ steps.upload_slack.outputs.slack_file_url }}
+        run: node scripts/slack-notify-checkout.js
+      
+      - name: 📤 Send Slack Notification (Production)
+        if: always() && github.event.inputs.environment != 'staging' && github.event.inputs.send_slack != 'false'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          TEST_FILE: 'Checkout-Mobile-Firefox-Production'
+          TEST_ENV: 'Production'
+          TEST_URL: 'https://lumimeds.com'
+          TEST_BROWSER: 'Mobile Firefox (iPhone 15 Pro Max)'
+          RECORD_VIDEO: ${{ github.event.inputs.record_video || 'true' }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_RUN_NUMBER: ${{ github.run_number }}
+          SLACK_FILE_URL: ${{ steps.upload_slack.outputs.slack_file_url }}
         run: node scripts/slack-notify-checkout.js
       
       - name: 📊 Upload results
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: mobile-checkout-firefox-results
+          name: checkout-mobile-firefox-results
           path: test-results.json
           retention-days: 30
-
-
