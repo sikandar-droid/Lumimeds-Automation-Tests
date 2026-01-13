@@ -81,7 +81,7 @@ export default defineConfig({
       name: 'mobile-safari',
       use: { 
         ...devices['iPhone 15 Pro Max'],
-        // Uses WebKit (Safari) by default
+        // Uses WebKit (Safari) by default - full mobile emulation
         launchOptions: {
           args: [
             '--disable-notifications',
@@ -94,7 +94,7 @@ export default defineConfig({
       name: 'mobile-chrome',
       use: { 
         ...devices['iPhone 15 Pro Max'],
-        // Force Chromium browser with mobile viewport
+        // Force Chromium browser with mobile viewport - full mobile emulation
         browserName: 'chromium',
         launchOptions: {
           args: [
@@ -105,8 +105,21 @@ export default defineConfig({
         },
       },
     },
-    // Note: Firefox does not support mobile emulation (isMobile option)
-    // Mobile testing is only available for Chromium and WebKit
+    {
+      name: 'firefox-mobile-viewport',
+      use: { 
+        browserName: 'firefox',
+        // Firefox doesn't support full mobile emulation, but we can test viewport size
+        viewport: { width: 430, height: 932 }, // iPhone 15 Pro Max dimensions
+        userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1',
+        launchOptions: {
+          args: [
+            '--disable-notifications',
+            '--disable-popup-blocking',
+          ],
+        },
+      },
+    },
 
     /* Test against branded browsers. */
     // {
