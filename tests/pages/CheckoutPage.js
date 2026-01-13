@@ -911,6 +911,11 @@ class CheckoutPage {
         } else {
             console.log(`⚠️ URL doesn't contain "success" but redirect was detected: ${successUrl}`);
         }
+        
+        // Wait 3 seconds at the end to ensure video recording captures the complete flow
+        console.log('🎬 Waiting 3 seconds to capture end of checkout flow in video...');
+        await this.page.waitForTimeout(3000);
+        console.log('✅ Checkout flow recording complete!');
     }
 
     /**
