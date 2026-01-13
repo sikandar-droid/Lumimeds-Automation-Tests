@@ -131,8 +131,8 @@ class CheckoutPage {
                     .or(this.page.locator('input[name*="address" i]'))
                     .first();
                 
-                // Chrome needs longer timeout for field visibility
-                await addressField.waitFor({ state: 'visible', timeout: isChrome ? 8000 : 5000 });
+                // Chrome needs longer timeout for field visibility (especially in production)
+                await addressField.waitFor({ state: 'visible', timeout: isChrome ? 15000 : 10000 });
                 
                 // Scroll into view
                 await addressField.scrollIntoViewIfNeeded();
