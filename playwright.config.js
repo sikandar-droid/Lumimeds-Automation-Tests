@@ -82,6 +82,12 @@ export default defineConfig({
       use: { 
         ...devices['iPhone 15 Pro Max'],
         // Uses WebKit (Safari) by default
+        launchOptions: {
+          args: [
+            '--disable-notifications',
+            '--disable-popup-blocking',
+          ],
+        },
       },
     },
     {
@@ -105,6 +111,12 @@ export default defineConfig({
         ...devices['iPhone 15 Pro Max'],
         // Force Firefox browser with mobile viewport
         browserName: 'firefox',
+        launchOptions: {
+          args: [
+            '--disable-notifications',
+            '--disable-popup-blocking',
+          ],
+        },
       },
     },
 
