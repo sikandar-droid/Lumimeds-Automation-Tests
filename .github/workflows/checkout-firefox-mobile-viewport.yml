@@ -21,7 +21,7 @@ on:
       send_slack:
         description: 'Send Slack notifications'
         required: false
-        default: false
+        default: true
         type: boolean
 
 jobs:
