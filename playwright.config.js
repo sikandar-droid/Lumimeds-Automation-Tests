@@ -105,20 +105,8 @@ export default defineConfig({
         },
       },
     },
-    {
-      name: 'mobile-firefox',
-      use: { 
-        ...devices['iPhone 15 Pro Max'],
-        // Force Firefox browser with mobile viewport
-        browserName: 'firefox',
-        launchOptions: {
-          args: [
-            '--disable-notifications',
-            '--disable-popup-blocking',
-          ],
-        },
-      },
-    },
+    // Note: Firefox does not support mobile emulation (isMobile option)
+    // Mobile testing is only available for Chromium and WebKit
 
     /* Test against branded browsers. */
     // {
