@@ -142,22 +142,28 @@ async function sendCheckoutNotification() {
     'Chromium': 'Chromium - Chrome/Edge compatible',
     'Firefox': 'Firefox - Mozilla Firefox',
     'WebKit': 'WebKit - Safari compatible',
-    'WebKit (Safari)': 'WebKit - Safari compatible'
+    'WebKit (Safari)': 'WebKit - Safari compatible',
+    'Mobile Safari (iPhone 15 Pro Max)': 'Mobile Safari - iPhone 15 Pro Max',
+    'Mobile Chrome (iPhone 15 Pro Max)': 'Mobile Chrome - iPhone 15 Pro Max',
+    'Firefox Mobile Viewport (iPhone 15 Pro Max)': 'Firefox Mobile Viewport - iPhone 15 Pro Max'
   };
   
   let browserSection;
   if (testDevice) {
-    // Mobile checkout
+    // Mobile checkout with device
     const browserName = browserMap[testBrowser] || testBrowser;
     browserSection = 
-      `*DEVICE TESTED*\n${testDevice}\n\n` +
-      `*BROWSER TESTED*\n${browserName}\n\n`;
+      `*DEVICE TESTED*\n• ${testDevice}\n\n` +
+      `*BROWSER TESTED*\n• ${browserName}\n\n`;
   } else if (testBrowser !== 'All' && browserMap[testBrowser]) {
-    // Desktop single browser
-    browserSection = `*BROWSER TESTED*\n${browserMap[testBrowser]}\n\n`;
+    // Single browser (desktop or mobile)
+    browserSection = `*BROWSER TESTED*\n• ${browserMap[testBrowser]}\n\n`;
+  } else if (testBrowser !== 'All') {
+    // Single browser not in map (fallback)
+    browserSection = `*BROWSER TESTED*\n• ${testBrowser}\n\n`;
   } else {
-    // Desktop all browsers
-    browserSection = `*BROWSERS TESTED*\nChromium (Chrome/Edge)\nFirefox\nWebKit (Safari)\n\n`;
+    // Should never happen for checkout tests, but keep as fallback
+    browserSection = `*BROWSERS TESTED*\n• Chromium (Chrome/Edge)\n• Firefox\n• WebKit (Safari)\n\n`;
   }
   
   const detailedText = 
@@ -167,16 +173,16 @@ async function sendCheckoutNotification() {
     `Status: *${statusText}*\n\n` +
     
     `*CHECKOUT FLOW*\n` +
-    `Survey Form - Complete flow tested\n` +
-    `Product Pricing - Verified correct\n` +
-    `Promo Application - Working correctly\n` +
-    `Medication Summary - Promo displayed\n` +
-    `Patient Info - Name, DOB, Address, Phone saved\n` +
-    `Questions - All verified and functional\n\n` +
+    `• Survey Form - Complete flow tested\n` +
+    `• Product Pricing - Verified correct\n` +
+    `• Promo Application - Working correctly\n` +
+    `• Medication Summary - Promo displayed\n` +
+    `• Patient Info - Name, DOB, Address, Phone saved\n` +
+    `• Questions - All verified and functional\n\n` +
     
     `*PRODUCT SUMMARY FORM*\n` +
-    `Navigation - Successfully accessed\n` +
-    `Page Flow - Smooth transitions\n\n` +
+    `• Navigation - Successfully accessed\n` +
+    `• Page Flow - Smooth transitions\n\n` +
     
     browserSection;
 
@@ -189,20 +195,20 @@ async function sendCheckoutNotification() {
   if (passed && recordVideo) {
     if (slackFileUrl) {
       // Slack file upload (preferred - appears in thread)
-      videoSection = `\n*VIDEO RECORDING*\n<${slackFileUrl}|View Video in Slack>\nVideo uploaded to this channel\n`;
+      videoSection = `\n*VIDEO RECORDING*\n• <${slackFileUrl}|View Video in Slack>\n• Video uploaded to this channel\n`;
     } else if (googleDriveUrl || googleDriveViewUrl) {
       // Google Drive link (fallback)
       const downloadUrl = googleDriveUrl || googleDriveViewUrl;
       const viewUrl = googleDriveViewUrl || googleDriveUrl;
-      videoSection = `\n*VIDEO RECORDING*\n<${downloadUrl}|Download Video from Google Drive>\n<${viewUrl}|View in Google Drive>\n`;
+      videoSection = `\n*VIDEO RECORDING*\n• <${downloadUrl}|Download Video from Google Drive>\n• <${viewUrl}|View in Google Drive>\n`;
     } else if (githubRunId && githubRepository) {
       // Fallback to GitHub artifacts
       const artifactUrl = `https://github.com/${githubRepository}/actions/runs/${githubRunId}`;
       const artifactName = `checkout-video-${githubRunNumber}`;
-      videoSection = `\n*VIDEO RECORDING*\n<${artifactUrl}|View Run #${githubRunNumber}>\n\nHow to Download:\n1. Click the link above\n2. Scroll to "Artifacts" section\n3. Click "${artifactName}"\n`;
+      videoSection = `\n*VIDEO RECORDING*\n• <${artifactUrl}|View Run #${githubRunNumber}>\n\nHow to Download:\n1. Click the link above\n2. Scroll to "Artifacts" section\n3. Click "${artifactName}"\n`;
     } else if (videoPath) {
       // Local video
-      videoSection = `\n*VIDEO RECORDING*\nVideo saved locally\n`;
+      videoSection = `\n*VIDEO RECORDING*\n• Video saved locally\n`;
     }
   }
 
