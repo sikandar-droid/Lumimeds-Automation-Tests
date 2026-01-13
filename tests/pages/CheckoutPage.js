@@ -123,6 +123,20 @@ class CheckoutPage {
                     }
                 }
                 
+                // Debug: Log all input fields to understand page structure
+                if (attempt === 1) {
+                    console.log('🔍 Debugging: Looking for address field...');
+                    const allInputs = await this.page.locator('input').count();
+                    console.log(`   Found ${allInputs} input fields on page`);
+                    
+                    // Check if specific address field exists
+                    const hasNameAttr = await this.page.locator('input[name="shipping_address"]').count();
+                    console.log(`   input[name="shipping_address"]: ${hasNameAttr} found`);
+                    
+                    const hasPlaceholder = await this.page.locator('input[placeholder*="address" i]').count();
+                    console.log(`   input with address placeholder: ${hasPlaceholder} found`);
+                }
+                
                 // Use a single locator with multiple strategies chained
                 const addressField = this.page.locator('input[name="shipping_address"][placeholder="Street address, house number, or P.O. Box"]')
                     .or(this.page.locator('input[name="shipping_address"]'))
@@ -131,6 +145,7 @@ class CheckoutPage {
                     .or(this.page.locator('input[name*="address" i]'))
                     .first();
                 
+                console.log('⏳ Waiting for address field to be visible...');
                 // Chrome needs longer timeout for field visibility (especially in production)
                 await addressField.waitFor({ state: 'visible', timeout: isChrome ? 15000 : 10000 });
                 
