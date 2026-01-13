@@ -73,7 +73,10 @@ export default defineConfig({
 
     {
       name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
+      use: { 
+        ...devices['Desktop Safari'],
+        // WebKit doesn't support Chrome-specific launch flags
+      },
     },
 
     /* Test against mobile viewports - iPhone 15 Pro Max */
@@ -82,12 +85,7 @@ export default defineConfig({
       use: { 
         ...devices['iPhone 15 Pro Max'],
         // Uses WebKit (Safari) by default - full mobile emulation
-        launchOptions: {
-          args: [
-            '--disable-notifications',
-            '--disable-popup-blocking',
-          ],
-        },
+        // Note: WebKit doesn't support Chrome launch flags
       },
     },
     {
