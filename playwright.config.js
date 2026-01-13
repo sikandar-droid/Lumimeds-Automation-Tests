@@ -81,15 +81,15 @@ export default defineConfig({
       name: 'mobile-safari',
       use: { 
         ...devices['iPhone 15 Pro Max'],
-        // iPhone 15 Pro Max uses WebKit (Safari)
+        // Uses WebKit (Safari) by default
       },
     },
     {
       name: 'mobile-chrome',
       use: { 
         ...devices['iPhone 15 Pro Max'],
-        // Override to use Chromium engine
-        channel: undefined,
+        // Force Chromium browser with mobile viewport
+        browserName: 'chromium',
         launchOptions: {
           args: [
             '--disable-notifications',
@@ -103,8 +103,8 @@ export default defineConfig({
       name: 'mobile-firefox',
       use: { 
         ...devices['iPhone 15 Pro Max'],
-        // Override to use Firefox engine  
-        defaultBrowserType: 'firefox',
+        // Force Firefox browser with mobile viewport
+        browserName: 'firefox',
       },
     },
 
