@@ -61,7 +61,7 @@ async function sendCheckoutNotification() {
   const fields = [
     {
       title: 'Status',
-      value: `${emoji} ${status}`,
+      value: status,
       short: true
     },
     {
@@ -79,7 +79,7 @@ async function sendCheckoutNotification() {
   // Add checkout-specific details if found
   if (checkoutDetails.email) {
     fields.push({
-      title: '📧 Customer Email',
+      title: 'Customer Email',
       value: `\`${checkoutDetails.email}\``,
       short: false
     });
@@ -87,7 +87,7 @@ async function sendCheckoutNotification() {
 
   if (checkoutDetails.couponCode) {
     fields.push({
-      title: '🎫 Coupon Applied',
+      title: 'Coupon Applied',
       value: `\`${checkoutDetails.couponCode}\``,
       short: true
     });
@@ -95,7 +95,7 @@ async function sendCheckoutNotification() {
 
   if (checkoutDetails.cardNumber) {
     fields.push({
-      title: '💳 Payment Card',
+      title: 'Payment Card',
       value: `\`${checkoutDetails.cardNumber}\``,
       short: true
     });
@@ -104,22 +104,22 @@ async function sendCheckoutNotification() {
   // Add test statistics
   fields.push(
     {
-      title: '✅ Passed',
+      title: 'Passed',
       value: `${stats.expected || 0}`,
       short: true
     },
     {
-      title: '❌ Failed',
+      title: 'Failed',
       value: `${stats.unexpected || 0}`,
       short: true
     },
     {
-      title: '⏱️ Duration',
+      title: 'Duration',
       value: formatDuration(results.duration),
       short: true
     },
     {
-      title: '📊 Report',
+      title: 'Report',
       value: reportUrl.startsWith('http') ? `<${reportUrl}|View Report>` : reportUrl,
       short: true
     }
@@ -135,62 +135,50 @@ async function sendCheckoutNotification() {
   });
   const todayLabel = `[Today] ${today}`;
   
-  const statusEmoji = passed ? ':white_check_mark:' : ':x:';
   const statusText = passed ? 'PASSED' : 'FAILED';
-  const statusBanner = passed ? '🟢 *ALL TESTS PASSED*' : '🔴 *TESTS FAILED*';
   
   // Build browser section based on what was tested
   const browserMap = {
-    'Chromium': '🌐 *Chromium* - Chrome/Edge compatible',
-    'Firefox': '🦊 *Firefox* - Mozilla Firefox',
-    'WebKit': '🧭 *WebKit* - Safari compatible',
-    'WebKit (Safari)': '🧭 *WebKit* - Safari compatible'
+    'Chromium': 'Chromium - Chrome/Edge compatible',
+    'Firefox': 'Firefox - Mozilla Firefox',
+    'WebKit': 'WebKit - Safari compatible',
+    'WebKit (Safari)': 'WebKit - Safari compatible'
   };
   
   let browserSection;
   if (testDevice) {
     // Mobile checkout
-    const browserName = browserMap[testBrowser] ? browserMap[testBrowser].replace(/🌐|🦊|🧭 \*/g, '') : testBrowser;
+    const browserName = browserMap[testBrowser] || testBrowser;
     browserSection = 
-      `📱 *DEVICE TESTED*\n\n   • ${testDevice}\n\n` +
-      `🌐 *BROWSER TESTED*\n\n   • ${browserName}\n\n`;
+      `*DEVICE TESTED*\n${testDevice}\n\n` +
+      `*BROWSER TESTED*\n${browserName}\n\n`;
   } else if (testBrowser !== 'All' && browserMap[testBrowser]) {
     // Desktop single browser
-    browserSection = `🌐 *BROWSER TESTED*\n\n   • ${browserMap[testBrowser].replace(/🌐|🦊|🧭 \*/g, '')}\n\n`;
+    browserSection = `*BROWSER TESTED*\n${browserMap[testBrowser]}\n\n`;
   } else {
     // Desktop all browsers
-    browserSection = `🌐 *BROWSERS TESTED*\n\n   • Chromium (Chrome/Edge)\n   • Firefox\n   • WebKit (Safari)\n\n`;
+    browserSection = `*BROWSERS TESTED*\nChromium (Chrome/Edge)\nFirefox\nWebKit (Safari)\n\n`;
   }
   
   const detailedText = 
-    `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
-    `       🛒 *LUMIMEDS CHECKOUT AUTOMATION*\n` +
-    `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n` +
+    `*LUMIMEDS CHECKOUT AUTOMATION*\n\n` +
     
-    `📅 *${todayLabel}*\n` +
-    `${statusBanner}\n\n` +
+    `${todayLabel}\n` +
+    `Status: *${statusText}*\n\n` +
     
-    `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n` +
+    `*CHECKOUT FLOW*\n` +
+    `Survey Form - Complete flow tested\n` +
+    `Product Pricing - Verified correct\n` +
+    `Promo Application - Working correctly\n` +
+    `Medication Summary - Promo displayed\n` +
+    `Patient Info - Name, DOB, Address, Phone saved\n` +
+    `Questions - All verified and functional\n\n` +
     
-    `📋 *CHECKOUT FLOW*\n\n` +
-    `   ${statusEmoji}  Survey Form - Complete flow tested\n` +
-    `   ${statusEmoji}  Product Pricing - Verified correct\n` +
-    `   ${statusEmoji}  Promo Application - Working correctly\n` +
-    `   ${statusEmoji}  Medication Summary - Promo displayed\n` +
-    `   ${statusEmoji}  Patient Info - Name, DOB, Address, Phone saved\n` +
-    `   ${statusEmoji}  Questions - All verified and functional\n\n` +
+    `*PRODUCT SUMMARY FORM*\n` +
+    `Navigation - Successfully accessed\n` +
+    `Page Flow - Smooth transitions\n\n` +
     
-    `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n` +
-    
-    `📦 *PRODUCT SUMMARY FORM*\n\n` +
-    `   ${statusEmoji}  Navigation - Successfully accessed\n` +
-    `   ${statusEmoji}  Page Flow - Smooth transitions\n\n` +
-    
-    `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n` +
-    
-    browserSection +
-    
-    `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
+    browserSection;
 
   // Add video section only if recording was enabled AND tests passed
   let videoSection = '';
@@ -201,42 +189,20 @@ async function sendCheckoutNotification() {
   if (passed && recordVideo) {
     if (slackFileUrl) {
       // Slack file upload (preferred - appears in thread)
-      videoSection = `\n\n` +
-        `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n` +
-        `🎬 *VIDEO RECORDING*\n\n` +
-        `   📹 <${slackFileUrl}|View Video in Slack>\n\n` +
-        `   ✨ Video uploaded to this channel!\n\n` +
-        `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
+      videoSection = `\n*VIDEO RECORDING*\n<${slackFileUrl}|View Video in Slack>\nVideo uploaded to this channel\n`;
     } else if (googleDriveUrl || googleDriveViewUrl) {
       // Google Drive link (fallback)
       const downloadUrl = googleDriveUrl || googleDriveViewUrl;
       const viewUrl = googleDriveViewUrl || googleDriveUrl;
-      videoSection = `\n\n` +
-        `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n` +
-        `🎬 *VIDEO RECORDING*\n\n` +
-        `   📹 <${downloadUrl}|⬇️ Download Video from Google Drive>\n` +
-        `   👁️  <${viewUrl}|View in Google Drive>\n\n` +
-        `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
+      videoSection = `\n*VIDEO RECORDING*\n<${downloadUrl}|Download Video from Google Drive>\n<${viewUrl}|View in Google Drive>\n`;
     } else if (githubRunId && githubRepository) {
       // Fallback to GitHub artifacts
       const artifactUrl = `https://github.com/${githubRepository}/actions/runs/${githubRunId}`;
       const artifactName = `checkout-video-${githubRunNumber}`;
-      videoSection = `\n\n` +
-        `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n` +
-        `🎬 *VIDEO RECORDING*\n\n` +
-        `   📹 <${artifactUrl}|⬇️ View Run #${githubRunNumber}>\n\n` +
-        `   📥 *How to Download:*\n` +
-        `   1. Click the link above\n` +
-        `   2. Scroll to "Artifacts" section\n` +
-        `   3. Click "${artifactName}"\n\n` +
-        `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
+      videoSection = `\n*VIDEO RECORDING*\n<${artifactUrl}|View Run #${githubRunNumber}>\n\nHow to Download:\n1. Click the link above\n2. Scroll to "Artifacts" section\n3. Click "${artifactName}"\n`;
     } else if (videoPath) {
       // Local video
-      videoSection = `\n\n` +
-        `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n` +
-        `🎬 *VIDEO RECORDING*\n\n` +
-        `   📹 Video saved locally\n\n` +
-        `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
+      videoSection = `\n*VIDEO RECORDING*\nVideo saved locally\n`;
     }
   }
 
