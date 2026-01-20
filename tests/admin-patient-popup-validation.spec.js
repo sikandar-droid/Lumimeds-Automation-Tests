@@ -334,8 +334,57 @@ test.describe('Admin Patient Popup Validation', () => {
             }
           }
           
-          // Wait a bit more after clicking products page button
-          await page.waitForTimeout(2000);
+          // Wait for modal with "Select" button to appear (if products button was clicked)
+          if (productsButtonClicked) {
+            console.log('   ⏳ Waiting for modal with "Select" button to appear...');
+            await page.waitForTimeout(2000);
+            
+            // Look for "Select" button in a modal
+            const selectButtonSelectors = [
+              'button:has-text("Select")',
+              'button:has-text("select")',
+              '[role="button"]:has-text("Select")',
+              'a:has-text("Select")'
+            ];
+            
+            let selectButtonClicked = false;
+            for (const selector of selectButtonSelectors) {
+              try {
+                const selectButton = page.locator(selector).first();
+                if (await selectButton.isVisible({ timeout: 5000 }).catch(() => false)) {
+                  console.log('   🖱️  Clicking "Select" button in modal...');
+                  await selectButton.click();
+                  selectButtonClicked = true;
+                  break;
+                }
+              } catch (e) {
+                continue;
+              }
+            }
+            
+            if (!selectButtonClicked) {
+              // Try role-based selector
+              try {
+                const selectButton = page.getByRole('button', { name: 'Select' });
+                if (await selectButton.isVisible({ timeout: 5000 }).catch(() => false)) {
+                  console.log('   🖱️  Clicking "Select" button (role selector)...');
+                  await selectButton.click();
+                  selectButtonClicked = true;
+                }
+              } catch (e) {
+                console.log('   ⚠️  Could not find "Select" button - Account Notice modal may appear directly');
+              }
+            }
+            
+            // Wait after clicking Select button
+            if (selectButtonClicked) {
+              console.log('   ⏳ Waiting after clicking "Select" button...');
+              await page.waitForTimeout(2000);
+            }
+          } else {
+            // Wait a bit more after clicking products page button
+            await page.waitForTimeout(2000);
+          }
         }
         
         // Wait for modal/popup to appear
