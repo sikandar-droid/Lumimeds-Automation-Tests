@@ -280,6 +280,64 @@ test.describe('Admin Patient Popup Validation', () => {
           }
         }
         
+        // Wait a bit to see if we're redirected to products page
+        await page.waitForTimeout(3000);
+        const currentUrl = page.url();
+        console.log(`   📍 Current URL after first click: ${currentUrl}`);
+        
+        // Check if redirected to products page (some ad pages redirect there)
+        if (currentUrl.includes('/products') && !currentUrl.includes('/products/survey')) {
+          console.log('   🔄 Redirected to products page - looking for "Get Started" button there...');
+          
+          // Close any pop-ups on products page
+          await closePopup(page);
+          
+          // Look for "Get Started" button on products page
+          const productsGetStartedSelectors = [
+            'button:has-text("Get Started")',
+            'a:has-text("Get Started")',
+            'button:has-text("Get started")',
+            'a:has-text("Get started")',
+            '[role="button"]:has-text("Get Started")'
+          ];
+          
+          let productsButtonClicked = false;
+          for (const selector of productsGetStartedSelectors) {
+            try {
+              const buttons = await page.locator(selector).all();
+              for (let i = 0; i < buttons.length; i++) {
+                const button = buttons[i];
+                if (await button.isVisible({ timeout: 2000 })) {
+                  console.log(`   🖱️  Clicking "Get Started" button on products page (${i + 1}/${buttons.length})...`);
+                  await button.click();
+                  productsButtonClicked = true;
+                  break;
+                }
+              }
+              if (productsButtonClicked) break;
+            } catch (e) {
+              continue;
+            }
+          }
+          
+          if (!productsButtonClicked) {
+            // Try role-based selector
+            try {
+              const button = page.getByRole('button', { name: 'Get Started' });
+              if (await button.isVisible({ timeout: 2000 })) {
+                console.log('   🖱️  Clicking "Get Started" button on products page (role selector)...');
+                await button.click();
+                productsButtonClicked = true;
+              }
+            } catch (e) {
+              console.log('   ⚠️  Could not find "Get Started" button on products page - modal may have appeared already');
+            }
+          }
+          
+          // Wait a bit more after clicking products page button
+          await page.waitForTimeout(2000);
+        }
+        
         // Wait for modal/popup to appear
         console.log('   ⏳ Waiting for "Account Notice" popup to appear...');
         
@@ -507,12 +565,68 @@ test.describe('Admin Patient Popup Validation', () => {
           }
         }
         
+        // Wait a bit to see if we're redirected to products page
+        await page.waitForTimeout(3000);
+        let urlAfterClick = page.url();
+        console.log(`   📍 URL after first click: ${urlAfterClick}`);
+        
+        // Check if redirected to products page (some ad pages redirect there)
+        if (urlAfterClick.includes('/products') && !urlAfterClick.includes('/products/survey')) {
+          console.log('   🔄 Redirected to products page - looking for "Get Started" button there...');
+          
+          // Close any pop-ups on products page
+          await closePopup(page);
+          
+          // Look for "Get Started" button on products page
+          const productsGetStartedSelectors = [
+            'button:has-text("Get Started")',
+            'a:has-text("Get Started")',
+            'button:has-text("Get started")',
+            'a:has-text("Get started")',
+            '[role="button"]:has-text("Get Started")'
+          ];
+          
+          let productsButtonClicked = false;
+          for (const selector of productsGetStartedSelectors) {
+            try {
+              const buttons = await page.locator(selector).all();
+              for (let i = 0; i < buttons.length; i++) {
+                const button = buttons[i];
+                if (await button.isVisible({ timeout: 2000 })) {
+                  console.log(`   🖱️  Clicking "Get Started" button on products page (${i + 1}/${buttons.length})...`);
+                  await button.click();
+                  productsButtonClicked = true;
+                  break;
+                }
+              }
+              if (productsButtonClicked) break;
+            } catch (e) {
+              continue;
+            }
+          }
+          
+          if (!productsButtonClicked) {
+            // Try role-based selector
+            try {
+              const button = page.getByRole('button', { name: 'Get Started' });
+              if (await button.isVisible({ timeout: 2000 })) {
+                console.log('   🖱️  Clicking "Get Started" button on products page (role selector)...');
+                await button.click();
+                productsButtonClicked = true;
+              }
+            } catch (e) {
+              console.log('   ⚠️  Could not find "Get Started" button on products page');
+            }
+          }
+          
+          // Wait for navigation after clicking products page button
+          await page.waitForTimeout(3000);
+          urlAfterClick = page.url();
+          console.log(`   📍 URL after products page click: ${urlAfterClick}`);
+        }
+        
         // Wait for navigation or form to appear
         console.log('   ⏳ Waiting for survey form to appear...');
-        await page.waitForTimeout(3000);
-        
-        const urlAfterClick = page.url();
-        console.log(`   📍 URL after click: ${urlAfterClick}`);
         
         // Step 3: Validate survey form is opened (not popup)
         console.log('   🔍 Validating survey form opened...');
