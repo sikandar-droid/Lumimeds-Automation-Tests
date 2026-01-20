@@ -13,23 +13,46 @@ const { test, expect } = require('@playwright/test');
 // Test configuration
 const BASE_URL = process.env.BASE_URL || 'https://usama-coc-2848.d2493ifc824sz6.amplifyapp.com';
 const ADMIN_LOGIN_URL = `${BASE_URL}/admin/login`;
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'your-admin-email@example.com';
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'your-password-here';
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'sikandar.naeem@devslooptech.com';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'Test@123';
 
 // Validate credentials are set
 if (ADMIN_EMAIL === 'your-admin-email@example.com' || ADMIN_PASSWORD === 'your-password-here') {
   console.warn('⚠️  WARNING: Using default credentials. Set ADMIN_EMAIL and ADMIN_PASSWORD environment variables.');
 }
 
-// List of ad pages to test
+// List of ad pages to test (all 27 pages)
 const AD_PAGES = [
+  // New/Active LPs
+  '/ad/new-year-new-you',
+  '/ad/longevity-nad',
   '/ad/for-women',
   '/ad/how-to-start',
   '/ad/journey',
   '/ad/redefined',
   '/ad/med-spa1',
   '/ad/best-weight-loss-medication',
+  '/ad/starter-pack',
   '/ad/holiday-weight-goals',
+  
+  // Old LPs
+  '/ad/stay-on-track',
+  '/ad/glow-up',
+  '/ad/free',
+  '/ad/science',
+  '/ad/otp',
+  '/ad/tirz',
+  '/ad/glp1-gip-treatment',
+  '/ad/sustained',
+  '/ad/sustainable-weight-loss',
+  '/ad/weight-loss-treatment',
+  '/ad/easy-weight-loss',
+  '/ad/med-spa',
+  '/ad/med-spa2',
+  '/ad/med-spa3',
+  '/ad/healthy-weight-loss',
+  '/ad/sem',
+  '/es/ad/med-spa1', // Spanish version
 ];
 
 // Helper function to close pop-ups on ad pages
@@ -258,90 +281,126 @@ test.describe('Admin Patient Popup Validation', () => {
         }
         
         // Wait for modal/popup to appear
-        console.log('   ⏳ Waiting for popup to appear...');
-        await page.waitForTimeout(2000);
+        console.log('   ⏳ Waiting for "Account Notice" popup to appear...');
         
-        // Step 4: Validate "Login as Patient" popup appears
-        console.log('   🔍 Validating "Login as Patient" popup...');
-        
-        const modalSelectors = [
-          '[role="dialog"]',
-          '[role="alertdialog"]',
-          '.modal',
-          '[class*="modal" i]',
-          '[class*="Modal"]'
-        ];
+        // Step 4: Validate "Account Notice" popup appears
+        // The popup has:
+        // - Title: "Account Notice"
+        // - Button: "Proceed to Patient Login"
+        // - Button: "Cancel"
         
         let modalFound = false;
         let modalLocator = null;
         
-        for (const selector of modalSelectors) {
-          const modal = page.locator(selector).first();
-          if (await modal.isVisible({ timeout: 5000 }).catch(() => false)) {
+        // Strategy 1: Wait for "Account Notice" title (most specific)
+        try {
+          await page.waitForSelector('text="Account Notice"', { timeout: 10000, state: 'visible' });
+          console.log('   ✅ Found "Account Notice" title');
+          
+          // Find the modal container (parent of the title)
+          const titleElement = page.locator('text="Account Notice"').first();
+          modalLocator = titleElement.locator('xpath=ancestor::*[contains(@class, "modal") or contains(@class, "dialog") or contains(@class, "popup") or @role="dialog" or @role="alertdialog"]').first();
+          
+          // If no specific modal container found, use the parent div
+          if (!(await modalLocator.count())) {
+            modalLocator = titleElement.locator('xpath=ancestor::div[1]').first();
+          }
+          
+          modalFound = true;
+        } catch (e) {
+          console.log(`   ⚠️  Could not find "Account Notice" title: ${e.message}`);
+        }
+        
+        // Strategy 2: Wait for "Proceed to Patient Login" button (reliable fallback)
+        if (!modalFound) {
+          try {
+            console.log('   🔍 Looking for "Proceed to Patient Login" button...');
+            await page.waitForSelector('button:has-text("Proceed to Patient Login"), a:has-text("Proceed to Patient Login")', { timeout: 10000, state: 'visible' });
+            console.log('   ✅ Found "Proceed to Patient Login" button');
+            
+            const proceedButton = page.locator('button:has-text("Proceed to Patient Login"), a:has-text("Proceed to Patient Login")').first();
+            // Find the modal container (parent of the button)
+            modalLocator = proceedButton.locator('xpath=ancestor::*[contains(@class, "modal") or contains(@class, "dialog") or contains(@class, "popup") or @role="dialog" or @role="alertdialog"]').first();
+            
+            // If no specific modal container found, use the parent div
+            if (!(await modalLocator.count())) {
+              modalLocator = proceedButton.locator('xpath=ancestor::div[1]').first();
+            }
+            
             modalFound = true;
-            modalLocator = modal;
-            console.log(`   ✅ Modal found using selector: ${selector}`);
-            break;
+          } catch (e) {
+            console.log(`   ⚠️  Could not find "Proceed to Patient Login" button: ${e.message}`);
+          }
+        }
+        
+        // Strategy 3: Try generic modal selectors
+        if (!modalFound) {
+          console.log('   🔍 Trying generic modal selectors...');
+          const modalSelectors = [
+            '[role="dialog"]',
+            '[role="alertdialog"]',
+            '.modal',
+            '[class*="modal" i]',
+            '[class*="Modal"]',
+            '[class*="popup" i]',
+            '[class*="Popup" i]',
+            '[class*="dialog" i]',
+            '[class*="Dialog" i]'
+          ];
+          
+          for (const selector of modalSelectors) {
+            try {
+              await page.waitForSelector(selector, { timeout: 3000, state: 'visible' });
+              const modal = page.locator(selector).first();
+              if (await modal.isVisible({ timeout: 1000 }).catch(() => false)) {
+                const modalText = await modal.textContent();
+                // Check if it contains expected text
+                if (modalText && (modalText.includes('Account Notice') || modalText.includes('Admin') || modalText.includes('Patient'))) {
+                  modalFound = true;
+                  modalLocator = modal;
+                  console.log(`   ✅ Modal found using selector: ${selector}`);
+                  break;
+                }
+              }
+            } catch (e) {
+              continue;
+            }
           }
         }
         
         if (!modalFound) {
-          console.log('   ❌ FAIL: Modal/popup did not appear');
+          console.log('   ❌ FAIL: "Account Notice" popup did not appear');
+          console.log('   📸 Taking screenshot for debugging...');
           await page.screenshot({ path: `admin-popup-missing-${adPage.replace(/\//g, '-')}.png`, fullPage: true });
-          throw new Error(`Modal/popup did not appear on ${adPage} when admin is logged in`);
+          
+          // Try to get page HTML to debug
+          const bodyText = await page.locator('body').textContent();
+          console.log(`   📝 Page text preview: ${bodyText.substring(0, 500)}...`);
+          
+          throw new Error(`"Account Notice" popup did not appear on ${adPage} when admin is logged in`);
         }
         
-        // Check modal content for "patient" or "login" text
+        console.log('   ✅ "Account Notice" popup found!');
+        
+        // Validate modal content
         const modalText = await modalLocator.textContent();
-        console.log(`   📝 Modal content preview: ${modalText.substring(0, 150)}...`);
+        console.log(`   📝 Modal content preview: ${modalText.substring(0, 200)}...`);
         
+        // Check for expected content
+        const hasAccountNotice = modalText.includes('Account Notice');
+        const hasAdminText = modalText.toLowerCase().includes('admin');
         const hasPatientText = modalText.toLowerCase().includes('patient');
-        const hasLoginText = modalText.toLowerCase().includes('login');
         
-        if (!hasPatientText && !hasLoginText) {
-          console.log('   ⚠️  Warning: Modal does not contain "patient" or "login" text');
-        }
+        console.log(`   📊 Content check: Account Notice=${hasAccountNotice}, Admin=${hasAdminText}, Patient=${hasPatientText}`);
         
-        // Look for "Proceed to Patient Login" or similar button/link
-        const proceedButtonSelectors = [
-          'link:has-text("Proceed to Patient Login")',
-          'a:has-text("Proceed to Patient Login")',
-          'button:has-text("Proceed to Patient Login")',
-          'a:has-text("Patient Login")',
-          'button:has-text("Patient Login")',
-          'a:has-text("Login as Patient")',
-          'button:has-text("Login as Patient")'
-        ];
+        // Look for "Proceed to Patient Login" button
+        const proceedButton = page.locator('button:has-text("Proceed to Patient Login"), a:has-text("Proceed to Patient Login")').first();
+        const proceedButtonFound = await proceedButton.isVisible({ timeout: 2000 }).catch(() => false);
         
-        let proceedButtonFound = false;
-        for (const selector of proceedButtonSelectors) {
-          try {
-            const button = page.locator(selector).first();
-            if (await button.isVisible({ timeout: 2000 }).catch(() => false)) {
-              proceedButtonFound = true;
-              console.log(`   ✅ Found "Proceed to Patient Login" button using: ${selector}`);
-              break;
-            }
-          } catch (e) {
-            continue;
-          }
-        }
-        
-        if (!proceedButtonFound) {
-          // Try role-based selector
-          try {
-            const link = page.getByRole('link', { name: /proceed to patient login/i });
-            if (await link.isVisible({ timeout: 2000 })) {
-              proceedButtonFound = true;
-              console.log('   ✅ Found "Proceed to Patient Login" link (role selector)');
-            }
-          } catch (e) {
-            // Continue to check
-          }
-        }
-        
-        if (!proceedButtonFound) {
-          console.log('   ⚠️  Warning: "Proceed to Patient Login" button/link not found in modal');
+        if (proceedButtonFound) {
+          console.log('   ✅ "Proceed to Patient Login" button found');
+        } else {
+          console.log('   ⚠️  "Proceed to Patient Login" button not found');
         }
         
         // Check for Cancel button
@@ -354,10 +413,13 @@ test.describe('Admin Patient Popup Validation', () => {
           console.log('   ⚠️  Cancel button not found');
         }
         
-        if (modalFound && (hasPatientText || hasLoginText || proceedButtonFound)) {
-          console.log(`   ✅ PASS: "Login as Patient" popup validated successfully on ${adPage}\n`);
+        // Final validation
+        if (hasAccountNotice && proceedButtonFound) {
+          console.log(`   ✅ PASS: "Account Notice" popup validated successfully on ${adPage}\n`);
+        } else if (hasAdminText && hasPatientText && proceedButtonFound) {
+          console.log(`   ✅ PASS: Admin/Patient popup validated successfully on ${adPage}\n`);
         } else {
-          console.log(`   ⚠️  Partial validation: Modal appeared but may not be the expected "Login as Patient" popup\n`);
+          console.log(`   ⚠️  Partial validation: Modal appeared but may not match expected content\n`);
         }
         
       } catch (error) {
