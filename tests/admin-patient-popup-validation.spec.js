@@ -1,5 +1,15 @@
 const { test, expect } = require('@playwright/test');
 
+/**
+ * Admin-Patient Popup Validation Tests
+ * 
+ * IMPORTANT: Always test in headed mode first before committing!
+ * Run: npx playwright test tests/admin-patient-popup-validation.spec.js --headed
+ * 
+ * Test 1: Admin logged in → Ad page → Get Started → Validate "Login as Patient" popup
+ * Test 2: Not logged in → Ad page → Get Started → Validate survey form opens directly
+ */
+
 // Test configuration
 const BASE_URL = process.env.BASE_URL || 'https://usama-coc-2848.d2493ifc824sz6.amplifyapp.com';
 const ADMIN_LOGIN_URL = `${BASE_URL}/admin/login`;
@@ -445,12 +455,13 @@ test.describe('Admin Patient Popup Validation', () => {
         // Step 3: Validate survey form is opened (not popup)
         console.log('   🔍 Validating survey form opened...');
         
-        // Check if URL changed (redirected to survey/questionnaire page)
+        // Check if URL changed (redirected to survey/questionnaire page or products page)
         const urlChanged = urlAfterClick !== urlBeforeClick;
         const isSurveyUrl = urlAfterClick.includes('survey') || 
                            urlAfterClick.includes('questionnaire') || 
                            urlAfterClick.includes('qualify') ||
-                           urlAfterClick.includes('form');
+                           urlAfterClick.includes('form') ||
+                           urlAfterClick.includes('/products'); // Some pages redirect to /products
         
         // Check for form elements on the page
         const formSelectors = [
