@@ -876,15 +876,72 @@ class CheckoutPage {
         if (!redirectSuccess) {
             console.log('⏳ Polling for URL change...');
             for (let i = 0; i < 30; i++) {
-                await this.page.waitForTimeout(2000);
-                const currentUrl = this.page.url();
-                if (currentUrl.toLowerCase().includes('success')) {
-                    redirectSuccess = true;
-                    console.log('✅ Success URL detected via polling');
-                    break;
-                }
-                if (i % 5 === 0) {
-                    console.log(`⏳ Still waiting... (${i * 2}s) - Current URL: ${currentUrl}`);
+                try {
+                    // Check if page is still open before waiting
+                    if (this.page.isClosed()) {
+                        console.log('⚠️ Page was closed during polling - checking if navigation occurred');
+                        // Page might have navigated and closed the old page
+                        // Try to get the current URL from the context
+                        try {
+                            const pages = this.page.context().pages();
+                            if (pages.length > 0) {
+                                const currentPage = pages[pages.length - 1];
+                                const currentUrl = currentPage.url();
+                                if (currentUrl.toLowerCase().includes('success')) {
+                                    redirectSuccess = true;
+                                    console.log('✅ Success URL detected after page navigation');
+                                    break;
+                                }
+                            }
+                        } catch (e) {
+                            console.log(`⚠️ Could not check URL after page close: ${e.message}`);
+                        }
+                        break;
+                    }
+                    
+                    await this.page.waitForTimeout(2000);
+                    
+                    // Check again if page closed during wait
+                    if (this.page.isClosed()) {
+                        console.log('⚠️ Page closed during wait');
+                        break;
+                    }
+                    
+                    const currentUrl = this.page.url();
+                    if (currentUrl.toLowerCase().includes('success')) {
+                        redirectSuccess = true;
+                        console.log('✅ Success URL detected via polling');
+                        break;
+                    }
+                    if (i % 5 === 0) {
+                        console.log(`⏳ Still waiting... (${i * 2}s) - Current URL: ${currentUrl}`);
+                    }
+                } catch (e) {
+                    // Handle page closed error
+                    if (e.message.includes('closed') || e.message.includes('Target page')) {
+                        console.log(`⚠️ Page closed during polling (iteration ${i + 1}/30)`);
+                        console.log(`   Error: ${e.message}`);
+                        
+                        // Try to find if navigation happened to a new page
+                        try {
+                            const pages = this.page.context().pages();
+                            if (pages.length > 0) {
+                                const currentPage = pages[pages.length - 1];
+                                const currentUrl = currentPage.url();
+                                console.log(`   Checking new page URL: ${currentUrl}`);
+                                if (currentUrl.toLowerCase().includes('success')) {
+                                    redirectSuccess = true;
+                                    console.log('✅ Success URL detected on new page after navigation');
+                                    break;
+                                }
+                            }
+                        } catch (navError) {
+                            console.log(`   Could not check navigation: ${navError.message}`);
+                        }
+                        break;
+                    }
+                    // Re-throw other errors
+                    throw e;
                 }
             }
         }
