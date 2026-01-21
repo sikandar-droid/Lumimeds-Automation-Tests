@@ -940,7 +940,120 @@ class CheckoutPage {
         // Wait for redirect - SIMPLE: If URL changes from checkout URL, it's a success
         console.log('⏳ Waiting for URL to change (any change = success)...');
         
-        // Simple approach: Wait for URL to change from checkout URL
+        // Poll for URL change instead of waitForFunction (more reliable with page closures)
+        const maxPollAttempts = 45; // 90 seconds total (45 * 2 seconds)
+        let urlChanged = false;
+        
+        for (let i = 0; i < maxPollAttempts; i++) {
+            try {
+                // Check if page is still open
+                if (this.page.isClosed()) {
+                    console.log('⚠️ Page closed during polling - checking for navigation/payment success...');
+                    
+                    // Check if we detected success via listeners before page closed
+                    if (navigationDetected || paymentSuccessDetected) {
+                        redirectSuccess = true;
+                        finalSuccessUrl = 'Navigation/payment success detected (page closed)';
+                        console.log('✅ Success detected via listeners before page closed');
+                        break;
+                    }
+                    
+                    // Check context pages for new URL
+                    try {
+                        const pages = this.page.context().pages();
+                        if (pages.length > 0) {
+                            const newUrl = pages[pages.length - 1].url();
+                            if (newUrl !== urlBeforeClick) {
+                                redirectSuccess = true;
+                                finalSuccessUrl = newUrl;
+                                urlChanged = true;
+                                console.log(`✅ URL changed to: ${newUrl} (found in context after page close)`);
+                                console.log('✅ Checkout successful - URL changed from checkout page');
+                                break;
+                            }
+                        }
+                    } catch (e) {
+                        // If navigation/payment was detected, still mark as success
+                        if (navigationDetected || paymentSuccessDetected) {
+                            redirectSuccess = true;
+                            finalSuccessUrl = 'Navigation/payment success detected';
+                            console.log('✅ Success detected via listeners');
+                            break;
+                        }
+                    }
+                    break;
+                }
+                
+                // Check current URL
+                const currentUrl = this.page.url();
+                if (currentUrl !== urlBeforeClick) {
+                    redirectSuccess = true;
+                    finalSuccessUrl = currentUrl;
+                    urlChanged = true;
+                    console.log(`✅ URL changed to: ${finalSuccessUrl}`);
+                    console.log('✅ Checkout successful - URL changed from checkout page');
+                    break;
+                }
+                
+                // Log progress every 10 seconds
+                if (i % 5 === 0 && i > 0) {
+                    console.log(`⏳ Still waiting for URL change... (${i * 2}s) - Current URL: ${currentUrl}`);
+                }
+                
+                // Wait 2 seconds before next check
+                await this.page.waitForTimeout(2000);
+                
+            } catch (e) {
+                // Handle page closed errors
+                if (e.message.includes('closed') || e.message.includes('Target page')) {
+                    console.log(`⚠️ Page closed during polling (iteration ${i + 1}/${maxPollAttempts})`);
+                    
+                    // Check if we detected success before closure
+                    if (navigationDetected || paymentSuccessDetected) {
+                        redirectSuccess = true;
+                        finalSuccessUrl = 'Navigation/payment success detected';
+                        console.log('✅ Success detected via listeners before page closed');
+                        break;
+                    }
+                    
+                    // Try to check context pages
+                    try {
+                        const pages = this.page.context().pages();
+                        if (pages.length > 0) {
+                            const newUrl = pages[pages.length - 1].url();
+                            if (newUrl !== urlBeforeClick) {
+                                redirectSuccess = true;
+                                finalSuccessUrl = newUrl;
+                                urlChanged = true;
+                                console.log(`✅ URL changed to: ${newUrl}`);
+                                break;
+                            }
+                        }
+                    } catch (contextError) {
+                        // If navigation/payment was detected, still mark as success
+                        if (navigationDetected || paymentSuccessDetected) {
+                            redirectSuccess = true;
+                            finalSuccessUrl = 'Navigation/payment success detected';
+                            console.log('✅ Success detected via listeners');
+                            break;
+                        }
+                    }
+                    break;
+                }
+                // Re-throw other errors
+                throw e;
+            }
+        }
+        
+        // Final check: If navigation or payment success was detected, mark as success
+        if (!redirectSuccess && (navigationDetected || paymentSuccessDetected)) {
+            redirectSuccess = true;
+            finalSuccessUrl = 'Navigation/payment success detected via listeners';
+            console.log('✅ Success detected via listeners - checkout successful');
+        }
+        
+        // OLD CODE BELOW - REMOVED waitForFunction approach
+        /*
         try {
             // Wait for URL to change (not equal to checkout URL)
             await this.page.waitForFunction(
