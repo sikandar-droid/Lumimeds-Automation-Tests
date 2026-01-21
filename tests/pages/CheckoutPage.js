@@ -920,129 +920,75 @@ class CheckoutPage {
             }
         };
         
-        // Set up listeners
+        // Set up listeners BEFORE clicking
         this.page.on('framenavigated', navigationHandler);
         this.page.on('response', responseHandler);
         this.page.context().on('page', newPageHandler);
         
-        // First, wait for some indication that checkout is processing
+        console.log('🛒 Clicking checkout button...');
+        await this.checkoutButton.click({ force: true }); // Force click for mobile
+        
+        // Wait 15 seconds after clicking checkout (as requested)
+        console.log('⏳ Waiting 15 seconds after clicking checkout...');
+        await this.page.waitForTimeout(15000);
+        console.log('✅ 15 seconds wait complete');
+        
+        // Check for success API calls in network tab
+        console.log('🔍 Checking network API calls for success indicators...');
+        
+        // Get all network responses that occurred after clicking
+        const allResponses = [];
         try {
-            // Wait for button to become disabled or for loading state
-            await Promise.race([
-                this.checkoutButton.waitFor({ state: 'hidden', timeout: 10000 }),
-                this.page.waitForSelector('text=/processing|loading|please wait/i', { timeout: 10000 }),
-                this.page.waitForTimeout(3000) // Minimum wait
-            ]).catch(() => {});
-        } catch (e) {
-            console.log('ℹ️  No explicit processing indicator found, continuing...');
-        }
-        
-        // Wait for redirect - SIMPLE: If URL changes from checkout URL, it's a success
-        console.log('⏳ Waiting for URL to change (any change = success)...');
-        
-        // Poll for URL change instead of waitForFunction (more reliable with page closures)
-        const maxPollAttempts = 45; // 90 seconds total (45 * 2 seconds)
-        let urlChanged = false;
-        
-        for (let i = 0; i < maxPollAttempts; i++) {
-            try {
-                // Check if page is still open
-                if (this.page.isClosed()) {
-                    console.log('⚠️ Page closed during polling - checking for navigation/payment success...');
-                    
-                    // Check if we detected success via listeners before page closed
-                    if (navigationDetected || paymentSuccessDetected) {
-                        redirectSuccess = true;
-                        finalSuccessUrl = 'Navigation/payment success detected (page closed)';
-                        console.log('✅ Success detected via listeners before page closed');
-                        break;
-                    }
-                    
-                    // Check context pages for new URL
-                    try {
-                        const pages = this.page.context().pages();
-                        if (pages.length > 0) {
-                            const newUrl = pages[pages.length - 1].url();
-                            if (newUrl !== urlBeforeClick) {
-                                redirectSuccess = true;
-                                finalSuccessUrl = newUrl;
-                                urlChanged = true;
-                                console.log(`✅ URL changed to: ${newUrl} (found in context after page close)`);
-                                console.log('✅ Checkout successful - URL changed from checkout page');
-                                break;
-                            }
-                        }
-                    } catch (e) {
-                        // If navigation/payment was detected, still mark as success
-                        if (navigationDetected || paymentSuccessDetected) {
+            // Check if we already detected success via response handler
+            if (successApiCalls.length > 0) {
+                console.log(`✅ Found ${successApiCalls.length} success API call(s):`);
+                successApiCalls.forEach((call, index) => {
+                    console.log(`   ${index + 1}. ${call.method} ${call.url} - Status: ${call.status}`);
+                });
+                redirectSuccess = true;
+                paymentSuccessDetected = true;
+            } else {
+                // Manually check network responses
+                console.log('📊 Analyzing network responses...');
+                
+                // Wait a bit more for any pending requests
+                await this.page.waitForTimeout(5000);
+                
+                // Check current URL as fallback
+                try {
+                    if (!this.page.isClosed()) {
+                        const currentUrl = this.page.url();
+                        if (currentUrl !== urlBeforeClick) {
                             redirectSuccess = true;
-                            finalSuccessUrl = 'Navigation/payment success detected';
-                            console.log('✅ Success detected via listeners');
-                            break;
-                        }
-                    }
-                    break;
-                }
-                
-                // Check current URL
-                const currentUrl = this.page.url();
-                if (currentUrl !== urlBeforeClick) {
-                    redirectSuccess = true;
-                    finalSuccessUrl = currentUrl;
-                    urlChanged = true;
-                    console.log(`✅ URL changed to: ${finalSuccessUrl}`);
-                    console.log('✅ Checkout successful - URL changed from checkout page');
-                    break;
-                }
-                
-                // Log progress every 10 seconds
-                if (i % 5 === 0 && i > 0) {
-                    console.log(`⏳ Still waiting for URL change... (${i * 2}s) - Current URL: ${currentUrl}`);
-                }
-                
-                // Wait 2 seconds before next check
-                await this.page.waitForTimeout(2000);
-                
-            } catch (e) {
-                // Handle page closed errors
-                if (e.message.includes('closed') || e.message.includes('Target page')) {
-                    console.log(`⚠️ Page closed during polling (iteration ${i + 1}/${maxPollAttempts})`);
-                    
-                    // Check if we detected success before closure
-                    if (navigationDetected || paymentSuccessDetected) {
-                        redirectSuccess = true;
-                        finalSuccessUrl = 'Navigation/payment success detected';
-                        console.log('✅ Success detected via listeners before page closed');
-                        break;
-                    }
-                    
-                    // Try to check context pages
-                    try {
-                        const pages = this.page.context().pages();
-                        if (pages.length > 0) {
-                            const newUrl = pages[pages.length - 1].url();
-                            if (newUrl !== urlBeforeClick) {
-                                redirectSuccess = true;
-                                finalSuccessUrl = newUrl;
-                                urlChanged = true;
-                                console.log(`✅ URL changed to: ${newUrl}`);
-                                break;
-                            }
-                        }
-                    } catch (contextError) {
-                        // If navigation/payment was detected, still mark as success
-                        if (navigationDetected || paymentSuccessDetected) {
+                            finalSuccessUrl = currentUrl;
+                            console.log(`✅ URL changed to: ${finalSuccessUrl}`);
+                        } else if (currentUrl.includes('success')) {
                             redirectSuccess = true;
-                            finalSuccessUrl = 'Navigation/payment success detected';
-                            console.log('✅ Success detected via listeners');
-                            break;
+                            finalSuccessUrl = currentUrl;
+                            console.log(`✅ Success URL detected: ${finalSuccessUrl}`);
+                        }
+                    } else {
+                        // Page closed - check context pages
+                        try {
+                            const pages = this.page.context().pages();
+                            if (pages.length > 0) {
+                                const newUrl = pages[pages.length - 1].url();
+                                if (newUrl !== urlBeforeClick || newUrl.includes('success')) {
+                                    redirectSuccess = true;
+                                    finalSuccessUrl = newUrl;
+                                    console.log(`✅ URL changed to: ${finalSuccessUrl}`);
+                                }
+                            }
+                        } catch (e) {
+                            console.log(`⚠️ Could not check context pages: ${e.message}`);
                         }
                     }
-                    break;
+                } catch (e) {
+                    console.log(`⚠️ Could not check URL: ${e.message}`);
                 }
-                // Re-throw other errors
-                throw e;
             }
+        } catch (e) {
+            console.log(`⚠️ Error checking network responses: ${e.message}`);
         }
         
         // Final check: If navigation or payment success was detected, mark as success
