@@ -856,17 +856,42 @@ class CheckoutPage {
         let navigationDetected = false;
         let finalSuccessUrl = null;
         let paymentSuccessDetected = false;
+        const successApiCalls = []; // Array to store success API calls
         
-        // Monitor network responses for success indicators
+        // Monitor network responses for success indicators - PRIMARY METHOD
         const responseHandler = async (response) => {
             const url = response.url();
             const status = response.status();
+            const method = response.request().method();
             
-            // Check for success indicators in network responses
+            // Check for checkout success API calls (POST to /checkout/success)
+            if (url.includes('/checkout/success') || url.includes('/checkout/success?')) {
+                if (status >= 200 && status < 300) {
+                    console.log(`✅ SUCCESS API CALL DETECTED: ${method} ${url} (status: ${status})`);
+                    successApiCalls.push({ url, status, method });
+                    paymentSuccessDetected = true;
+                    redirectSuccess = true;
+                }
+            }
+            
+            // Check for order/payment success endpoints
+            if (url.includes('/order') && (url.includes('/success') || url.includes('/complete'))) {
+                if (status >= 200 && status < 300) {
+                    console.log(`✅ Order success API call: ${method} ${url} (status: ${status})`);
+                    successApiCalls.push({ url, status, method });
+                    paymentSuccessDetected = true;
+                    redirectSuccess = true;
+                }
+            }
+            
+            // Check for success indicators in network responses (fallback)
             if (url.includes('success') || url.includes('checkout/success') || url.includes('order')) {
-                console.log(`✅ Success indicator in network response: ${url} (status: ${status})`);
-                paymentSuccessDetected = true;
-                redirectSuccess = true;
+                if (status >= 200 && status < 300 && !successApiCalls.some(call => call.url === url)) {
+                    console.log(`✅ Success indicator in network response: ${url} (status: ${status})`);
+                    successApiCalls.push({ url, status, method });
+                    paymentSuccessDetected = true;
+                    redirectSuccess = true;
+                }
             }
             
             // Check response body for success indicators (if it's a JSON response)
