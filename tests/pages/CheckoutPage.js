@@ -995,24 +995,33 @@ class CheckoutPage {
                     // Page is closed - try to screenshot from context pages
                     try {
                         const context = this.page.context();
-                        if (context && !context.browser()?.isConnected() === false) {
-                            const pages = context.pages();
-                            if (pages && pages.length > 0) {
-                                const lastPage = pages[pages.length - 1];
-                                if (!lastPage.isClosed()) {
-                                    await lastPage.screenshot({
-                                        path: 'screenshots/checkout-redirect-failed.png',
-                                        fullPage: true
-                                    });
-                                    console.log('📸 Screenshot saved from context page: screenshots/checkout-redirect-failed.png');
+                        if (context) {
+                            try {
+                                const browser = context.browser();
+                                if (browser && browser.isConnected()) {
+                                    const pages = context.pages();
+                                    if (pages && pages.length > 0) {
+                                        const lastPage = pages[pages.length - 1];
+                                        if (!lastPage.isClosed()) {
+                                            await lastPage.screenshot({
+                                                path: 'screenshots/checkout-redirect-failed.png',
+                                                fullPage: true
+                                            });
+                                            console.log('📸 Screenshot saved from context page: screenshots/checkout-redirect-failed.png');
+                                        } else {
+                                            console.log('⚠️ All pages closed - cannot take screenshot');
+                                        }
+                                    } else {
+                                        console.log('⚠️ No pages available in context');
+                                    }
                                 } else {
-                                    console.log('⚠️ All pages closed - cannot take screenshot');
+                                    console.log('⚠️ Browser disconnected - cannot take screenshot');
                                 }
-                            } else {
-                                console.log('⚠️ No pages available in context');
+                            } catch (browserError) {
+                                console.log(`⚠️ Could not access browser: ${browserError.message}`);
                             }
                         } else {
-                            console.log('⚠️ Context or browser closed - cannot take screenshot');
+                            console.log('⚠️ Context unavailable - cannot take screenshot');
                         }
                     } catch (contextError) {
                         // Silently handle context errors - page is already closed
