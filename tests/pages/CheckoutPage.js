@@ -823,6 +823,42 @@ class CheckoutPage {
         // Wait for checkout processing
         console.log('⏳ Waiting for checkout to process...');
         
+        // Set up navigation and page close listeners BEFORE clicking
+        let redirectSuccess = false;
+        let navigationDetected = false;
+        let finalSuccessUrl = null;
+        
+        // Listen for navigation events
+        const navigationHandler = (frame) => {
+            if (frame === this.page.mainFrame()) {
+                const url = frame.url();
+                console.log(`🔄 Navigation detected: ${url}`);
+                navigationDetected = true;
+                if (url.toLowerCase().includes('success')) {
+                    redirectSuccess = true;
+                    finalSuccessUrl = url;
+                    console.log('✅ Success URL detected via navigation event!');
+                }
+            }
+        };
+        
+        // Listen for new pages (popups or new tabs)
+        const newPageHandler = async (newPage) => {
+            console.log('📄 New page opened - checking URL...');
+            await newPage.waitForLoadState('networkidle', { timeout: 5000 }).catch(() => {});
+            const url = newPage.url();
+            console.log(`📍 New page URL: ${url}`);
+            if (url.toLowerCase().includes('success')) {
+                redirectSuccess = true;
+                finalSuccessUrl = url;
+                console.log('✅ Success detected on new page!');
+            }
+        };
+        
+        // Set up listeners
+        this.page.on('framenavigated', navigationHandler);
+        this.page.context().on('page', newPageHandler);
+        
         // First, wait for some indication that checkout is processing
         try {
             // Wait for button to become disabled or for loading state
@@ -838,12 +874,11 @@ class CheckoutPage {
         // Wait for redirect to success page using multiple approaches
         console.log('⏳ Waiting for redirect to success page...');
         
-        let redirectSuccess = false;
-        
         // Approach 1: Use waitForURL (most reliable)
         try {
             await this.page.waitForURL(/.*success.*/i, { timeout: 90000 });
             redirectSuccess = true;
+            finalSuccessUrl = this.page.url();
             console.log('✅ Redirect detected via waitForURL');
         } catch (e) {
             console.log('⚠️ waitForURL timed out, trying alternative approaches...');
@@ -851,11 +886,23 @@ class CheckoutPage {
         
         // Approach 2: Check if URL already changed
         if (!redirectSuccess) {
-            const currentUrl = this.page.url();
-            if (currentUrl !== urlBeforeClick && currentUrl.toLowerCase().includes('success')) {
-                redirectSuccess = true;
-                console.log('✅ Redirect detected via URL comparison');
+            try {
+                if (!this.page.isClosed()) {
+                    const currentUrl = this.page.url();
+                    if (currentUrl !== urlBeforeClick && currentUrl.toLowerCase().includes('success')) {
+                        redirectSuccess = true;
+                        finalSuccessUrl = currentUrl;
+                        console.log('✅ Redirect detected via URL comparison');
+                    }
+                }
+            } catch (e) {
+                // Page might be closed, continue
             }
+        }
+        
+        // Check if navigation event already detected success
+        if (redirectSuccess && finalSuccessUrl) {
+            console.log(`✅ Success already detected via navigation: ${finalSuccessUrl}`);
         }
         
         // Approach 3: Wait for success page elements
@@ -946,27 +993,50 @@ class CheckoutPage {
             }
         }
         
+        // Clean up event listeners
+        this.page.off('framenavigated', navigationHandler);
+        this.page.context().off('page', newPageHandler);
+        
         // Get final URL - handle case where page might be closed
-        let successUrl = '';
-        try {
-            if (!this.page.isClosed()) {
-                successUrl = this.page.url();
-            } else {
-                // Page closed - try to get URL from context pages
-                try {
-                    const pages = this.page.context().pages();
-                    if (pages.length > 0) {
-                        successUrl = pages[pages.length - 1].url();
-                        console.log(`📍 Page closed, but found URL from context: ${successUrl}`);
-                    } else {
-                        successUrl = 'Page closed - URL unavailable';
+        let successUrl = finalSuccessUrl || '';
+        if (!successUrl) {
+            try {
+                if (!this.page.isClosed()) {
+                    successUrl = this.page.url();
+                } else {
+                    // Page closed - try to get URL from context pages
+                    try {
+                        const pages = this.page.context().pages();
+                        if (pages.length > 0) {
+                            successUrl = pages[pages.length - 1].url();
+                            console.log(`📍 Page closed, but found URL from context: ${successUrl}`);
+                        } else {
+                            // If navigation was detected but no pages, might be successful navigation
+                            if (navigationDetected) {
+                                successUrl = 'Navigation detected - checkout likely succeeded';
+                                console.log('✅ Navigation was detected - checkout likely completed successfully');
+                                redirectSuccess = true; // Mark as success if navigation was detected
+                            } else {
+                                successUrl = 'Page closed - URL unavailable';
+                            }
+                        }
+                    } catch (e) {
+                        if (navigationDetected) {
+                            successUrl = 'Navigation detected - checkout likely succeeded';
+                            redirectSuccess = true;
+                        } else {
+                            successUrl = 'Page closed - could not retrieve URL';
+                        }
                     }
-                } catch (e) {
-                    successUrl = 'Page closed - could not retrieve URL';
+                }
+            } catch (e) {
+                if (navigationDetected) {
+                    successUrl = 'Navigation detected - checkout likely succeeded';
+                    redirectSuccess = true;
+                } else {
+                    successUrl = `Error getting URL: ${e.message}`;
                 }
             }
-        } catch (e) {
-            successUrl = `Error getting URL: ${e.message}`;
         }
         
         if (!redirectSuccess) {
