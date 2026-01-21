@@ -1051,9 +1051,6 @@ class CheckoutPage {
             finalSuccessUrl = 'Navigation/payment success detected via listeners';
             console.log('✅ Success detected via listeners - checkout successful');
         }
-        
-        // OLD CODE BELOW - REMOVED waitForFunction approach
-        /*
         try {
             // Wait for URL to change (not equal to checkout URL)
             await this.page.waitForFunction(
