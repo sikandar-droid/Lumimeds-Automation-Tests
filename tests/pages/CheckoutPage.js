@@ -971,32 +971,61 @@ class CheckoutPage {
         
         if (!redirectSuccess) {
             // Take a screenshot for debugging (only if page is still open)
+            // Wrap in try-catch to handle any page closure errors
             try {
-                if (!this.page.isClosed()) {
-                    await this.page.screenshot({
-                        path: 'screenshots/checkout-redirect-failed.png',
-                        fullPage: true
-                    });
-                    console.log('📸 Screenshot saved: screenshots/checkout-redirect-failed.png');
-                } else {
-                    // Try to screenshot from context pages
+                // Check if page is closed before attempting screenshot
+                const pageClosed = this.page.isClosed();
+                
+                if (!pageClosed) {
                     try {
-                        const pages = this.page.context().pages();
-                        if (pages.length > 0) {
-                            await pages[pages.length - 1].screenshot({
-                                path: 'screenshots/checkout-redirect-failed.png',
-                                fullPage: true
-                            });
-                            console.log('📸 Screenshot saved from context page: screenshots/checkout-redirect-failed.png');
+                        await this.page.screenshot({
+                            path: 'screenshots/checkout-redirect-failed.png',
+                            fullPage: true
+                        });
+                        console.log('📸 Screenshot saved: screenshots/checkout-redirect-failed.png');
+                    } catch (screenshotError) {
+                        // Handle specific "closed" error
+                        if (screenshotError.message && screenshotError.message.includes('closed')) {
+                            console.log('⚠️ Page closed during screenshot attempt - skipping screenshot');
                         } else {
-                            console.log('⚠️ Could not take screenshot - all pages closed');
+                            console.log(`⚠️ Screenshot failed: ${screenshotError.message}`);
                         }
-                    } catch (e) {
-                        console.log(`⚠️ Could not take screenshot: ${e.message}`);
+                    }
+                } else {
+                    // Page is closed - try to screenshot from context pages
+                    try {
+                        const context = this.page.context();
+                        if (context && !context.browser()?.isConnected() === false) {
+                            const pages = context.pages();
+                            if (pages && pages.length > 0) {
+                                const lastPage = pages[pages.length - 1];
+                                if (!lastPage.isClosed()) {
+                                    await lastPage.screenshot({
+                                        path: 'screenshots/checkout-redirect-failed.png',
+                                        fullPage: true
+                                    });
+                                    console.log('📸 Screenshot saved from context page: screenshots/checkout-redirect-failed.png');
+                                } else {
+                                    console.log('⚠️ All pages closed - cannot take screenshot');
+                                }
+                            } else {
+                                console.log('⚠️ No pages available in context');
+                            }
+                        } else {
+                            console.log('⚠️ Context or browser closed - cannot take screenshot');
+                        }
+                    } catch (contextError) {
+                        // Silently handle context errors - page is already closed
+                        console.log(`⚠️ Could not access context pages: ${contextError.message}`);
                     }
                 }
             } catch (e) {
-                console.log(`⚠️ Screenshot failed: ${e.message}`);
+                // Final fallback - just log and continue
+                if (e.message && e.message.includes('closed')) {
+                    console.log('⚠️ Page/browser closed - screenshot skipped');
+                } else {
+                    console.log(`⚠️ Screenshot attempt failed: ${e.message}`);
+                }
             }
             
             console.log(`❌ Final URL: ${successUrl}`);
