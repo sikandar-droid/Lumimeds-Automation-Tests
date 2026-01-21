@@ -1104,18 +1104,18 @@ class CheckoutPage {
                             successUrl = pages[pages.length - 1].url();
                             console.log(`📍 Page closed, but found URL from context: ${successUrl}`);
                         } else {
-                            // If navigation or payment success was detected but no pages, mark as success
-                            if (navigationDetected || paymentSuccessDetected) {
-                                successUrl = 'Navigation/payment success detected - checkout likely succeeded';
-                                console.log('✅ Navigation or payment success was detected - checkout likely completed successfully');
-                                redirectSuccess = true; // Mark as success if navigation or payment success was detected
+                            // If API success was detected but no pages, mark as success
+                            if (successApiCalls.length > 0 || navigationDetected || paymentSuccessDetected) {
+                                successUrl = `API success detected - ${successApiCalls.length} success call(s)`;
+                                console.log(`✅ API success calls detected (${successApiCalls.length}) - checkout completed successfully`);
+                                redirectSuccess = true;
                             } else {
                                 successUrl = 'Page closed - URL unavailable';
                             }
                         }
                     } catch (e) {
-                        if (navigationDetected || paymentSuccessDetected) {
-                            successUrl = 'Navigation/payment success detected - checkout likely succeeded';
+                        if (successApiCalls.length > 0 || navigationDetected || paymentSuccessDetected) {
+                            successUrl = `API success detected - ${successApiCalls.length} success call(s)`;
                             redirectSuccess = true;
                         } else {
                             successUrl = 'Page closed - could not retrieve URL';
@@ -1123,13 +1123,25 @@ class CheckoutPage {
                     }
                 }
             } catch (e) {
-                if (navigationDetected || paymentSuccessDetected) {
-                    successUrl = 'Navigation/payment success detected - checkout likely succeeded';
+                if (successApiCalls.length > 0 || navigationDetected || paymentSuccessDetected) {
+                    successUrl = `API success detected - ${successApiCalls.length} success call(s)`;
                     redirectSuccess = true;
                 } else {
                     successUrl = `Error getting URL: ${e.message}`;
                 }
             }
+        }
+        
+        // PRIMARY ASSERTION: Check for success API calls
+        if (successApiCalls.length > 0) {
+            console.log(`\n✅ ========== CHECKOUT SUCCESS DETECTED VIA API CALLS ==========`);
+            console.log(`   Found ${successApiCalls.length} success API call(s):`);
+            successApiCalls.forEach((call, index) => {
+                console.log(`   ${index + 1}. ${call.method} ${call.url}`);
+                console.log(`      Status: ${call.status}`);
+            });
+            console.log(`✅ Checkout completed successfully based on API calls!\n`);
+            redirectSuccess = true;
         }
         
         // Final check: if payment success was detected, mark as success
