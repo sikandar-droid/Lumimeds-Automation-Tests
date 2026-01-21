@@ -958,14 +958,92 @@ class CheckoutPage {
         
         console.log('✅ Event listeners attached (response, navigation, newPage)');
         console.log('🛒 Clicking checkout button...');
+        
+        // Verify button is ready before clicking
+        try {
+            await this.checkoutButton.waitFor({ state: 'visible', timeout: 5000 });
+            const isEnabled = await this.checkoutButton.isEnabled().catch(() => true);
+            if (!isEnabled) {
+                console.log('⚠️ Checkout button is disabled - waiting for it to be enabled...');
+                await this.page.waitForTimeout(2000);
+            }
+        } catch (e) {
+            console.log(`⚠️ Could not verify button state: ${e.message}`);
+        }
+        
         await this.checkoutButton.click({ force: true }); // Force click for mobile
+        console.log('✅ Checkout button clicked');
+        
+        // Wait a moment for the click to register
+        await this.page.waitForTimeout(1000);
+        
+        // Check if page is processing (loading indicators, etc.)
+        try {
+            const loadingSelectors = [
+                '[class*="loading"]',
+                '[class*="Loading"]',
+                '[class*="spinner"]',
+                'text=/processing/i',
+                'text=/loading/i'
+            ];
+            
+            let loadingDetected = false;
+            for (const selector of loadingSelectors) {
+                try {
+                    const loadingElement = await this.page.locator(selector).first();
+                    if (await loadingElement.isVisible({ timeout: 2000 }).catch(() => false)) {
+                        console.log('⏳ Loading indicator detected - checkout is processing...');
+                        loadingDetected = true;
+                        break;
+                    }
+                } catch (e) {
+                    // Continue
+                }
+            }
+            
+            if (!loadingDetected) {
+                console.log('ℹ️ No loading indicators detected (may process in background)');
+            }
+        } catch (e) {
+            console.log(`⚠️ Could not check for loading indicators: ${e.message}`);
+        }
         
         // Wait 15 seconds after clicking checkout (as requested)
         console.log('⏳ Waiting 15 seconds after clicking checkout...');
         await this.page.waitForTimeout(15000);
         console.log('✅ 15 seconds wait complete');
         
-        // Wait a bit more for API calls to complete
+        // Check for error messages on the page (CI might show errors differently)
+        try {
+            if (!this.page.isClosed()) {
+                const errorSelectors = [
+                    '[class*="error"]',
+                    '[class*="Error"]',
+                    '[id*="error"]',
+                    'text=/error/i',
+                    'text=/failed/i',
+                    'text=/invalid/i'
+                ];
+                
+                for (const selector of errorSelectors) {
+                    try {
+                        const errorElement = await this.page.locator(selector).first();
+                        if (await errorElement.isVisible({ timeout: 1000 }).catch(() => false)) {
+                            const errorText = await errorElement.textContent().catch(() => '');
+                            if (errorText && errorText.trim()) {
+                                console.log(`⚠️ Error detected on page: ${errorText.substring(0, 200)}`);
+                            }
+                        }
+                    } catch (e) {
+                        // Continue checking other selectors
+                    }
+                }
+            }
+        } catch (e) {
+            console.log(`⚠️ Could not check for page errors: ${e.message}`);
+        }
+        
+        // Wait a bit more for API calls to complete (longer for CI)
         console.log('⏳ Waiting additional 5 seconds for API calls to complete...');
         await this.page.waitForTimeout(5000);
         
@@ -989,9 +1067,16 @@ class CheckoutPage {
         
         // If no API calls detected yet, wait a bit more (CI might be slower)
         if (successApiCalls.length === 0) {
-            console.log('⏳ No API calls detected yet - waiting additional 3 seconds for CI...');
-            await this.page.waitForTimeout(3000);
+            console.log('⏳ No API calls detected yet - waiting additional 5 seconds for CI...');
+            await this.page.waitForTimeout(5000);
             console.log(`📊 Success API calls after additional wait: ${successApiCalls.length}`);
+            
+            // One more wait if still nothing (CI can be very slow)
+            if (successApiCalls.length === 0) {
+                console.log('⏳ Still no API calls - waiting another 5 seconds...');
+                await this.page.waitForTimeout(5000);
+                console.log(`📊 Success API calls after second wait: ${successApiCalls.length}`);
+            }
         }
         
         // Manually check all network responses if handler didn't catch them
