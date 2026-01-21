@@ -946,15 +946,59 @@ class CheckoutPage {
             }
         }
         
-        const successUrl = this.page.url();
+        // Get final URL - handle case where page might be closed
+        let successUrl = '';
+        try {
+            if (!this.page.isClosed()) {
+                successUrl = this.page.url();
+            } else {
+                // Page closed - try to get URL from context pages
+                try {
+                    const pages = this.page.context().pages();
+                    if (pages.length > 0) {
+                        successUrl = pages[pages.length - 1].url();
+                        console.log(`📍 Page closed, but found URL from context: ${successUrl}`);
+                    } else {
+                        successUrl = 'Page closed - URL unavailable';
+                    }
+                } catch (e) {
+                    successUrl = 'Page closed - could not retrieve URL';
+                }
+            }
+        } catch (e) {
+            successUrl = `Error getting URL: ${e.message}`;
+        }
         
         if (!redirectSuccess) {
-            // Take a screenshot for debugging
-            await this.page.screenshot({
-                path: 'screenshots/checkout-redirect-failed.png',
-                fullPage: true
-            });
-            console.log('📸 Screenshot saved: screenshots/checkout-redirect-failed.png');
+            // Take a screenshot for debugging (only if page is still open)
+            try {
+                if (!this.page.isClosed()) {
+                    await this.page.screenshot({
+                        path: 'screenshots/checkout-redirect-failed.png',
+                        fullPage: true
+                    });
+                    console.log('📸 Screenshot saved: screenshots/checkout-redirect-failed.png');
+                } else {
+                    // Try to screenshot from context pages
+                    try {
+                        const pages = this.page.context().pages();
+                        if (pages.length > 0) {
+                            await pages[pages.length - 1].screenshot({
+                                path: 'screenshots/checkout-redirect-failed.png',
+                                fullPage: true
+                            });
+                            console.log('📸 Screenshot saved from context page: screenshots/checkout-redirect-failed.png');
+                        } else {
+                            console.log('⚠️ Could not take screenshot - all pages closed');
+                        }
+                    } catch (e) {
+                        console.log(`⚠️ Could not take screenshot: ${e.message}`);
+                    }
+                }
+            } catch (e) {
+                console.log(`⚠️ Screenshot failed: ${e.message}`);
+            }
+            
             console.log(`❌ Final URL: ${successUrl}`);
             throw new Error(`❌ Checkout redirect failed. Expected success URL but got: ${successUrl}`);
         }
