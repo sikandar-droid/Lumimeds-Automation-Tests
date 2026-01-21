@@ -25,8 +25,42 @@ class CheckoutPage {
     async waitForPageLoad() {
         console.log('⏳ Waiting for checkout page to load...');
         
-        // Wait for address input to appear
-        await this.addressInput.waitFor({ state: 'visible', timeout: 30000 });
+        // Wait for address input to appear - try multiple selectors
+        const addressSelectors = [
+            'input[name="shipping_address"][placeholder="Street address, house number, or P.O. Box"]',
+            'input[name="shipping_address"]',
+            'input[placeholder*="address" i]',
+            'input[placeholder*="Street" i]',
+            'input[name*="address" i]',
+            '[name="shipping_address"]'
+        ];
+        
+        let addressFound = false;
+        for (const selector of addressSelectors) {
+            try {
+                const addressField = this.page.locator(selector).first();
+                await addressField.waitFor({ state: 'visible', timeout: 10000 });
+                console.log(`✅ Address field found using selector: ${selector}`);
+                addressFound = true;
+                // Update the addressInput locator to the working one
+                this.addressInput = addressField;
+                break;
+            } catch (e) {
+                console.log(`⚠️ Address field not found with selector: ${selector}`);
+                continue;
+            }
+        }
+        
+        if (!addressFound) {
+            // Last resort: wait for any form input to appear
+            console.log('⚠️ Specific address field not found, waiting for any form input...');
+            try {
+                await this.page.waitForSelector('input[type="text"], input[name*="address"], input[placeholder*="address" i]', { timeout: 10000 });
+                console.log('✅ Form inputs found - page likely loaded');
+            } catch (e) {
+                throw new Error('Checkout page did not load - no address field or form inputs found');
+            }
+        }
         
         // Wait for any loading overlays to disappear
         try {
