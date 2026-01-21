@@ -968,27 +968,33 @@ class CheckoutPage {
         console.log('⏳ Waiting additional 5 seconds for API calls to complete...');
         await this.page.waitForTimeout(5000);
         
-        // Check for success API calls in network tab
+        // Wait for network idle to ensure all API calls are captured
+        try {
+            if (!this.page.isClosed()) {
+                console.log('⏳ Waiting for network to be idle...');
+                await this.page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {
+                    console.log('⚠️ Network idle timeout - proceeding anyway');
+                });
+                // Additional wait to ensure all responses are processed
+                await this.page.waitForTimeout(2000);
+            }
+        } catch (e) {
+            console.log(`⚠️ Could not wait for network idle: ${e.message}`);
+        }
+        
+        // Check for success API calls BEFORE cleaning up listeners
         console.log('🔍 Checking network API calls for success indicators...');
         console.log(`📊 Success API calls detected so far: ${successApiCalls.length}`);
         
+        // If no API calls detected yet, wait a bit more (CI might be slower)
+        if (successApiCalls.length === 0) {
+            console.log('⏳ No API calls detected yet - waiting additional 3 seconds for CI...');
+            await this.page.waitForTimeout(3000);
+            console.log(`📊 Success API calls after additional wait: ${successApiCalls.length}`);
+        }
+        
         // Manually check all network responses if handler didn't catch them
         try {
-            // Get all responses from the page
-            const responses = [];
-            const responsePromises = [];
-            
-            // Try to get responses from page context
-            try {
-                // Check if page is still open
-                if (!this.page.isClosed()) {
-                    // Wait for any pending network activity
-                    await this.page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {});
-                }
-            } catch (e) {
-                console.log(`⚠️ Could not wait for network idle: ${e.message}`);
-            }
-            
             // Check if we already detected success via response handler
             if (successApiCalls.length > 0) {
                 console.log(`✅ Found ${successApiCalls.length} success API call(s) via response handler:`);
@@ -1054,12 +1060,7 @@ class CheckoutPage {
             console.log('✅ Success detected via listeners - checkout successful');
         }
         
-        // Clean up event listeners
-        this.page.off('framenavigated', navigationHandler);
-        this.page.off('response', responseHandler);
-        this.page.context().off('page', newPageHandler);
-        
-        // PRIMARY ASSERTION: Only check API calls, not URL
+        // PRIMARY ASSERTION: Check API calls BEFORE cleaning up listeners
         // Get final URL only for logging purposes
         let successUrl = '';
         try {
@@ -1081,7 +1082,7 @@ class CheckoutPage {
             successUrl = `Error getting URL: ${e.message}`;
         }
         
-        // Assert based ONLY on API calls
+        // Assert based ONLY on API calls - CHECK BEFORE CLEANUP
         if (successApiCalls.length > 0) {
             console.log(`\n✅ ========== CHECKOUT SUCCESS DETECTED VIA API CALLS ==========`);
             console.log(`   Found ${successApiCalls.length} success API call(s):`);
@@ -1110,6 +1111,11 @@ class CheckoutPage {
             console.log(`📍 Current URL: ${successUrl}\n`);
             redirectSuccess = true;
         }
+        
+        // Clean up event listeners AFTER checking API calls
+        this.page.off('framenavigated', navigationHandler);
+        this.page.off('response', responseHandler);
+        this.page.context().off('page', newPageHandler);
         
         if (!redirectSuccess) {
             // Take a screenshot for debugging (only if page is still open)
