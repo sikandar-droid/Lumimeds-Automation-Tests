@@ -817,13 +817,7 @@ class CheckoutPage {
         const urlBeforeClick = this.page.url();
         console.log(`📍 Current URL before checkout: ${urlBeforeClick}`);
         
-        console.log('🛒 Clicking checkout button...');
-        await this.checkoutButton.click({ force: true }); // Force click for mobile
-        
-        // Wait for checkout processing
-        console.log('⏳ Waiting for checkout to process...');
-        
-        // Set up navigation and network response listeners BEFORE clicking
+        // Set up navigation and network response listeners BEFORE clicking checkout
         let redirectSuccess = false;
         let navigationDetected = false;
         let finalSuccessUrl = null;
