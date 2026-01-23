@@ -64,14 +64,36 @@ class OnboardingQuestionnairePage {
     }
 
     /**
-     * Enter full name
-     * @param {string} name - The full name
+     * Enter first name and last name (now split into two separate questions)
+     * @param {string} name - The full name (will be split into first and last)
      */
     async enterName(name) {
+        // Split name into first and last name
+        const nameParts = name.trim().split(/\s+/);
+        const firstName = nameParts[0] || 'Sikandar';
+        const lastName = nameParts.slice(1).join(' ') || 'Automation';
+        
+        console.log(`📝 Entering first name: ${firstName}`);
+        // Fill first name
         await this.textbox.click();
-        await this.textbox.fill(name);
+        await this.textbox.fill(firstName);
         await this.waitForNextButtonEnabled();
         await this.nextButton.click();
+        await this.waitForPageChange();
+        
+        console.log(`📝 Entering last name: ${lastName}`);
+        // Fill last name
+        await this.textbox.click();
+        await this.textbox.fill(lastName);
+        await this.waitForNextButtonEnabled();
+        await this.nextButton.click();
+        
+        // Wait for next page - date of birth dropdowns (not a textbox)
+        await this.page.waitForSelector('#rsd__select-month', { state: 'visible', timeout: 10000 }).catch(() => {
+            // Fallback: wait a bit for page transition
+            console.log('⚠️ Date of birth dropdowns not immediately visible, waiting...');
+        });
+        await this.page.waitForTimeout(500);
     }
 
     /**
