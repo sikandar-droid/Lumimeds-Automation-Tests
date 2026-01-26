@@ -64,7 +64,7 @@ class OnboardingQuestionnairePage {
     }
 
     /**
-     * Enter first name and last name (now both fields on the same page)
+     * Enter first name and last name (now split into two separate questions)
      * @param {string} name - The full name (will be split into first and last)
      */
     async enterName(name) {
@@ -73,71 +73,18 @@ class OnboardingQuestionnairePage {
         const firstName = nameParts[0] || 'Sikandar';
         const lastName = nameParts.slice(1).join(' ') || 'Automation';
         
-        console.log(`📝 Entering first name: ${firstName} and last name: ${lastName}`);
-        
-        // Find first name field - try multiple selectors
-        let firstNameField;
-        const firstNameSelectors = [
-            () => this.page.getByRole('textbox', { name: /first name/i }),
-            () => this.page.getByPlaceholder(/first name|your first name/i),
-            () => this.page.getByLabel(/first name/i),
-            () => this.page.locator('input[placeholder*="first name" i]'),
-            () => this.page.locator('input[placeholder*="Your first name" i]')
-        ];
-        
-        for (const selectorFn of firstNameSelectors) {
-            try {
-                const field = selectorFn().first();
-                await field.waitFor({ state: 'visible', timeout: 2000 });
-                firstNameField = field;
-                console.log('✅ Found first name field');
-                break;
-            } catch (e) {
-                continue;
-            }
-        }
-        
-        if (!firstNameField) {
-            throw new Error('❌ Could not find first name field');
-        }
-        
-        // Find last name field - try multiple selectors
-        let lastNameField;
-        const lastNameSelectors = [
-            () => this.page.getByRole('textbox', { name: /last name/i }),
-            () => this.page.getByPlaceholder(/last name|your last name/i),
-            () => this.page.getByLabel(/last name/i),
-            () => this.page.locator('input[placeholder*="last name" i]'),
-            () => this.page.locator('input[placeholder*="Your last name" i]')
-        ];
-        
-        for (const selectorFn of lastNameSelectors) {
-            try {
-                const field = selectorFn().first();
-                await field.waitFor({ state: 'visible', timeout: 2000 });
-                lastNameField = field;
-                console.log('✅ Found last name field');
-                break;
-            } catch (e) {
-                continue;
-            }
-        }
-        
-        if (!lastNameField) {
-            throw new Error('❌ Could not find last name field');
-        }
-        
+        console.log(`📝 Entering first name: ${firstName}`);
         // Fill first name
-        await firstNameField.click();
-        await firstNameField.fill(firstName);
-        await this.page.waitForTimeout(500);
+        await this.textbox.click();
+        await this.textbox.fill(firstName);
+        await this.waitForNextButtonEnabled();
+        await this.nextButton.click();
+        await this.waitForPageChange();
         
+        console.log(`📝 Entering last name: ${lastName}`);
         // Fill last name
-        await lastNameField.click();
-        await lastNameField.fill(lastName);
-        await this.page.waitForTimeout(500);
-        
-        // Click Next button after both fields are filled
+        await this.textbox.click();
+        await this.textbox.fill(lastName);
         await this.waitForNextButtonEnabled();
         await this.nextButton.click();
         
