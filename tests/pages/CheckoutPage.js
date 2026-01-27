@@ -219,15 +219,63 @@ class CheckoutPage {
                     await addressField.type(address, { delay: 50, timeout: 5000 });
                 }
                 
-                // Chrome: Press Tab to dismiss any autocomplete
-                if (isChrome) {
-                    await this.page.waitForTimeout(300);
-                    await this.page.keyboard.press('Tab').catch(() => {});
-                    await this.page.waitForTimeout(200);
+                // Wait for address suggestions dropdown to appear and click first option
+                console.log('⏳ Waiting for address suggestions dropdown...');
+                await this.page.waitForTimeout(800); // Give time for dropdown to appear
+                
+                // Try multiple selectors for the address suggestion dropdown
+                const dropdownSelectors = [
+                    // Google Places Autocomplete (pac-container)
+                    () => this.page.locator('.pac-container .pac-item').first(),
+                    // Common dropdown patterns with role attributes
+                    () => this.page.locator('[role="listbox"] [role="option"]').first(),
+                    () => this.page.locator('[role="listbox"] > div').first(),
+                    // Autocomplete patterns
+                    () => this.page.locator('[class*="autocomplete"] [class*="option"]').first(),
+                    () => this.page.locator('[class*="autocomplete"] > div').first(),
+                    () => this.page.locator('[class*="suggestion"]').first(),
+                    () => this.page.locator('[class*="dropdown"] [class*="item"]').first(),
+                    () => this.page.locator('[class*="dropdown"] > div').first(),
+                    // Look for location pin icon (SVG) and click its parent
+                    () => this.page.locator('svg').filter({ hasText: /location|pin|map/i }).locator('xpath=ancestor::*[contains(@class, "item") or contains(@class, "option") or contains(@class, "suggestion")]').first(),
+                    () => this.page.locator('svg').locator('xpath=ancestor::*[contains(@class, "item") or contains(@class, "option")]').first(),
+                    // Look for elements containing the address text (clickable)
+                    () => this.page.locator(`text="${address}"`).first(),
+                    () => this.page.locator(`text=/.*${address.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}.*/i`).first(),
+                    // Generic clickable dropdown items
+                    () => this.page.locator('div[class*="item"][class*="cursor"]').first(),
+                    () => this.page.locator('div[class*="option"][class*="cursor"]').first(),
+                ];
+                
+                let dropdownClicked = false;
+                for (const selectorFn of dropdownSelectors) {
+                    try {
+                        const dropdownOption = selectorFn();
+                        const isVisible = await dropdownOption.isVisible({ timeout: 1500 }).catch(() => false);
+                        if (isVisible) {
+                            console.log('✅ Found address suggestion dropdown, clicking first option...');
+                            await dropdownOption.scrollIntoViewIfNeeded();
+                            await this.page.waitForTimeout(200);
+                            await dropdownOption.click({ timeout: 3000 });
+                            dropdownClicked = true;
+                            // Wait for selection to process and fields to auto-fill (dropdown closes automatically)
+                            await this.page.waitForTimeout(1000);
+                            console.log('✅ Clicked first address suggestion');
+                            break;
+                        }
+                    } catch (e) {
+                        continue;
+                    }
+                }
+                
+                // Fallback: If no dropdown found, wait a bit and verify the address was filled
+                if (!dropdownClicked) {
+                    console.log('ℹ️ No dropdown found, address may auto-fill or need manual selection');
+                    await this.page.waitForTimeout(500);
                 }
                 
                 // Verify it worked
-                await this.page.waitForTimeout(300);
+                await this.page.waitForTimeout(500);
                 const value = await addressField.inputValue().catch(() => '');
                 
                 if (value && value.trim().includes(address.trim().substring(0, 10))) {
