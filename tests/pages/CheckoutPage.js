@@ -224,9 +224,11 @@ class CheckoutPage {
                 await this.page.waitForTimeout(800); // Give time for dropdown to appear
                 
                 // Try multiple selectors for the address suggestion dropdown
-                // Priority: Target the specific structure with SVG location icon and address text
+                // Priority: Use the specific xpath provided
                 const dropdownSelectors = [
-                    // Specific structure: div.tw-flex.tw-items-start with SVG and address div
+                    // Primary: Use the specific xpath
+                    () => this.page.locator('xpath=//*[@id="op_ojs_form"]/div[1]/div[1]/div[2]/div[2]/div[3]/div/div[2]/button[1]/div/div/div[1]'),
+                    // Fallback: Specific structure: div.tw-flex.tw-items-start with SVG and address div
                     () => this.page.locator('div.tw-flex.tw-items-start.tw-gap-2').filter({ 
                         has: this.page.locator('svg[viewBox="0 0 24 24"]'),
                         has: this.page.locator('div.tw-font-medium.tw-text-gray-900')
