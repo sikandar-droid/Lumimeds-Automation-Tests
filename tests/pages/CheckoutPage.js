@@ -259,7 +259,7 @@ class CheckoutPage {
                             await dropdownOption.click({ timeout: 3000 });
                             dropdownClicked = true;
                             // Wait for selection to process and fields to auto-fill (dropdown closes automatically)
-                            await this.page.waitForTimeout(1000);
+                            await this.page.waitForTimeout(2000);
                             console.log('✅ Clicked first address suggestion');
                             break;
                         }
@@ -456,9 +456,52 @@ class CheckoutPage {
      */
     async fillAddressDetails(addressData) {
         await this.fillAddress(addressData.address);
-        await this.fillCity(addressData.city);
-        await this.selectState(addressData.state);
-        await this.fillZipCode(addressData.zipCode);
+        
+        // Wait for auto-fill to complete after selecting address from dropdown
+        console.log('⏳ Waiting for city, state, and zip to auto-fill...');
+        
+        // Wait for any overlay to disappear first
+        try {
+            const overlay = this.page.locator('.tw-absolute.tw-inset-0.tw-bg-white\\/80, [class*="overlay"]');
+            const hasOverlay = await overlay.isVisible({ timeout: 1000 }).catch(() => false);
+            if (hasOverlay) {
+                console.log('⏳ Waiting for overlay to disappear...');
+                await overlay.waitFor({ state: 'hidden', timeout: 5000 }).catch(() => {});
+            }
+        } catch (e) {
+            // Ignore overlay check errors
+        }
+        
+        // Wait longer for fields to auto-populate
+        await this.page.waitForTimeout(3000);
+        
+        // Check if city is already filled
+        const cityValue = await this.cityInput.inputValue().catch(() => '');
+        if (cityValue && cityValue.trim() !== '') {
+            console.log(`✅ City already auto-filled: ${cityValue}`);
+        } else {
+            console.log('📝 City not auto-filled, filling manually...');
+            await this.fillCity(addressData.city);
+        }
+        
+        // Check if zip is already filled
+        const zipValue = await this.zipCodeInput.inputValue().catch(() => '');
+        if (zipValue && zipValue.trim() !== '') {
+            console.log(`✅ Zip code already auto-filled: ${zipValue}`);
+        } else {
+            console.log('📝 Zip code not auto-filled, filling manually...');
+            await this.fillZipCode(addressData.zipCode);
+        }
+        
+        // Check if state is already selected (check dropdown value or input)
+        const stateValue = await this.stateDropdown.inputValue().catch(() => '');
+        const stateText = await this.stateDropdown.textContent().catch(() => '');
+        if ((stateValue && stateValue.trim() !== '') || (stateText && stateText.includes(addressData.state))) {
+            console.log(`✅ State already auto-filled: ${stateValue || stateText}`);
+        } else {
+            console.log('📝 State not auto-filled, selecting manually...');
+            await this.selectState(addressData.state);
+        }
     }
 
     /**
