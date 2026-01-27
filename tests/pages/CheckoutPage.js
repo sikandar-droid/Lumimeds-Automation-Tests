@@ -224,7 +224,19 @@ class CheckoutPage {
                 await this.page.waitForTimeout(800); // Give time for dropdown to appear
                 
                 // Try multiple selectors for the address suggestion dropdown
+                // Priority: Target the specific structure with SVG location icon and address text
                 const dropdownSelectors = [
+                    // Specific structure: div.tw-flex.tw-items-start with SVG and address div
+                    () => this.page.locator('div.tw-flex.tw-items-start.tw-gap-2').filter({ 
+                        has: this.page.locator('svg[viewBox="0 0 24 24"]'),
+                        has: this.page.locator('div.tw-font-medium.tw-text-gray-900')
+                    }).first(),
+                    // Alternative: Find by the address text in the specific div structure
+                    () => this.page.locator('div.tw-font-medium.tw-text-gray-900').filter({ 
+                        hasText: address.substring(0, 10) 
+                    }).locator('xpath=ancestor::div[contains(@class, "tw-flex") and contains(@class, "tw-items-start")]').first(),
+                    // Find by SVG location icon and get parent container
+                    () => this.page.locator('svg[viewBox="0 0 24 24"] path[d*="M17.657"]').locator('xpath=ancestor::div[contains(@class, "tw-flex")]').first(),
                     // Google Places Autocomplete (pac-container)
                     () => this.page.locator('.pac-container .pac-item').first(),
                     // Common dropdown patterns with role attributes
@@ -234,17 +246,9 @@ class CheckoutPage {
                     () => this.page.locator('[class*="autocomplete"] [class*="option"]').first(),
                     () => this.page.locator('[class*="autocomplete"] > div').first(),
                     () => this.page.locator('[class*="suggestion"]').first(),
-                    () => this.page.locator('[class*="dropdown"] [class*="item"]').first(),
-                    () => this.page.locator('[class*="dropdown"] > div').first(),
-                    // Look for location pin icon (SVG) and click its parent
-                    () => this.page.locator('svg').filter({ hasText: /location|pin|map/i }).locator('xpath=ancestor::*[contains(@class, "item") or contains(@class, "option") or contains(@class, "suggestion")]').first(),
-                    () => this.page.locator('svg').locator('xpath=ancestor::*[contains(@class, "item") or contains(@class, "option")]').first(),
                     // Look for elements containing the address text (clickable)
                     () => this.page.locator(`text="${address}"`).first(),
                     () => this.page.locator(`text=/.*${address.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}.*/i`).first(),
-                    // Generic clickable dropdown items
-                    () => this.page.locator('div[class*="item"][class*="cursor"]').first(),
-                    () => this.page.locator('div[class*="option"][class*="cursor"]').first(),
                 ];
                 
                 let dropdownClicked = false;
@@ -259,8 +263,9 @@ class CheckoutPage {
                             await dropdownOption.click({ timeout: 3000 });
                             dropdownClicked = true;
                             // Wait for selection to process and fields to auto-fill (dropdown closes automatically)
-                            await this.page.waitForTimeout(2000);
                             console.log('✅ Clicked first address suggestion');
+                            // Wait longer for auto-fill to complete
+                            await this.page.waitForTimeout(4000);
                             break;
                         }
                     } catch (e) {
@@ -309,7 +314,26 @@ class CheckoutPage {
      * @param {string} city - City name
      */
     async fillCity(city) {
-        await this.cityInput.click();
+        // Wait for any blocking overlay to disappear
+        try {
+            const blockingOverlay = this.page.locator('div.tw-font-medium.tw-text-gray-900');
+            const isBlocking = await blockingOverlay.isVisible({ timeout: 1000 }).catch(() => false);
+            if (isBlocking) {
+                console.log('⏳ Waiting for blocking overlay to disappear before filling city...');
+                await blockingOverlay.waitFor({ state: 'hidden', timeout: 5000 }).catch(() => {});
+                await this.page.waitForTimeout(500);
+            }
+        } catch (e) {
+            // Ignore
+        }
+        
+        // Try normal click first, if blocked use force
+        try {
+            await this.cityInput.click({ timeout: 5000 });
+        } catch (e) {
+            console.log('⚠️ Normal click blocked, using force click...');
+            await this.cityInput.click({ force: true });
+        }
         await this.cityInput.fill(city);
     }
 
@@ -460,23 +484,45 @@ class CheckoutPage {
         // Wait for auto-fill to complete after selecting address from dropdown
         console.log('⏳ Waiting for city, state, and zip to auto-fill...');
         
-        // Wait for any overlay to disappear first
+        // Wait for any overlay to disappear first (including the address confirmation overlay)
         try {
+            // Check for the address confirmation overlay that blocks clicks
+            const addressOverlay = this.page.locator('div.tw-font-medium.tw-text-gray-900').filter({ hasText: /Poker|address|place/i });
+            const hasAddressOverlay = await addressOverlay.isVisible({ timeout: 2000 }).catch(() => false);
+            if (hasAddressOverlay) {
+                console.log('⏳ Waiting for address confirmation overlay to disappear...');
+                await addressOverlay.waitFor({ state: 'hidden', timeout: 8000 }).catch(() => {});
+            }
+            
+            // Also check for general overlays
             const overlay = this.page.locator('.tw-absolute.tw-inset-0.tw-bg-white\\/80, [class*="overlay"]');
             const hasOverlay = await overlay.isVisible({ timeout: 1000 }).catch(() => false);
             if (hasOverlay) {
                 console.log('⏳ Waiting for overlay to disappear...');
-                await overlay.waitFor({ state: 'hidden', timeout: 5000 }).catch(() => {});
+                await overlay.waitFor({ state: 'hidden', timeout: 8000 }).catch(() => {});
             }
         } catch (e) {
             // Ignore overlay check errors
         }
         
-        // Wait longer for fields to auto-populate
+        // Wait longer for fields to auto-populate (total wait time includes the 4 seconds from dropdown click)
         await this.page.waitForTimeout(3000);
+        
+        // Try to dismiss any remaining overlay by clicking elsewhere or pressing Escape
+        try {
+            const stillBlocking = await this.page.locator('div.tw-font-medium.tw-text-gray-900').isVisible({ timeout: 500 }).catch(() => false);
+            if (stillBlocking) {
+                console.log('⏳ Dismissing blocking overlay...');
+                await this.page.keyboard.press('Escape').catch(() => {});
+                await this.page.waitForTimeout(1000);
+            }
+        } catch (e) {
+            // Ignore
+        }
         
         // Check if city is already filled
         const cityValue = await this.cityInput.inputValue().catch(() => '');
+        console.log(`🔍 City field value: "${cityValue}"`);
         if (cityValue && cityValue.trim() !== '') {
             console.log(`✅ City already auto-filled: ${cityValue}`);
         } else {
@@ -486,6 +532,7 @@ class CheckoutPage {
         
         // Check if zip is already filled
         const zipValue = await this.zipCodeInput.inputValue().catch(() => '');
+        console.log(`🔍 Zip field value: "${zipValue}"`);
         if (zipValue && zipValue.trim() !== '') {
             console.log(`✅ Zip code already auto-filled: ${zipValue}`);
         } else {
@@ -496,6 +543,7 @@ class CheckoutPage {
         // Check if state is already selected (check dropdown value or input)
         const stateValue = await this.stateDropdown.inputValue().catch(() => '');
         const stateText = await this.stateDropdown.textContent().catch(() => '');
+        console.log(`🔍 State field value: "${stateValue}", text: "${stateText}"`);
         if ((stateValue && stateValue.trim() !== '') || (stateText && stateText.includes(addressData.state))) {
             console.log(`✅ State already auto-filled: ${stateValue || stateText}`);
         } else {
